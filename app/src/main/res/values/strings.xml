@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">mFolk</string>
+
+    <string name="app_name_georgian">ფოლკორი</string>
+    <string name="ensembles">ანსამბლები</string>
+    <string name="artistDetails">ანსამბლის დეტალები</string>
+    <string name="settings">პარამეტრები</string>
+    <string name="states">კუთხეები</string>
+    <string name="oldRecordings">ჩანაწერები</string>
+    <string name="favourites">ფავორიტები</string>
+    <string name="songs">სიმღერები</string>
+    <string name="chants">გალობა</string>
+    <string name="auto_play_off">აუტომატური დაკვრა გამორთულია</string>
+    <string name="auto_play_on">აუტომატური დაკვრა ჩართულია</string>
+    <string name="network_is_off">ინტერნეტთან კავშირის პრობლემა</string>
+    <string name="storage_options_question">სად გსურთ შეინახოთ ჩანაწერები?</string>
+    <string name="storage_option_application_cache">აპლიკაციის მეხსიერებაში</string>
+    <string name="storage_option_appliance_cache">ტელეფონის მეხსიერებაში</string>
+    <string name="search">ძიება</string>
+    <string name="search_hint">მაგ: ალილო</string>
+    <string name="cancel">გაქმება</string>
+    <string name="downloading">იწერება</string>
+    <string name="no_records">ჩანაწერები არ არის</string>
+    <string name="player">player</string>
+    <string name="set">დაყენება</string>
+    <string name="unset">გაუქმება</string>
+</resources>

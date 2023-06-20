@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.MFolk" parent="Theme.AppCompat.Light.DarkActionBar">
+
+    </style>
+
+    <style name="ArtistTabViewStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="fontFamily">@font/bpg_nino_mtavruli_bold</item>
+        <item name="android:padding">15dp</item>
+    </style>
+
+    <style name="DownloadSwitchStyle">
+        <item name="colorControlActivated">@color/green</item>
+        <item name="colorSwitchThumbNormal">#444343</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/colorGray</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.MFolk</item>
+    </style>
+
+</resources>
