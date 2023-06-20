@@ -1,18 +1,16 @@
 package ge.baqar.gogia.malazani.ui.songs
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import ge.baqar.gogia.malazani.storage.db.FolkApiDao
-import ge.baqar.gogia.malazani.http.FolkApiRepository
 import ge.baqar.gogia.malazani.arch.ReactiveViewModel
+import ge.baqar.gogia.malazani.http.FolkApiRepository
 import ge.baqar.gogia.malazani.model.Artist
 import ge.baqar.gogia.malazani.model.FailedResult
 import ge.baqar.gogia.malazani.model.SongType
 import ge.baqar.gogia.malazani.model.SucceedResult
-import ge.baqar.gogia.malazani.utility.toModel
 import ge.baqar.gogia.malazani.storage.CharConverter
+import ge.baqar.gogia.malazani.storage.db.FolkApiDao
 import ge.baqar.gogia.malazani.storage.usecase.FileSaveController
 import ge.baqar.gogia.malazani.utility.FileExtensions
+import ge.baqar.gogia.malazani.utility.toModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
@@ -102,12 +100,5 @@ class SongsViewModel(
 
     suspend fun isSongFav(songId: String): Boolean {
         return folkApiDao.song(songId) != null
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    suspend fun downloadSongData(id: String, callback: (ByteArray) -> Unit) {
-        val songData = folkApiRepository.downloadSong(id) as SucceedResult
-        callback.invoke(songData.value.readAllBytes())
     }
 }

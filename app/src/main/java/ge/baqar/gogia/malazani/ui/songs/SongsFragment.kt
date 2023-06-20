@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.malazani.databinding.FragmentArtistBinding
-import ge.baqar.gogia.malazani.ui.MenuActivity
 import ge.baqar.gogia.malazani.model.Artist
 import ge.baqar.gogia.malazani.model.Song
 import ge.baqar.gogia.malazani.model.SongType
@@ -20,13 +19,13 @@ import ge.baqar.gogia.malazani.model.events.CurrentPlayingSong
 import ge.baqar.gogia.malazani.model.events.GetCurrentSong
 import ge.baqar.gogia.malazani.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.malazani.model.events.SongsUnmarkedAsFavourite
+import ge.baqar.gogia.malazani.ui.MenuActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -196,13 +195,8 @@ class SongsFragment : Fragment() {
         if (state.songs.size > 0) {
             currentPlayingSong(CurrentPlayingSong(_currentSong))
             binding?.songsListView?.adapter = SongsAdapter(state.songs) { song, index ->
-                lifecycleScope.launch {
-                    viewModel.downloadSongData(song.id){
-                        song.data = it
-                        play(index, state.songs)
-                        currentPlayingSong(CurrentPlayingSong(song))
-                    }
-                }
+                play(index, state.songs)
+                currentPlayingSong(CurrentPlayingSong(song))
             }
             _currentSong?.let {
                 if (_currentSong?.songType == SongType.Song) {
@@ -231,13 +225,8 @@ class SongsFragment : Fragment() {
         if (state.chants.size > 0) {
             currentPlayingSong(CurrentPlayingSong(_currentSong))
             binding?.chantsListView?.adapter = SongsAdapter(state.chants) { song, index ->
-                lifecycleScope.launch {
-                    viewModel.downloadSongData(song.id){
-                        song.data = it
-                        play(index, state.chants)
-                        currentPlayingSong(CurrentPlayingSong(song))
-                    }
-                }
+                play(index, state.chants)
+                currentPlayingSong(CurrentPlayingSong(song))
             }
             _currentSong?.let {
                 if (_currentSong?.songType == SongType.Chant) {

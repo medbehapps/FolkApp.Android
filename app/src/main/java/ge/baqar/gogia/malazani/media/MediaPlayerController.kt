@@ -3,7 +3,6 @@ package ge.baqar.gogia.malazani.media
 import android.Manifest
 import android.content.Intent
 import android.os.Build
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.viewModelScope
 import com.permissionx.guolindev.PermissionX
@@ -64,13 +63,8 @@ class MediaPlayerController(
     }
 
     private fun listenAudioPlayerChanges() {
-        audioPlayer.listenPlayer {
-            binding?.mediaPlayerView?.isPlaying(it)
-        }
         audioPlayer.completed {
             binding?.mediaPlayerView?.setDuration(null, 0)
-            binding?.mediaPlayerView?.setCurrentDuration(null)
-            binding?.mediaPlayerView?.isPlaying(false)
 
             when (autoPlayState) {
                 AutoPlayState.OFF -> {
@@ -89,12 +83,16 @@ class MediaPlayerController(
                     }
                     binding?.mediaPlayerView?.setTrackTitle(repeatedSong.name, artist?.name)
                     binding?.mediaPlayerView?.isPlaying(true)
+                    binding?.mediaPlayerView?.show()
                 }
 
                 AutoPlayState.REPEAT_ALBUM -> {
                     next()
                 }
             }
+        }
+        audioPlayer.listenPlayer {
+            binding?.mediaPlayerView?.isPlaying(it)
         }
         audioPlayer.updateTimeHandler { progress, time ->
             binding?.mediaPlayerView?.setProgress(time, progress.toInt())
@@ -178,7 +176,7 @@ class MediaPlayerController(
                 .create()
             dialog.show()
         }
-        binding?.mediaPlayerView?.setFabButtonClickListener = {
+        binding?.mediaPlayerView?.setFavButtonClickListener = {
             PermissionX.init(activity)
                 .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .request { allGranted, grantedList, deniedList ->
@@ -250,9 +248,9 @@ class MediaPlayerController(
             viewModel.viewModelScope.launch {
                 audioPlayer.play(song.path, song.data) { onPrepareListener() }
             }
+            binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
             binding?.mediaPlayerView?.show()
             checkAutoPlayEnabled()
-            binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
             updateFavouriteMarkFor(song)
         }
     }
@@ -266,7 +264,6 @@ class MediaPlayerController(
         pause()
         EventBus.getDefault().post(ArtistChanged(STOP_MEDIA))
         binding?.mediaPlayerView?.setDuration(null, 0)
-        binding?.mediaPlayerView?.setCurrentDuration(null)
         binding?.mediaPlayerView?.minimize()
     }
 
@@ -284,8 +281,6 @@ class MediaPlayerController(
                 audioPlayer.play(song.path, song.data) { onPrepareListener() }
                 EventBus.getDefault().post(ArtistChanged(NEXT_MEDIA))
             }
-            binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
-            updateFavouriteMarkFor(song)
         }
     }
 
@@ -298,8 +293,6 @@ class MediaPlayerController(
                 audioPlayer.play(song.path, song.data) { onPrepareListener() }
                 EventBus.getDefault().post(ArtistChanged(PREV_MEDIA))
             }
-            binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
-            updateFavouriteMarkFor(song)
         }
     }
 
@@ -326,13 +319,12 @@ class MediaPlayerController(
 
     private fun updateUI(song: Song) {
         viewListeners()
-        binding?.mediaPlayerView?.let {
-            it.visibility = View.VISIBLE
-        }
         checkAutoPlayEnabled()
         binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
         binding?.mediaPlayerView?.isPlaying(true)
+        updateFavouriteMarkFor(song)
         onPrepareListener()
+        binding?.mediaPlayerView?.show()
     }
 
     fun setInitialPosition(position: Int) {

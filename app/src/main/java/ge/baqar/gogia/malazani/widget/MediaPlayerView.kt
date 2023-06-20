@@ -1,12 +1,10 @@
 package ge.baqar.gogia.malazani.widget
 
-import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -29,7 +27,7 @@ class MediaPlayerView @JvmOverloads constructor(
     var onPrev: (() -> Unit)? = null
     var onStop: (() -> Unit)? = null
     var onPlayPause: (() -> Unit)? = null
-    var setFabButtonClickListener: (() -> Unit)? = null
+    var setFavButtonClickListener: (() -> Unit)? = null
     var openPlayListListener: (() -> Unit)? = null
     var setOnCloseListener: (() -> Unit)? = null
     var setSeekListener: ((Int) -> Unit)? = null
@@ -37,13 +35,14 @@ class MediaPlayerView @JvmOverloads constructor(
     private var animationDuration = 350L
     private var translate: Float = 0F
     var minimized = true
+    private var measured = false
 
     private var binding: ViewMediaPlayerContainerBinding =
         ViewMediaPlayerContainerBinding.inflate(LayoutInflater.from(context), this, true)
     private var calculatedHeight = 0
 
     init {
-        binding.mediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
+        binding.collapsedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
         binding.expandedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
         translate = context.resources.getDimension(R.dimen.bottom_navigation_heght)
         initMinimizedMediaPlayerListeners()
@@ -52,11 +51,11 @@ class MediaPlayerView @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        calculatedHeight = MeasureSpec.getSize(heightMeasureSpec)
-        binding.expandedMediaPlayerViewContainer.animate()
-            .translationY(calculatedHeight.toFloat())
-            .setDuration(2)
-            .start()
+        if (!measured) {
+            calculatedHeight = MeasureSpec.getSize(heightMeasureSpec)
+            binding.expandedMediaPlayerViewContainer.translationY = calculatedHeight.toFloat()
+            measured = true
+        }
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
@@ -92,7 +91,7 @@ class MediaPlayerView @JvmOverloads constructor(
         }
 
         binding.expandedMediaPlayerView.favBtn.setOnClickListener {
-            setFabButtonClickListener?.invoke()
+            setFavButtonClickListener?.invoke()
         }
 
         binding.expandedMediaPlayerView.playerAutoPlayButton.setOnClickListener {
@@ -127,9 +126,11 @@ class MediaPlayerView @JvmOverloads constructor(
                     binding.expandedMediaPlayerViewContainer.translationY += event.rawY - previousY
                     previousY = event.rawY
                 }
+
                 MotionEvent.ACTION_DOWN -> {
                     previousY = event.rawY
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                     val translationY = binding.expandedMediaPlayerViewContainer.translationY
                     if (translationY < calculatedHeight / 1.4) {
@@ -145,24 +146,20 @@ class MediaPlayerView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initMinimizedMediaPlayerListeners() {
-        binding.mediaPlayerView.playerViewCloseBtn.setOnClickListener {
+        binding.collapsedMediaPlayerView.playerViewCloseBtn.setOnClickListener {
             setOnCloseListener?.invoke()
-            if (minimized) {
-                maximize()
-            } else {
-                minimize()
-            }
+            maximize()
         }
 
-        binding.mediaPlayerView.favBtn.setOnClickListener {
-            setFabButtonClickListener?.invoke()
+        binding.collapsedMediaPlayerView.favBtn.setOnClickListener {
+            setFavButtonClickListener?.invoke()
         }
 
-        binding.mediaPlayerView.playerAutoPlayButton.setOnClickListener {
+        binding.collapsedMediaPlayerView.playerAutoPlayButton.setOnClickListener {
             onAutoPlayChanged?.invoke()
         }
 
-        binding.mediaPlayerView.playPauseButton.setOnClickListener {
+        binding.collapsedMediaPlayerView.playPauseButton.setOnClickListener {
             onPlayPause?.invoke()
         }
         var initialY = 0f
@@ -172,9 +169,11 @@ class MediaPlayerView @JvmOverloads constructor(
                     val calculatedMovingY = calculatedHeight + (event.rawY - initialY)
                     binding.expandedMediaPlayerViewContainer.translationY = calculatedMovingY
                 }
+
                 MotionEvent.ACTION_DOWN -> {
                     initialY = event.rawY
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                     val translationY = binding.expandedMediaPlayerViewContainer.translationY
                     if (translationY < calculatedHeight / 1.2) {
@@ -189,7 +188,7 @@ class MediaPlayerView @JvmOverloads constructor(
     }
 
     fun setTrackTitle(title: String, artistName: String?) {
-        binding.mediaPlayerView.playingTrackTitle.text = title
+        binding.collapsedMediaPlayerView.playingTrackTitle.text = title
         binding.expandedMediaPlayerView.playingTrackTitle.text = title
         binding.expandedMediaPlayerView.playingTrackArtist.text = artistName
     }
@@ -203,132 +202,101 @@ class MediaPlayerView @JvmOverloads constructor(
     }
 
     fun setIsFav(isFav: Boolean) {
-        post {
-            if (isFav) {
-                binding.expandedMediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_24)
-                binding.mediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_24)
-            } else {
-                binding.expandedMediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-                binding.mediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-            }
+        if (isFav) {
+            binding.expandedMediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_24)
+            binding.collapsedMediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_24)
+        } else {
+            binding.expandedMediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+            binding.collapsedMediaPlayerView.favBtn.setImageResource(R.drawable.ic_baseline_favorite_border_24)
         }
     }
 
     fun setAutoPlayState(autoPlayState: Int) {
-        post {
-            when (autoPlayState) {
-                AutoPlayState.OFF -> {
-                    binding.mediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_off)
-                    binding.expandedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_off)
-                }
-                AutoPlayState.REPEAT_ALBUM -> {
-                    binding.mediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_on)
-                    binding.expandedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_on)
-                }
-                AutoPlayState.REPEAT_ONE -> {
-                    binding.mediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_one_24)
-                    binding.expandedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_one_24)
-                }
+        when (autoPlayState) {
+            AutoPlayState.OFF -> {
+                binding.collapsedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_off)
+                binding.expandedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_off)
+            }
+
+            AutoPlayState.REPEAT_ALBUM -> {
+                binding.collapsedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_on)
+                binding.expandedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_24_on)
+            }
+
+            AutoPlayState.REPEAT_ONE -> {
+                binding.collapsedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_one_24)
+                binding.expandedMediaPlayerView.playerAutoPlayButton.setImageResource(R.drawable.ic_baseline_repeat_one_24)
             }
         }
     }
 
     fun setDuration(durationString: String?, duration: Int) {
-        post {
-            binding.expandedMediaPlayerView.playingTrackDurationTime.text = durationString
-            binding.expandedMediaPlayerView.playerProgressBar.max = duration
-        }
-    }
-
-    fun setProgress(time: String?, progress: Int) {
-        binding.expandedMediaPlayerView.playerProgressBar.post {
-            binding.expandedMediaPlayerView.playingTrackTime.text = time
-            binding.expandedMediaPlayerView.playerProgressBar.progress = progress
-        }
-    }
-
-    fun setCurrentDuration(durationString: String?) {
+        binding.expandedMediaPlayerView.playingTrackDurationTime.text = durationString
+        binding.expandedMediaPlayerView.playerProgressBar.max = duration
         binding.expandedMediaPlayerView.playingTrackTime.text = durationString
     }
 
+    fun setProgress(time: String?, progress: Int) {
+        binding.expandedMediaPlayerView.playingTrackTime.text = time
+        binding.expandedMediaPlayerView.playerProgressBar.progress = progress
+    }
+
     fun isPlaying(it: Boolean) {
-        post {
-            if (it) {
-                binding.expandedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
-                binding.mediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
-            } else {
-                binding.mediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_play_circle_outline_24)
-                binding.expandedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_play_circle_outline_24)
-            }
+        if (it) {
+            binding.expandedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
+            binding.collapsedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
+        } else {
+            binding.collapsedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_play_circle_outline_24)
+            binding.expandedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_play_circle_outline_24)
         }
     }
 
     fun maximize() {
         minimized = false
-        post {
-            binding.expandedMediaPlayerViewContainer.visibility = View.VISIBLE
-            binding.expandedMediaPlayerViewContainer.animate()
-                .setDuration(animationDuration)
-                .translationY(0F)
-                .start()
-            binding.mediaPlayerViewContainer.animate()
-                .setDuration(animationDuration)
-                .alpha(0f)
-                .setListener(object: Animator.AnimatorListener{
-                    override fun onAnimationStart(p0: Animator) {
+        binding.expandedMediaPlayerViewContainer.animate()
+            .setDuration(animationDuration)
+            .translationY(0F)
+            .start()
 
-                    }
+        binding.mediaPlayerViewContainer.animate()
+            .setDuration(animationDuration)
+            .alpha(0f)
+            .start()
 
-                    override fun onAnimationEnd(p0: Animator) {
-                        p0.removeAllListeners()
-                    }
-
-                    override fun onAnimationCancel(p0: Animator) {
-
-                    }
-
-                    override fun onAnimationRepeat(p0: Animator) {
-
-                    }
-                })
-                .start()
-            bottomNavigationView.animate()
-                .setDuration(animationDuration)
-                .translationY(translate)
-                .start()
-        }
+        bottomNavigationView.animate()
+            .setDuration(animationDuration)
+            .translationY(translate)
+            .start()
         state = OPENED
     }
 
     fun minimize() {
         minimized = true
-        post {
-            binding.mediaPlayerViewContainer.visibility = View.VISIBLE
-            binding.expandedMediaPlayerViewContainer.animate()
-                .setDuration(animationDuration)
-                .translationY(measuredHeight.toFloat())
-                .start()
 
+        binding.expandedMediaPlayerViewContainer.animate()
+            .setDuration(animationDuration)
+            .translationY(measuredHeight.toFloat())
+            .start()
 
-            binding.mediaPlayerViewContainer.animate()
-                .setDuration(animationDuration)
-                .alpha(1f)
-                .start()
+        binding.mediaPlayerViewContainer.animate()
+            .setDuration(animationDuration)
+            .alpha(1f)
+            .start()
 
-            bottomNavigationView.animate()
-                .setDuration(animationDuration)
-                .translationY(0F)
-                .start()
-        }
+        bottomNavigationView.animate()
+            .setDuration(animationDuration)
+            .translationY(0F)
+            .start()
         state = HALF_OPENED
     }
 
     fun show() {
-        binding.mediaPlayerViewContainer.visibility = View.VISIBLE
-        binding.mediaPlayerViewContainer.animate()
-            .setDuration(1)
-            .alpha(1f)
-            .start()
+        if (minimized) {
+            minimize()
+        } else {
+            maximize()
+        }
+
         state = HALF_OPENED
     }
 
@@ -337,6 +305,7 @@ class MediaPlayerView @JvmOverloads constructor(
             .setDuration(animationDuration)
             .alpha(0f)
             .start()
+        binding.mediaPlayerViewContainer.alpha = 0f
         state = HIDDEN
     }
 

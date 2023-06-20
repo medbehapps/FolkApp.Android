@@ -28,7 +28,7 @@ class AudioPlayer(private val context: Context) {
     }
 
     fun play(audioData: String?, dataStream: ByteArray?, callback: () -> Unit) {
-        if (dataStream == null) return
+        if (audioData.isNullOrEmpty() && dataStream == null) return
         reset()
         if (mediaPlayer == null) mediaPlayer = MediaPlayer()
 
@@ -39,8 +39,12 @@ class AudioPlayer(private val context: Context) {
                 .build()
         )
 
-        val fis = getTempSongFile(dataStream)
-        mediaPlayer?.setDataSource(fis.fd)
+        if (dataStream != null) {
+            val fis = getTempSongFile(dataStream)
+            mediaPlayer?.setDataSource(fis.fd)
+        } else {
+            mediaPlayer?.setDataSource(audioData)
+        }
         mediaPlayer?.prepareAsync()
         mediaPlayer?.setOnPreparedListener {
             it.start()
