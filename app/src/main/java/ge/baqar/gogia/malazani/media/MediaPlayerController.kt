@@ -1,11 +1,9 @@
 package ge.baqar.gogia.malazani.media
 
-import android.Manifest
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.viewModelScope
-import com.permissionx.guolindev.PermissionX
 import ge.baqar.gogia.malazani.R
 import ge.baqar.gogia.malazani.databinding.ActivityMenuBinding
 import ge.baqar.gogia.malazani.media.MediaPlaybackService.Companion.NEXT_MEDIA
@@ -176,51 +174,46 @@ class MediaPlayerController(
                 .create()
             dialog.show()
         }
-        binding?.mediaPlayerView?.setFavButtonClickListener = {
-            PermissionX.init(activity)
-                .permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .request { allGranted, grantedList, deniedList ->
-                    if (allGranted) {
-                        val currentSong = getCurrentSong()!!
-                        viewModel.viewModelScope.launch {
-                            var isFav = viewModel.isSongFav(currentSong.id)
-                            val downloadableSongs = currentSong.asDownloadable()
-                            if (!isFav) {
-                                val intent = Intent(activity, DownloadService::class.java).apply {
-                                    action = DownloadService.DOWNLOAD_SONGS
-                                    putExtra("ensemble", artist)
-                                    putParcelableArrayListExtra(
-                                        "songs",
-                                        arrayListOf(downloadableSongs)
-                                    )
-                                }
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    activity.startForegroundService(intent)
-                                } else {
-                                    activity.startService(intent)
-                                }
-                            } else {
-                                val intent = Intent(activity, DownloadService::class.java).apply {
-                                    action = DownloadService.STOP_DOWNLOADING
-                                    putExtra("ensemble", artist)
-                                    putParcelableArrayListExtra(
-                                        "songs",
-                                        arrayListOf(downloadableSongs)
-                                    )
-                                }
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    activity.startForegroundService(intent)
-                                } else {
-                                    activity.startService(intent)
-                                }
 
-                                updateFavouriteMarkFor(currentSong.also {
-                                    isFav = false
-                                })
-                            }
-                        }
+        binding?.mediaPlayerView?.setFavButtonClickListener = {
+            val currentSong = getCurrentSong()!!
+            viewModel.viewModelScope.launch {
+                var isFav = viewModel.isSongFav(currentSong.id)
+                val downloadableSongs = currentSong.asDownloadable()
+                if (!isFav) {
+                    val intent = Intent(activity, DownloadService::class.java).apply {
+                        action = DownloadService.DOWNLOAD_SONGS
+                        putExtra("ensemble", artist)
+                        putParcelableArrayListExtra(
+                            "songs",
+                            arrayListOf(downloadableSongs)
+                        )
                     }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        activity.startForegroundService(intent)
+                    } else {
+                        activity.startService(intent)
+                    }
+                } else {
+                    val intent = Intent(activity, DownloadService::class.java).apply {
+                        action = DownloadService.STOP_DOWNLOADING
+                        putExtra("ensemble", artist)
+                        putParcelableArrayListExtra(
+                            "songs",
+                            arrayListOf(downloadableSongs)
+                        )
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        activity.startForegroundService(intent)
+                    } else {
+                        activity.startService(intent)
+                    }
+
+                    updateFavouriteMarkFor(currentSong.also {
+                        isFav = false
+                    })
                 }
+            }
         }
     }
 

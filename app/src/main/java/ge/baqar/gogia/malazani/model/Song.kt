@@ -7,9 +7,9 @@ data class Song(
     val name: String,
     var nameEng: String,
     val path: String,
-    val songType: SongType,
-    val ensembleId: String,
-    val ensembleName: String,
+    val songType: Int,
+    val artistId: String,
+    val artistName: String,
     var isPlaying: Boolean = false,
     var data: ByteArray? = null,
     var isFav: Boolean = false
@@ -20,14 +20,14 @@ data class Song(
         if (other is Song) {
             return other.name == name
                     && other.path == path
-                    && other.ensembleId == ensembleId
+                    && other.artistId == artistId
                     && other.songType == songType
         }
         return super.equals(other)
     }
 
     override fun detailedName(): String {
-        return "$name - $ensembleName"
+        return "$name - $artistName"
     }
 
     override fun hashCode(): Int {

@@ -9,7 +9,7 @@ data class DownloadableSong(
     val name: String,
     val nameEng: String,
     val link: String,
-    val songType: SongType,
+    val songType: Int,
     val ensembleId: String
 ) : Parcelable {
 }

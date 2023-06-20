@@ -131,7 +131,7 @@ class SearchFragment : Fragment() {
             if (state.result.songs.isNotEmpty()) {
                 binding?.songsSearchResultListView?.adapter =
                     SearchedDataAdapter(state.result.songs) { position, song ->
-                        viewModel.ensembleById(song.ensembleId) { ensemble ->
+                        viewModel.ensembleById(song.artistId) { ensemble ->
                             ensemble?.let {
                                 play(position, ensemble, state.result.songs)
                             }

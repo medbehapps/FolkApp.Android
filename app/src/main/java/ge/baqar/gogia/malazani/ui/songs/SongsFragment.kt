@@ -142,7 +142,7 @@ class SongsFragment : Fragment() {
         _currentSong = event?.song
         if (viewModel.state.songs.isNotEmpty() || viewModel.state.chants.isNotEmpty()) {
             _currentSong?.let {
-                if (_currentSong?.songType == SongType.Song) {
+                if (_currentSong?.songType == SongType.Song.index) {
                     (binding?.songsListView?.adapter as? SongsAdapter)?.apply {
                         applyNotPlayingState()
                         dataSource.firstOrNull { it.id == _currentSong?.id }?.isPlaying = true
@@ -199,7 +199,7 @@ class SongsFragment : Fragment() {
                 currentPlayingSong(CurrentPlayingSong(song))
             }
             _currentSong?.let {
-                if (_currentSong?.songType == SongType.Song) {
+                if (_currentSong?.songType == SongType.Song.index) {
                     (binding?.songsListView?.adapter as? SongsAdapter)?.apply {
                         applyNotPlayingState()
                         dataSource.firstOrNull { it.id == _currentSong?.id }?.isPlaying = true
@@ -229,7 +229,7 @@ class SongsFragment : Fragment() {
                 currentPlayingSong(CurrentPlayingSong(song))
             }
             _currentSong?.let {
-                if (_currentSong?.songType == SongType.Chant) {
+                if (_currentSong?.songType == SongType.Chant.index) {
                     (binding?.chantsListView?.adapter as? SongsAdapter)?.apply {
                         applyNotPlayingState()
                         dataSource.firstOrNull { it.id == _currentSong?.id }?.isPlaying = true

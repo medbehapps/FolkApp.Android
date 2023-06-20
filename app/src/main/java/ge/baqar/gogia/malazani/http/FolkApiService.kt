@@ -20,13 +20,6 @@ interface FolkApiService {
     @GET("songs/{artistId}/all")
     suspend fun songs(@Path("artistId") artistId: String): SongsResponse
 
-    @GET("songs/{id}/data")
-    suspend fun downloadSongData(@Path("id") id: String): Response<ResponseBody>
-
     @GET("songs/{id}/file")
     suspend fun downloadSongFile(@Path("id") id: String): Response<ResponseBody>
-
-//    @Streaming
-//    @GET
-//    suspend fun downloadSongData(@Url fileUrl:String): Response<ResponseBody>
 }

@@ -19,8 +19,8 @@ data class Artist(
 }
 
 enum class ArtistType(val type: String) {
-    @SerializedName("1")
-    ENSEMBLE("1"),
     @SerializedName("2")
-    OLD_RECORDING("2")
+    ENSEMBLE("2"),
+    @SerializedName("1")
+    OLD_RECORDING("1")
 }

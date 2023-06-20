@@ -13,7 +13,7 @@ data class DbSong(
     @ColumnInfo(name = "name_eng") val nameEng: String,
     @ColumnInfo(name = "path") val path: String?,
     @ColumnInfo(name = "ensemble_id") val ensembleId: String,
-    @ColumnInfo(name = "song_type") val songType: ge.baqar.gogia.malazani.model.SongType,
+    @ColumnInfo(name = "song_type") val songType: Int,
     @ColumnInfo(name = "data") var filePath: String,
     @ColumnInfo(name = "is_current") var isCurrentPlaying: Boolean
 ) {

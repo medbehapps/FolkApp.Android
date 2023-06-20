@@ -84,7 +84,7 @@ class FavouritesFragment : Fragment() {
             binding?.favSongsListView?.adapter = FavouritesAdapter(state.favSongs) { position, song ->
                 play(
                     position,
-                    Artist(song.ensembleId, song.ensembleName, "", ArtistType.ENSEMBLE, true),
+                    Artist(song.artistId, song.artistName, "", ArtistType.ENSEMBLE, true),
                     state.favSongs
                 )
             }

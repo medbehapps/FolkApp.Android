@@ -55,7 +55,7 @@ class SongsViewModel(
                 if (value is FailedResult) {
                     val cacheSongs = folkApiDao.songsByEnsembleId(artist.id)
                     val songs = cacheSongs
-                        .filter { it.songType == SongType.Song }
+                        .filter { it.songType == SongType.Song.index }
                         .map {
                             val fileSystemSong =
                                 saveController.getFile(artist.nameEng, it.nameEng)
@@ -64,7 +64,7 @@ class SongsViewModel(
                         .toMutableList()
 
                     val chants = cacheSongs
-                        .filter { it.songType == SongType.Chant }
+                        .filter { it.songType == SongType.Chant.index }
                         .map {
                             val fileSystemSong =
                                 saveController.getFile(artist.nameEng, it.nameEng)

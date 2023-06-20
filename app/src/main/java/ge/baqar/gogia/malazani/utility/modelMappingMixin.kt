@@ -30,21 +30,21 @@ fun Song.toDb(isCurrentPlaying: Boolean = false): DbSong {
         this.name,
         this.nameEng,
         this.path,
-        this.ensembleId,
+        this.artistId,
         this.songType,
         "",
         isCurrentPlaying
     )
 }
 
-fun Song.asDownloadable(): DownloadableSong {
+fun Song. asDownloadable(): DownloadableSong {
     return DownloadableSong(
         this.id,
         this.name,
         this.nameEng,
         this.path,
         this.songType,
-        this.ensembleId
+        this.artistId
     )
 }
 

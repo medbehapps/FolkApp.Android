@@ -18,7 +18,7 @@ class FavouritesAdapter(
         }
 
         fun bind(position: Int, song: Song) {
-            songName.text = "${song.name} - ${song.ensembleName}"
+            songName.text = "${song.name} - ${song.artistName}"
             itemView.setOnClickListener {
                 callback(position, song)
             }

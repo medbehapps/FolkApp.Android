@@ -1,11 +1,28 @@
 package ge.baqar.gogia.malazani.ui
 
+import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -19,17 +36,19 @@ import ge.baqar.gogia.malazani.job.SyncFilesAndDatabaseJob
 import ge.baqar.gogia.malazani.media.MediaPlaybackService
 import ge.baqar.gogia.malazani.media.MediaPlaybackServiceManager
 import ge.baqar.gogia.malazani.media.MediaPlayerController
-import ge.baqar.gogia.malazani.widget.MediaPlayerView.Companion.OPENED
 import ge.baqar.gogia.malazani.model.Artist
 import ge.baqar.gogia.malazani.model.Song
 import ge.baqar.gogia.malazani.model.events.RequestMediaControllerInstance
 import ge.baqar.gogia.malazani.model.events.ServiceCreatedEvent
+import ge.baqar.gogia.malazani.utility.permission.BgPermission
+import ge.baqar.gogia.malazani.widget.MediaPlayerView.Companion.OPENED
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.core.component.KoinComponent
 import org.koin.dsl.module
+import java.io.File
 import kotlin.time.ExperimentalTime
 
 
@@ -38,12 +57,14 @@ import kotlin.time.ExperimentalTime
 class MenuActivity : AppCompatActivity(), KoinComponent,
     NavController.OnDestinationChangedListener {
 
+    private val PERMISSION_REQUEST_CODE = 200
     var destinationChanged: ((String) -> Unit)? = null
     private var tempLastPlayedSong: Song? = null
     private var tempArtist: Artist? = null
     private var tempDataSource: MutableList<Song>? = null
     private var tempPosition: Int? = null
 
+    private var runtimePermission: BgPermission? = null
     private var _playbackRequest: Boolean = false
     private var _playMediaPlaybackAction: ((MutableList<Song>, Int, Artist) -> Unit)? =
         { songs, position, ensemble ->
@@ -63,6 +84,20 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     private lateinit var binding: ActivityMenuBinding
     private lateinit var navController: NavController
     private var mediaPlayerController: MediaPlayerController? = null
+    var permissionResult: ActivityResultLauncher<String>? = null
+    private val storageActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                //Android is 11(R) or above
+                if (Environment.isExternalStorageManager()) {
+                } else {
+                }
+            } else {
+                //Android is below 11(R)
+            }
+        }
+    var permissionAccuired: (() -> Unit)? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,6 +130,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             doBindService()
             binding.mediaPlayerView.show()
         }
+
         instance = this
     }
 
@@ -107,8 +143,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!MediaPlaybackServiceManager.isRunning)
-            doUnbindService()
+        if (!MediaPlaybackServiceManager.isRunning) doUnbindService()
         navController.removeOnDestinationChangedListener(this)
         instance = null
     }
@@ -118,13 +153,43 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         EventBus.getDefault().unregister(this)
     }
 
+//    fun requestPermission(callback: (() -> Unit)) {
+//        runtimePermission = BgPermission.Builder()
+//            .requestCode(125)
+//            .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//            .callBack(object : OnGrantPermissions {
+//                override fun get(grantedPermissions: List<String>) {
+//                    if (grantedPermissions.any()) {
+//                        callback.invoke()
+//                    }
+//                }
+//            }, object : OnDenyPermissions {
+//                override fun get(deniedPermissions: List<String>) {
+//
+//                }
+//            }, object : OnFailure {
+//                override fun fail(e: Exception) {
+//                    e.printStackTrace()
+//                }
+//            })
+//        runtimePermission?.request(this)
+//    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val state = binding.mediaPlayerView.state
         if (state == OPENED) {
             binding.mediaPlayerView.minimize()
-        } else
-            super.onBackPressed()
+        } else super.onBackPressed()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        runtimePermission?.onPermissionsResult(requestCode, permissions, grantResults)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -139,9 +204,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         }
         if (_playbackRequest) {
             _playMediaPlaybackAction?.invoke(
-                tempDataSource!!,
-                tempPosition!!,
-                tempArtist!!
+                tempDataSource!!, tempPosition!!, tempArtist!!
             )
             tempDataSource = null
             tempPosition = null
@@ -182,8 +245,8 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             startService(intent);
         }
 
-        if (mediaPlayerController == null)
-            EventBus.getDefault().postSticky(RequestMediaControllerInstance())
+        if (mediaPlayerController == null) EventBus.getDefault()
+            .postSticky(RequestMediaControllerInstance())
     }
 
     private fun doUnbindService() {
@@ -192,9 +255,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     }
 
     override fun onDestinationChanged(
-        controller: NavController,
-        destination: NavDestination,
-        arguments: Bundle?
+        controller: NavController, destination: NavDestination, arguments: Bundle?
     ) {
         destinationChanged?.invoke(destination.javaClass.name)
     }
