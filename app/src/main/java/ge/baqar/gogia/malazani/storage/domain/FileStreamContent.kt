@@ -1,9 +1,7 @@
 package ge.baqar.gogia.malazani.storage.domain
 
-import java.io.InputStream
-
 data class FileStreamContent(
-    val data: InputStream,
+    val data: ByteArray,
     override val fileNameWithoutSuffix: String,
     override val suffix: String,
     override val mimeType: String?,

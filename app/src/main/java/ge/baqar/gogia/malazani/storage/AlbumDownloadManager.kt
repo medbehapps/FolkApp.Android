@@ -14,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.io.InputStream
 import java.util.*
 
 class AlbumDownloadManager internal constructor(
@@ -73,8 +72,8 @@ class AlbumDownloadManager internal constructor(
 
                 val exists = saveController.exists(_artist.nameEng, song.nameEng)
                 if (!exists) {
-                    val result = folkApiRepository.downloadSong(song.path!!)
-                    if (result is SucceedResult<InputStream>) {
+                    val result = folkApiRepository.downloadSong(song.referenceId)
+                    if (result is SucceedResult<ByteArray>) {
                         saveController.saveDocumentFile(
                             FileStreamContent(
                                 data = result.value,

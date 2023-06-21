@@ -12,7 +12,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
-import java.io.InputStream
 
 class FolkApiRepository(
     private var networkStatus: NetworkStatus,
@@ -80,9 +79,9 @@ class FolkApiRepository(
         }
     }
 
-    suspend fun downloadSong(id: String): ReactiveResult<String, InputStream> {
+    suspend fun downloadSong(id: String): ReactiveResult<String, ByteArray> {
         val result = if (networkStatus.isOnline()) {
-            val song = folkApiService.downloadSongFile(id).body()?.byteStream()
+            val song = folkApiService.downloadSongFile(id).body()?.bytes()
                 ?: return "network_is_off".asError
 
             song.asSuccess
