@@ -2,13 +2,10 @@ package ge.baqar.gogia.malazani.media.player
 
 import android.content.Context
 import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.MediaDataSource
 import android.media.MediaPlayer
 import android.os.CountDownTimer
 import android.os.PowerManager
 import java.io.File
-import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
@@ -75,6 +72,7 @@ class AudioPlayer(private val context: Context) {
     fun resume() {
         mediaPlayer?.start()
         mediaPlayerIsPlayingCallback?.invoke(isPlaying())
+        startTimer()
     }
 
     fun updateTimeHandler(callback: (Long, String?) -> Unit) {

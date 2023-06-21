@@ -60,17 +60,17 @@ class MediaPlayerController(
         binding?.mediaPlayerView?.setDuration(durationString, duration)
     }
 
-    private fun listenAudioPlayerChanges() {
+    private fun initializeAudioPlayerChanges() {
         audioPlayer.completed {
-            binding?.mediaPlayerView?.setDuration(null, 0)
-
             when (autoPlayState) {
                 AutoPlayState.OFF -> {
                     stop()
+                    binding?.mediaPlayerView?.setDuration(null, 0)
                     return@completed
                 }
 
                 AutoPlayState.REPEAT_ONE -> {
+                    binding?.mediaPlayerView?.setDuration(null, 0)
                     val repeatedSong = playList!![position]
                     viewModel.viewModelScope.launch {
                         audioPlayer.play(
@@ -79,13 +79,16 @@ class MediaPlayerController(
                         ) { onPrepareListener() }
                         EventBus.getDefault().post(ArtistChanged(PLAY_MEDIA))
                     }
-                    binding?.mediaPlayerView?.setTrackTitle(repeatedSong.name, artist?.name)
-                    binding?.mediaPlayerView?.isPlaying(true)
-                    binding?.mediaPlayerView?.show()
+                    updateUI(repeatedSong)
                 }
 
                 AutoPlayState.REPEAT_ALBUM -> {
-                    next()
+                    if (isThereAnythingNextToPlay()) {
+                        next()
+                        return@completed
+                    }
+
+                    stop()
                 }
             }
         }
@@ -97,7 +100,7 @@ class MediaPlayerController(
         }
     }
 
-    private fun viewListeners() {
+    private fun initializeViewListeners() {
         binding?.mediaPlayerView?.setSeekListener = { progress ->
             viewModel.viewModelScope.launch {
                 audioPlayer.playOn(progress)
@@ -105,10 +108,12 @@ class MediaPlayerController(
         }
 
         binding?.mediaPlayerView?.onNext = {
-            next()
+            if (isThereAnythingNextToPlay())
+                next()
         }
         binding?.mediaPlayerView?.onPrev = {
-            previous()
+            if (isThereAnythingPriorToPlay())
+                previous()
         }
         binding?.mediaPlayerView?.onPlayPause = {
             if (audioPlayer.isPlaying()) {
@@ -236,8 +241,8 @@ class MediaPlayerController(
     fun play() {
         playList?.let {
             val song = playList!![this.position]
-            listenAudioPlayerChanges()
-            viewListeners()
+            initializeAudioPlayerChanges()
+            initializeViewListeners()
             viewModel.viewModelScope.launch {
                 audioPlayer.play(song.path, song.data) { onPrepareListener() }
             }
@@ -256,7 +261,7 @@ class MediaPlayerController(
     fun stop() {
         pause()
         EventBus.getDefault().post(ArtistChanged(STOP_MEDIA))
-        binding?.mediaPlayerView?.setDuration(null, 0)
+        binding?.mediaPlayerView?.setProgress(null, 0)
         binding?.mediaPlayerView?.minimize()
     }
 
@@ -265,27 +270,31 @@ class MediaPlayerController(
         audioPlayer.resume()
     }
 
+    private fun isThereAnythingNextToPlay(): Boolean {
+        return (position + 1) < playList?.size!!
+    }
+
+    private fun isThereAnythingPriorToPlay(): Boolean {
+        return position > 0
+    }
+
     fun next() {
-        if ((position + 1) < playList?.size!!) {
-            ++position
-            val song = playList!![position]
-            updateUI(song)
-            viewModel.viewModelScope.launch {
-                audioPlayer.play(song.path, song.data) { onPrepareListener() }
-                EventBus.getDefault().post(ArtistChanged(NEXT_MEDIA))
-            }
+        ++position
+        val song = playList!![position]
+        updateUI(song)
+        viewModel.viewModelScope.launch {
+            audioPlayer.play(song.path, song.data) { onPrepareListener() }
+            EventBus.getDefault().post(ArtistChanged(NEXT_MEDIA))
         }
     }
 
     fun previous() {
-        if (position > 0) {
-            --position
-            val song = playList!![position]
-            updateUI(song)
-            viewModel.viewModelScope.launch {
-                audioPlayer.play(song.path, song.data) { onPrepareListener() }
-                EventBus.getDefault().post(ArtistChanged(PREV_MEDIA))
-            }
+        --position
+        val song = playList!![position]
+        updateUI(song)
+        viewModel.viewModelScope.launch {
+            audioPlayer.play(song.path, song.data) { onPrepareListener() }
+            EventBus.getDefault().post(ArtistChanged(PREV_MEDIA))
         }
     }
 
@@ -311,7 +320,6 @@ class MediaPlayerController(
     }
 
     private fun updateUI(song: Song) {
-        viewListeners()
         checkAutoPlayEnabled()
         binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
         binding?.mediaPlayerView?.isPlaying(true)

@@ -300,12 +300,22 @@ class MediaPlayerView @JvmOverloads constructor(
         state = HALF_OPENED
     }
 
-    private fun hide() {
+    fun hide() {
         binding.mediaPlayerViewContainer.animate()
             .setDuration(animationDuration)
             .alpha(0f)
             .start()
-        binding.mediaPlayerViewContainer.alpha = 0f
+
+        binding.expandedMediaPlayerViewContainer.animate()
+            .setDuration(animationDuration)
+            .translationY(measuredHeight.toFloat())
+            .start()
+
+        bottomNavigationView.animate()
+            .setDuration(animationDuration)
+            .translationY(0F)
+            .start()
+
         state = HIDDEN
     }
 
