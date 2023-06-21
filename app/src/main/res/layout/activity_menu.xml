@@ -34,7 +34,7 @@
             app:navGraph="@navigation/mobile_navigation" />
     </FrameLayout>
 
-    <ge.baqar.gogia.malazani.widget.MediaPlayerView
+    <ge.baqar.gogia.goefolk.widget.MediaPlayerView
         android:id="@+id/mediaPlayerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

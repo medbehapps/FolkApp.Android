@@ -1,0 +1,39 @@
+package ge.baqar.gogia.goefolk.storage
+
+import android.content.Context
+import android.content.SharedPreferences
+
+class FolkAppPreferences(private val context: Context) {
+    private val preferences: SharedPreferences by lazy {
+        context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)!!
+    }
+    private val playerControlsAreVisibleKey = "playerControlsAreVisible"
+    private val autoPlayEnabledKey = "autoPlayEnabledKey"
+    private val timerSetKey = "timerSetKey"
+
+    fun updateAutoPlay(autoPlayEnabled: Int) {
+        preferences.edit()
+            .putInt(autoPlayEnabledKey, autoPlayEnabled)
+            .apply()
+    }
+
+    fun getAutoPlay(): Int {
+        return preferences.getInt(autoPlayEnabledKey, ge.baqar.gogia.goefolk.model.AutoPlayState.OFF)
+    }
+
+    fun setPlayerState(playerControlsAreVisible: Boolean) {
+        preferences.edit()
+            .putBoolean(playerControlsAreVisibleKey, playerControlsAreVisible)
+            .apply()
+    }
+
+    fun setTimerSet(enabled: Boolean) {
+        preferences.edit()
+            .putBoolean(timerSetKey, enabled)
+            .apply()
+    }
+
+    fun getTimerSet(): Boolean {
+        return preferences.getBoolean(timerSetKey, false)
+    }
+}

@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">mFolk</string>
-
+    <string name="app_name">Georgian Folk</string>
     <string name="app_name_georgian">ფოლკორი</string>
     <string name="ensembles">ანსამბლები</string>
     <string name="artistDetails">ანსამბლის დეტალები</string>
