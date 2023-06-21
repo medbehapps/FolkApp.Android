@@ -38,7 +38,7 @@ class MediaPlayerController(
     private val viewModel: SongsViewModel,
     private val folkAppPreferences: FolkAppPreferences,
     private val audioPlayer: AudioPlayer,
-    private val activity: MenuActivity
+    private val activity: MenuActivity?
 ) {
     var binding: ActivityMenuBinding? = null
     var artist: Artist? = null
@@ -158,22 +158,22 @@ class MediaPlayerController(
             folkAppPreferences.setTimerSet(timerSet)
             binding?.mediaPlayerView?.setTimer(timerSet)
 
-            val array = arrayOf(activity.resources.getString(R.string.unset), "5", "10", "30", "60")
+            val array = arrayOf(activity?.resources?.getString(R.string.unset), "5", "10", "30", "60")
             var selectedPosition = 0
-            val dialog = AlertDialog.Builder(activity)
+            val dialog = AlertDialog.Builder(activity!!)
                 .setTitle(R.string.app_name_georgian)
                 .setSingleChoiceItems(
                     array, 0
                 ) { _, position -> selectedPosition = position }
                 .setPositiveButton(
-                    activity.resources.getString(R.string.set)
+                    activity?.resources?.getString(R.string.set)
                 ) { _, _ ->
                     val item = array[selectedPosition]
-                    if (item == activity.resources.getString(R.string.unset)) {
+                    if (item == activity?.resources?.getString(R.string.unset)) {
                         EventBus.getDefault().post(UnSetTimerEvent)
                     } else {
-                        val time = item.toLong()
-                        EventBus.getDefault().post(SetTimerEvent(time))
+                        val time = item?.toLong()
+                        EventBus.getDefault().post(SetTimerEvent(time!!))
                     }
                 }
                 .create()
@@ -195,9 +195,9 @@ class MediaPlayerController(
                         )
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        activity.startForegroundService(intent)
+                        activity?.startForegroundService(intent)
                     } else {
-                        activity.startService(intent)
+                        activity?.startService(intent)
                     }
                 } else {
                     val intent = Intent(activity, DownloadService::class.java).apply {
@@ -209,9 +209,9 @@ class MediaPlayerController(
                         )
                     }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        activity.startForegroundService(intent)
+                        activity?.startForegroundService(intent)
                     } else {
-                        activity.startService(intent)
+                        activity?.startService(intent)
                     }
 
                     updateFavouriteMarkFor(currentSong.also {

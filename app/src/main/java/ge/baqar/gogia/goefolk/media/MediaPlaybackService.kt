@@ -202,14 +202,13 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
 
             val notificationBuilder: NotificationCompat.Builder
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channelId = "HEADS_UP_NOTIFICATIONS"
                 val channel = NotificationChannel(
-                    channelId,
+                    getString(R.string.app_name_notification_channel),
                     getString(R.string.app_name),
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_NONE
                 )
                 channel.enableVibration(false)
-                notificationBuilder = NotificationCompat.Builder(this, channelId)
+                notificationBuilder = NotificationCompat.Builder(this, getString(R.string.app_name_notification_channel))
                 notificationManager?.createNotificationChannel(channel)
             } else {
                 notificationBuilder = NotificationCompat.Builder(this)
@@ -220,6 +219,7 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
                 .setCustomBigContentView(notificationLayoutExpanded)
                 .setStyle(NotificationCompat.DecoratedCustomViewStyle())
                 .setColorized(true)
+                .setOngoing(true)
                 .setColor(ContextCompat.getColor(this, R.color.colorAccentLighter))
 
             startForeground(notificationId, notification.build())

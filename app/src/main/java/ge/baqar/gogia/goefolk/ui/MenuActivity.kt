@@ -1,10 +1,16 @@
 package ge.baqar.gogia.goefolk.ui
 
+import android.Manifest
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
@@ -13,6 +19,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import ge.baqar.gogia.goefolk.FolkApplication
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityMenuBinding
 import ge.baqar.gogia.goefolk.job.SyncFilesAndDatabaseJob
@@ -23,11 +30,13 @@ import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.model.events.RequestMediaControllerInstance
 import ge.baqar.gogia.goefolk.model.events.ServiceCreatedEvent
+import ge.baqar.gogia.goefolk.utility.permission.BgPermission
 import ge.baqar.gogia.goefolk.widget.MediaPlayerView.Companion.OPENED
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.koin.android.ext.koin.androidApplication
 import org.koin.core.component.KoinComponent
 import org.koin.dsl.module
 import kotlin.time.ExperimentalTime
@@ -60,9 +69,13 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             }
         }
 
+    private val notificationManager by lazy {
+        getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+    }
     private lateinit var binding: ActivityMenuBinding
     private lateinit var navController: NavController
     private var mediaPlayerController: MediaPlayerController? = null
+    private var bgPermission: BgPermission? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,9 +109,16 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             binding.mediaPlayerView.show()
         }
 
-        instance = this
-    }
+        if (!notificationManager.areNotificationsEnabled()) {
+            binding.root.findViewById<AppCompatImageButton>(R.id.notificationOffImage)
+                ?.visibility = View.VISIBLE
 
+            binding.root.findViewById<AppCompatImageButton>(R.id.notificationOffImage)
+                ?.setOnClickListener {
+                    checkNotificationPermission()
+                }
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -106,11 +126,21 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         SyncFilesAndDatabaseJob.triggerNow(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!notificationManager.areNotificationsEnabled()) {
+            binding.root.findViewById<AppCompatImageButton>(R.id.notificationOffImage)
+                ?.visibility = View.VISIBLE
+        } else {
+            binding.root.findViewById<AppCompatImageButton>(R.id.notificationOffImage)
+                ?.visibility = View.GONE
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (!MediaPlaybackServiceManager.isRunning) doUnbindService()
         navController.removeOnDestinationChangedListener(this)
-        instance = null
     }
 
     override fun onStop() {
@@ -124,6 +154,15 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         if (state == OPENED) {
             binding.mediaPlayerView.minimize()
         } else super.onBackPressed()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        bgPermission?.onPermissionsResult(requestCode, permissions, grantResults)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -156,6 +195,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         EventBus.getDefault().post(RequestMediaControllerInstance())
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun playMediaPlayback(position: Int, songs: MutableList<Song>, artist: Artist) {
         (binding.navHostFragmentActivityMenuContainer.layoutParams as ConstraintLayout.LayoutParams).apply {
             bottomMargin = resources.getDimension(R.dimen.minimized_media_player_height).toInt()
@@ -168,6 +208,27 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             tempArtist = artist
             _playbackRequest = true
             doBindService()
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (!notificationManager.areNotificationsEnabled()) {
+//            val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+//                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+//                putExtra(Settings.EXTRA_CHANNEL_ID,
+//                    getString(R.string.app_name_notification_channel))
+//            }
+//
+//            startActivity(intent)
+
+            bgPermission = BgPermission.builder()
+                ?.requestCode(203)
+                ?.permission(Manifest.permission.POST_NOTIFICATIONS)
+                ?.callBack({ granted ->
+
+                }, { denied -> }, { failure -> })
+
+            bgPermission?.request(this)
         }
     }
 
@@ -193,13 +254,9 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     ) {
         destinationChanged?.invoke(destination.javaClass.name)
     }
-
-    companion object {
-        var instance: MenuActivity? = null
-    }
 }
 
 @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
 val activityModule = module {
-    single { MenuActivity.instance }
+    single { (androidApplication() as FolkApplication).activeActivity }
 }

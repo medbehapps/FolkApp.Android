@@ -19,15 +19,15 @@ class BgPermission {
 
     class RuntimePermissions {
         fun permission(permission: String): RuntimePermissions {
-            allPermissions.put(counter, permission)
+            allPermissions[counter] = permission
             counter++
             return runtimePermissions
         }
 
         fun callBack(
-            onGrantPermissions: OnGrantPermissions,
-            onDenyPermissions: OnDenyPermissions,
-            onFailure: OnFailure
+            onGrantPermissions: (ArrayList<out String>) -> Unit,
+            onDenyPermissions: (ArrayList<out String>) -> Unit,
+            onFailure: (Exception) -> Unit
         ): BgPermission {
             grantPermissions = onGrantPermissions
             denyPermissions = onDenyPermissions
@@ -47,8 +47,8 @@ class BgPermission {
                     deniedPermissions.add(permission)
                 }
             }
-            grantPermissions?.get(grantedPermissions)
-            denyPermissions?.get(deniedPermissions)
+            grantPermissions?.invoke(grantedPermissions)
+            denyPermissions?.invoke(deniedPermissions)
         }
     }
 
@@ -66,7 +66,7 @@ class BgPermission {
             }
             ActivityCompat.requestPermissions(activity, tempArr, requestCode)
         } catch (e: Exception) {
-            failure?.fail(e)
+            failure?.invoke(e)
         }
 
     }
@@ -75,13 +75,13 @@ class BgPermission {
         private var requestCode = 0
         private val runtimePermissions: RuntimePermissions by lazy { RuntimePermissions() }
         private val runtimePermission: BgPermission by lazy { BgPermission() }
-        private val grantedPermissions = ArrayList<String>()
-        private val deniedPermissions = ArrayList<String>()
+        private val grantedPermissions = arrayListOf<String>()
+        private val deniedPermissions = arrayListOf<String>()
         private var counter = 0
-        val builder: Builder by lazy { Builder() }
-        private var denyPermissions: OnDenyPermissions? = null
-        private var grantPermissions: OnGrantPermissions? = null
-        private var failure: OnFailure? = null
+        private val builder: Builder by lazy { Builder() }
+        private var denyPermissions: ((ArrayList<String>) -> Unit)? = null
+        private var grantPermissions: ((ArrayList<String>) -> Unit)? = null
+        private var failure: ((Exception) -> Unit)? = null
 
         @SuppressLint("UseSparseArrays")
         private val allPermissions = HashMap<Int, String>()
