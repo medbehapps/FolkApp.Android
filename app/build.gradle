@@ -12,6 +12,7 @@ android {
     defaultConfig {
         applicationId "ge.baqar.gogia.goefolk"
         minSdk 24
+        //noinspection OldTargetApi
         targetSdk 33
         versionCode 106
         versionName "1.0.6"
