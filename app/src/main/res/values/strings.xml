@@ -24,4 +24,5 @@
     <string name="player">player</string>
     <string name="set">დაყენება</string>
     <string name="unset">გაუქმება</string>
+    <string name="no_track">დასაკრავი სია ცარიელია</string>
 </resources>

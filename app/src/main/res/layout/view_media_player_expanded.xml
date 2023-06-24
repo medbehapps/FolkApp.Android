@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorGrayDarker">
@@ -32,7 +33,8 @@
         android:padding="10dp"
         android:src="@drawable/ic_baseline_repeat_24_off"
         app:layout_constraintBottom_toBottomOf="@+id/timerBtn"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/drawable_disabled_tint" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/favBtn"
@@ -42,7 +44,8 @@
         android:padding="10dp"
         android:src="@drawable/ic_baseline_favorite_border_24"
         app:layout_constraintBottom_toBottomOf="@+id/timerBtn"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/drawable_disabled_tint" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/timerBtn"
@@ -53,7 +56,8 @@
         android:src="@drawable/ic_outline_timer_24"
         app:layout_constraintBottom_toTopOf="@+id/playerControlsView"
         app:layout_constraintEnd_toStartOf="@+id/favBtn"
-        app:layout_constraintStart_toEndOf="@+id/playerAutoPlayButton" />
+        app:layout_constraintStart_toEndOf="@+id/playerAutoPlayButton"
+        app:tint="@color/drawable_disabled_tint" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayout"
@@ -75,7 +79,8 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:textColor="@color/white"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:ignore="RtlSymmetry" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/playingTrackDurationTime"
@@ -88,7 +93,8 @@
             android:paddingEnd="10dp"
             android:paddingBottom="5dp"
             android:textColor="@color/white"
-            android:textSize="13sp" />
+            android:textSize="13sp"
+            tools:ignore="RtlSymmetry" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -108,26 +114,27 @@
     <View
         android:id="@+id/guideline"
         android:layout_width="0dp"
+        android:layout_height="1dp"
         android:layout_margin="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appCompatImageView"
         app:layout_constraintBottom_toTopOf="@+id/playerProgressBar"
-        android:layout_height="1dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appCompatImageView" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/playingTrackArtist"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/bpg_nino_mtavruli_bold"
         android:gravity="center_vertical"
         android:padding="10dp"
+        android:text="@string/no_track"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:transitionName="heronakamura"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"  />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
     <androidx.appcompat.widget.AppCompatSeekBar
         android:id="@+id/playerProgressBar"
@@ -161,7 +168,8 @@
             android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="10dp"
-            android:src="@drawable/ic_outline_stop_circle_24" />
+            android:src="@drawable/ic_outline_stop_circle_24"
+            app:tint="@color/drawable_disabled_tint" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/playPauseButton"
@@ -172,7 +180,8 @@
             android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="15dp"
-            android:src="@drawable/ic_baseline_play_circle_outline_24" />
+            android:src="@drawable/ic_baseline_play_circle_outline_24"
+            app:tint="@color/drawable_disabled_tint" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/playPrevButton"
@@ -183,7 +192,8 @@
             android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="10dp"
-            android:src="@drawable/ic_baseline_fast_rewind_24" />
+            android:src="@drawable/ic_baseline_fast_rewind_24"
+            app:tint="@color/drawable_disabled_tint" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/playNextButton"
@@ -194,7 +204,8 @@
             android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="10dp"
-            android:src="@drawable/ic_round_fast_forward_24" />
+            android:src="@drawable/ic_round_fast_forward_24"
+            app:tint="@color/drawable_disabled_tint" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/playerPlaylistButton"
@@ -205,6 +216,7 @@
             android:layout_gravity="center"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:padding="10dp"
-            android:src="@drawable/ic_baseline_playlist_play_24" />
+            android:src="@drawable/ic_baseline_playlist_play_24"
+            app:tint="@color/drawable_disabled_tint" />
     </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

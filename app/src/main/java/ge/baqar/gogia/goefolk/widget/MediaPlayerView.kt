@@ -10,6 +10,7 @@ import android.widget.SeekBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ViewMediaPlayerContainerBinding
+import ge.baqar.gogia.goefolk.media.MediaPlaybackServiceManager
 import ge.baqar.gogia.goefolk.model.AutoPlayState
 
 class MediaPlayerView @JvmOverloads constructor(
@@ -40,12 +41,38 @@ class MediaPlayerView @JvmOverloads constructor(
         ViewMediaPlayerContainerBinding.inflate(LayoutInflater.from(context), this, true)
     private var calculatedHeight = 0
 
+    private var actionButtons = arrayOf(
+        binding.collapsedMediaPlayerView.playPauseButton,
+        binding.expandedMediaPlayerView.playPauseButton,
+        binding.collapsedMediaPlayerView.favBtn,
+        binding.expandedMediaPlayerView.favBtn,
+        binding.collapsedMediaPlayerView.playerAutoPlayButton,
+        binding.expandedMediaPlayerView.playerAutoPlayButton,
+        binding.expandedMediaPlayerView.playStopButton,
+        binding.expandedMediaPlayerView.playNextButton,
+        binding.expandedMediaPlayerView.playPrevButton,
+        binding.expandedMediaPlayerView.timerBtn,
+        binding.expandedMediaPlayerView.playerPlaylistButton
+    )
+
     init {
-        binding.collapsedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
-        binding.expandedMediaPlayerView.playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
+        disableButtons()
         translate = context.resources.getDimension(R.dimen.bottom_navigation_heght)
         initMinimizedMediaPlayerListeners()
         initMaximizedMediaPlayerListeners()
+    }
+
+    private fun disableButtons() {
+        actionButtons.forEach {
+            it.isEnabled = false
+        }
+    }
+
+    private fun enableButtons() {
+        actionButtons.forEach {
+            if (!it.isEnabled)
+                it.isEnabled = true
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -74,7 +101,6 @@ class MediaPlayerView @JvmOverloads constructor(
         binding.expandedMediaPlayerView.playStopButton.setOnClickListener {
             onStop?.invoke()
             minimize()
-            hide()
         }
 
         binding.expandedMediaPlayerView.playNextButton.setOnClickListener {
@@ -146,6 +172,9 @@ class MediaPlayerView @JvmOverloads constructor(
     @SuppressLint("ClickableViewAccessibility")
     private fun initMinimizedMediaPlayerListeners() {
         binding.collapsedMediaPlayerView.playerViewCloseBtn.setOnClickListener {
+            if (!MediaPlaybackServiceManager.isRunning)
+                return@setOnClickListener
+
             setOnCloseListener?.invoke()
             maximize()
         }
@@ -163,6 +192,9 @@ class MediaPlayerView @JvmOverloads constructor(
         }
         var initialY = 0f
         binding.mediaPlayerViewContainer.setOnTouchListener { _, event ->
+            if (!MediaPlaybackServiceManager.isRunning)
+                return@setOnTouchListener false
+
             when (event.action) {
                 MotionEvent.ACTION_MOVE -> {
                     val calculatedMovingY = calculatedHeight + (event.rawY - initialY)
@@ -290,6 +322,8 @@ class MediaPlayerView @JvmOverloads constructor(
     }
 
     fun show() {
+        enableButtons()
+
         if (minimized) {
             minimize()
         } else {
@@ -297,25 +331,6 @@ class MediaPlayerView @JvmOverloads constructor(
         }
 
         state = HALF_OPENED
-    }
-
-    fun hide() {
-        binding.mediaPlayerViewContainer.animate()
-            .setDuration(animationDuration)
-            .alpha(0f)
-            .start()
-
-        binding.expandedMediaPlayerViewContainer.animate()
-            .setDuration(animationDuration)
-            .translationY(measuredHeight.toFloat())
-            .start()
-
-        bottomNavigationView.animate()
-            .setDuration(animationDuration)
-            .translationY(0F)
-            .start()
-
-        state = HIDDEN
     }
 
     fun setupWithBottomNavigation(navView: BottomNavigationView) {
