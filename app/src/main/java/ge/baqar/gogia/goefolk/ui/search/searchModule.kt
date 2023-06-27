@@ -10,7 +10,7 @@ import org.koin.dsl.module
 @InternalCoroutinesApi
 val searchModule = module {
     viewModel { SearchViewModel(get(), get()) }
-    single { SearchServiceImpl(get(), get()) }
-    single { ArtistsServiceImpl(get(), get()) }
+    single { SearchServiceImpl(get()) }
+    single { ArtistsServiceImpl(get()) }
 }
 

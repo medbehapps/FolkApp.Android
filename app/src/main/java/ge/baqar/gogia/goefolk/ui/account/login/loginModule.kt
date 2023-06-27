@@ -8,6 +8,6 @@ import org.koin.dsl.module
 
 @InternalCoroutinesApi
 val loginModule = module {
-    single { AccountServiceImpl(get(), get()) }
+    single { AccountServiceImpl(get()) }
     viewModel { LoginViewModel(get(), get()) }
 }

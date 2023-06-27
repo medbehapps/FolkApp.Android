@@ -37,7 +37,7 @@ class LoginViewModel(
                 }
             }
             if (value is FailedResult) {
-                emit { state.copy(isInProgress = false, error = value.value.error) }
+                emit { state.copy(isInProgress = false, error = value.value.message) }
             }
         }
     }

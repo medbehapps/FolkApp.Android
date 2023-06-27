@@ -22,6 +22,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import reactivecircus.flowbinding.android.widget.textChanges
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
@@ -31,13 +32,12 @@ import kotlin.time.ExperimentalTime
 @InternalCoroutinesApi
 @FlowPreview
 class SearchFragment : Fragment() {
-    private val viewModel: SearchViewModel by inject()
+    private val viewModel: SearchViewModel by viewModel()
     private var binding: FragmentSearchBinding? = null
     private val ime: InputMethodManager by lazy {
         context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

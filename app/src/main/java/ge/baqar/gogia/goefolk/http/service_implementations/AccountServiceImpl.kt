@@ -1,43 +1,38 @@
 package ge.baqar.gogia.goefolk.http.service_implementations
 
 import ge.baqar.gogia.goefolk.http.request.LoginRequest
-import ge.baqar.gogia.goefolk.http.response.LoginErrorResponse
+import ge.baqar.gogia.goefolk.http.response.BaseError
 import ge.baqar.gogia.goefolk.http.services.AccountService
 import ge.baqar.gogia.goefolk.model.ReactiveResult
 import ge.baqar.gogia.goefolk.model.asError
-import ge.baqar.gogia.goefolk.model.asSuccess
-import ge.baqar.gogia.goefolk.utility.NetworkStatus
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOf
+import retrofit2.HttpException
 
 class AccountServiceImpl(
-    private var networkStatus: NetworkStatus,
     private var accountService: AccountService
-) {
+) : ServiceBase() {
 
     suspend fun login(
         email: String,
         password: String,
         deviceId: String
-    ): Flow<ReactiveResult<LoginErrorResponse, String>> {
+    ): Flow<ReactiveResult<BaseError, String>> {
         return coroutineScope {
             try {
-                if (networkStatus.isOnline()) {
-                    val loginResult = accountService.login(LoginRequest(email, password, deviceId, 1))
-                    val flow = callbackFlow<ReactiveResult<LoginErrorResponse, String>> {
-                        trySend(loginResult.body()?.asSuccess!!)
-                        awaitClose { channel.close() }
-                    }
-                    return@coroutineScope flow
-                } else {
-                    return@coroutineScope flowOf(LoginErrorResponse("network_is_off").asError)
+                val loginResult =
+                    accountService.login(LoginRequest(email, password, deviceId, 1))
+                val flow = callbackFlow {
+                    trySend(mapToReactiveResult(loginResult))
+                    awaitClose { channel.close() }
                 }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                return@coroutineScope flowOf(LoginErrorResponse("network_is_off").asError)
+                return@coroutineScope flow
+            } catch (ex: HttpException) {
+                val response = escapeServerError(ex)
+                return@coroutineScope flowOf(response.error?.asError!!)
             }
         }
     }

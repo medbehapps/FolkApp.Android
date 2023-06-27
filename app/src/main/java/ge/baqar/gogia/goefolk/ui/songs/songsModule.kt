@@ -8,6 +8,6 @@ import org.koin.dsl.module
 @InternalCoroutinesApi
 val songsModule = module {
     viewModel { SongsViewModel(get(), get(), get(), get()) }
-    single { SongServiceImpl(get(), get()) }
+    single { SongServiceImpl(get()) }
 }
 

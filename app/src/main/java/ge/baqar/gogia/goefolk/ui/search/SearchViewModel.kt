@@ -2,6 +2,7 @@ package ge.baqar.gogia.goefolk.ui.search
 
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
+import ge.baqar.gogia.goefolk.http.response.BaseError
 import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
 import ge.baqar.gogia.goefolk.http.service_implementations.SearchServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
@@ -24,11 +25,13 @@ class SearchViewModel(
             is DoSearch -> {
                 doSearch(term)
             }
+
             is ClearSearchResult -> update {
                 emit {
                     state.copy(isInProgress = false, error = null, result = null)
                 }
             }
+
             else -> update {
 
             }
@@ -40,22 +43,19 @@ class SearchViewModel(
             SearchState.LOADING
         }
 
-        searchService.search(term).collect(object :FlowCollector<ReactiveResult<String, SearchResult>>{
-            override suspend fun emit(result: ReactiveResult<String, SearchResult>) {
-                if (result is SucceedResult) {
-                    emit {
-                        state.copy(isInProgress = false, result = result.value)
-                    }
-                }
-                if (result is FailedResult) {
-                    emit { state.copy(isInProgress = false, error = result.value) }
+        searchService.search(term).collect { result ->
+            if (result is SucceedResult) {
+                emit {
+                    state.copy(isInProgress = false, result = result.value)
                 }
             }
-
-        })
+            if (result is FailedResult) {
+                emit { state.copy(isInProgress = false, error = result.value.message) }
+            }
+        }
     }
 
-    fun ensembleById(ensembleId: String, completion: (Artist?) -> Unit){
+    fun ensembleById(ensembleId: String, completion: (Artist?) -> Unit) {
         viewModelScope.launch {
             val ensemble = artistsService.ensemble(ensembleId)
             completion(ensemble)

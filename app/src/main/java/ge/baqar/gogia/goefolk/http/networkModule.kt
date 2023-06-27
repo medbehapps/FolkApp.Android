@@ -3,11 +3,10 @@ package ge.baqar.gogia.goefolk.http
 import org.koin.dsl.module
 
 val networkModule = module {
-    factory { provideArtistsService() }
-    factory { provideAccountService() }
-    factory { provideSongsService() }
-    factory { provideSearchService() }
-    factory { provideOkHttpClient() }
-    factory { provideRetrofit(get()) }
-    single { JwtTokenInterceptor(get()) }
+    single { provideArtistsService() }
+    single { provideAccountService() }
+    single { provideSongsService() }
+    single { provideSearchService() }
+    single { JwtTokenInterceptor(get(), get()) }
+    single { RequestInterceptor(get(), get(), get()) }
 }

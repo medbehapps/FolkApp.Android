@@ -14,18 +14,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 private const val baseURL = "https://ammpjt8siw.us-east-1.awsapprunner.com/"
 private var gson = GsonBuilder().setLenient().create()
 private val jwtTokenInterceptor by inject<JwtTokenInterceptor>(JwtTokenInterceptor::class.java)
+private val requestInterceptor by inject<RequestInterceptor>(RequestInterceptor::class.java)
+
 fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
     return Retrofit.Builder().baseUrl(baseURL).client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson)).build()
 }
 
 fun provideOkHttpClient(): OkHttpClient {
-    return OkHttpClient().newBuilder().build()
+    val builder = OkHttpClient().newBuilder()
+    builder.addInterceptor(requestInterceptor)
+    return builder.build()
 }
 
 fun provideAuthorizedOkHttpClient(): OkHttpClient {
     val builder = OkHttpClient().newBuilder()
-    builder.interceptors().add(jwtTokenInterceptor)
+    builder
+        .addInterceptor(requestInterceptor)
+        .addInterceptor(jwtTokenInterceptor)
     return builder.build()
 }
 
@@ -42,5 +48,5 @@ fun provideSongsService(): SongService {
 }
 
 fun provideSearchService(): SearchService {
-    return provideRetrofit(provideOkHttpClient()).create(SearchService::class.java)
+    return provideRetrofit(provideAuthorizedOkHttpClient()).create(SearchService::class.java)
 }

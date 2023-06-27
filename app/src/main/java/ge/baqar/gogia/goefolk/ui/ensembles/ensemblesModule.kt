@@ -8,6 +8,6 @@ import org.koin.dsl.module
 
 @InternalCoroutinesApi
 val ensemblesModule = module {
-    single { ArtistsServiceImpl(get(), get()) }
+    single { ArtistsServiceImpl(get()) }
     viewModel { EnsemblesViewModel(get(), get()) }
 }

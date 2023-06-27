@@ -2,6 +2,7 @@ package ge.baqar.gogia.goefolk
 
 import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -10,6 +11,7 @@ import ge.baqar.gogia.goefolk.http.networkModule
 import ge.baqar.gogia.goefolk.media.mediaModule
 import ge.baqar.gogia.goefolk.storage.storageModule
 import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.account.AccountActivity
 import ge.baqar.gogia.goefolk.ui.account.login.loginModule
 import ge.baqar.gogia.goefolk.ui.activityModule
 import ge.baqar.gogia.goefolk.ui.ensembles.ensemblesModule
@@ -93,4 +95,9 @@ class FolkApplication : Application() {
         }
     }
 
+    fun logOut() {
+        startActivity(Intent(this, AccountActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        })
+    }
 }

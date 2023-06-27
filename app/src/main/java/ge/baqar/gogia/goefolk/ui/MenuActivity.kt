@@ -31,6 +31,7 @@ import ge.baqar.gogia.goefolk.media.player.AudioPlayer
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
+import ge.baqar.gogia.goefolk.ui.account.AccountActivity
 import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
 import ge.baqar.gogia.goefolk.utility.permission.BgPermission
 import ge.baqar.gogia.goefolk.widget.MediaPlayerView.Companion.OPENED
@@ -63,6 +64,8 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
+                mediaPlayerController?.stop()
+                mediaPlayerController = null
                 mediaPlaybackService = null
             }
         }
@@ -216,6 +219,12 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         controller: NavController, destination: NavDestination, arguments: Bundle?
     ) {
         destinationChanged?.invoke(destination.javaClass.name)
+    }
+
+    fun logOut() {
+        unbindService(serviceConnection)
+        startActivity(Intent(this, AccountActivity::class.java))
+        finish()
     }
 }
 

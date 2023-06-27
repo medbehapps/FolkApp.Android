@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
@@ -42,7 +43,7 @@ class SongsFragment : Fragment() {
     private var _currentSong: Song? = null
     private var _artist: Artist? = null
 
-    private val viewModel: SongsViewModel by inject()
+    private val viewModel: SongsViewModel by viewModel()
     private var binding: FragmentArtistBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

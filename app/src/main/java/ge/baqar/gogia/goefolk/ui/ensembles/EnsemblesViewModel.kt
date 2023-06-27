@@ -45,7 +45,7 @@ class EnsemblesViewModel(
                         state.copy(isInProgress = false, artists = mapped)
                     }
                 }
-                emit { state.copy(isInProgress = false, error = value.value) }
+                emit { state.copy(isInProgress = false, error = value.value.message) }
             }
         }
     }
@@ -61,7 +61,7 @@ class EnsemblesViewModel(
                 }
             }
             if (result is FailedResult) {
-                emit { state.copy(isInProgress = false, error = result.value) }
+                emit { state.copy(isInProgress = false, error = result.value.message) }
             }
         }
     }

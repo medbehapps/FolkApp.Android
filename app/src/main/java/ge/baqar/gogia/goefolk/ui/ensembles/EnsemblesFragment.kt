@@ -23,12 +23,13 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 @InternalCoroutinesApi
 class EnsemblesFragment : Fragment() {
 
-    private val viewModel: EnsemblesViewModel by inject()
+    private val viewModel: EnsemblesViewModel by viewModel()
     private var binding: FragmentArtistsBinding? = null
     private var _view: View? = null
 

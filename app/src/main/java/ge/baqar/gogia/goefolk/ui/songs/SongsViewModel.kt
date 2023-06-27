@@ -1,7 +1,6 @@
 package ge.baqar.gogia.goefolk.ui.songs
 
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
-import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
 import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
@@ -81,7 +80,7 @@ class SongsViewModel(
                         )
                     }
                     emit {
-                        state.copy(isInProgress = false, error = value.value)
+                        state.copy(isInProgress = false, error = value.value.message)
                     }
                 }
             }

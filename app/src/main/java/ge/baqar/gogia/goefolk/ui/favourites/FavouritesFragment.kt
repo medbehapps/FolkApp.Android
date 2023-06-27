@@ -22,12 +22,13 @@ import kotlinx.coroutines.flow.onEach
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
 @InternalCoroutinesApi
 class FavouritesFragment : Fragment() {
-    private val viewModel: FavouritesViewModel by inject()
+    private val viewModel: FavouritesViewModel by viewModel()
     private var binding: FragmentFavouritesBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
