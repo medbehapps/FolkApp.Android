@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/account_navigation"
+    app:startDestination="@+id/navigation_login">
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="ge.baqar.gogia.goefolk.ui.account.login.LoginFragment"
+        android:label="@string/log_in"
+        tools:layout="@layout/fragment_account_login" />
+
+    <fragment
+        android:id="@+id/navigation_register"
+        android:name="ge.baqar.gogia.goefolk.ui.account.register.RegisterFragment"
+        android:label="@string/registration"
+        tools:layout="@layout/fragment_account_register" />
+
+</navigation>

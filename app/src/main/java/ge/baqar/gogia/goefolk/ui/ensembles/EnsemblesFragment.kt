@@ -85,7 +85,7 @@ class EnsemblesFragment : Fragment() {
         })
     }
 
-    fun initializeIntents(inputs: Flow<EnsemblesAction>) {
+    private fun initializeIntents(inputs: Flow<EnsemblesAction>) {
         viewModel.intents(inputs)
             .onEach { output ->
                 when (output) {

@@ -1,24 +1,25 @@
 package ge.baqar.gogia.goefolk.storage
 
+import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
+import ge.baqar.gogia.goefolk.model.Artist
+import ge.baqar.gogia.goefolk.model.DownloadableSong
+import ge.baqar.gogia.goefolk.model.SucceedResult
 import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
+import ge.baqar.gogia.goefolk.storage.domain.FileStreamContent
 import ge.baqar.gogia.goefolk.storage.model.DbEnsemble
 import ge.baqar.gogia.goefolk.storage.model.DbSong
-import ge.baqar.gogia.goefolk.http.FolkApiRepository
-import ge.baqar.gogia.goefolk.utility.toDb
-import ge.baqar.gogia.goefolk.model.DownloadableSong
-import ge.baqar.gogia.goefolk.model.Artist
-import ge.baqar.gogia.goefolk.model.SucceedResult
-import ge.baqar.gogia.goefolk.storage.domain.FileStreamContent
 import ge.baqar.gogia.goefolk.storage.usecase.FileSaveController
+import ge.baqar.gogia.goefolk.utility.toDb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Random
+import java.util.UUID
 
 class AlbumDownloadManager internal constructor(
     private val folkApiDao: FolkApiDao,
-    private val folkApiRepository: FolkApiRepository,
+    private val songService: SongServiceImpl,
     private val saveController: FileSaveController
 ) : CoroutineScope {
     override val coroutineContext = Dispatchers.IO + SupervisorJob()
@@ -72,7 +73,7 @@ class AlbumDownloadManager internal constructor(
 
                 val exists = saveController.exists(_artist.nameEng, song.nameEng)
                 if (!exists) {
-                    val result = folkApiRepository.downloadSong(song.referenceId)
+                    val result = songService.downloadSong(song.referenceId)
                     if (result is SucceedResult<ByteArray>) {
                         saveController.saveDocumentFile(
                             FileStreamContent(

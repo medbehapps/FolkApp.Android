@@ -10,6 +10,7 @@ class FolkAppPreferences(private val context: Context) {
     private val playerControlsAreVisibleKey = "playerControlsAreVisible"
     private val autoPlayEnabledKey = "autoPlayEnabledKey"
     private val timerSetKey = "timerSetKey"
+    private val tokenKey = "tokenKey"
 
     fun updateAutoPlay(autoPlayEnabled: Int) {
         preferences.edit()
@@ -18,7 +19,10 @@ class FolkAppPreferences(private val context: Context) {
     }
 
     fun getAutoPlay(): Int {
-        return preferences.getInt(autoPlayEnabledKey, ge.baqar.gogia.goefolk.model.AutoPlayState.OFF)
+        return preferences.getInt(
+            autoPlayEnabledKey,
+            ge.baqar.gogia.goefolk.model.AutoPlayState.OFF
+        )
     }
 
     fun setPlayerState(playerControlsAreVisible: Boolean) {
@@ -35,5 +39,15 @@ class FolkAppPreferences(private val context: Context) {
 
     fun getTimerSet(): Boolean {
         return preferences.getBoolean(timerSetKey, false)
+    }
+
+    fun setToken(token: String?) {
+        preferences.edit()
+            .putString(tokenKey, token)
+            .apply()
+    }
+
+    fun getToken(): String? {
+        return preferences.getString(tokenKey, null)
     }
 }

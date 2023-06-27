@@ -25,4 +25,9 @@
     <string name="set">დაყენება</string>
     <string name="unset">გაუქმება</string>
     <string name="no_track">დასაკრავი სია ცარიელია</string>
+    <string name="timer_title">ავტომატურად გათიშვის ტაიმერი</string>
+    <string name="email_placeholder">ელ. ფოსტა</string>
+    <string name="password_placeholder">პაროლი</string>
+    <string name="log_in">ავტორიზაცია</string>
+    <string name="registration"><u>რეგისტრაცია</u></string>
 </resources>

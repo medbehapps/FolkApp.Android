@@ -7,14 +7,17 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.media.MediaPlayer
+import android.os.Binder
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
+import android.provider.MediaStore.Audio.Media
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import ge.baqar.gogia.goefolk.R
+import ge.baqar.gogia.goefolk.media.player.AudioPlayer
 import ge.baqar.gogia.goefolk.model.events.ArtistChanged
 import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
 import ge.baqar.gogia.goefolk.model.events.GetCurrentSong
@@ -24,38 +27,44 @@ import ge.baqar.gogia.goefolk.model.events.SetTimerEvent
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.UnSetTimerEvent
+import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
+import org.koin.core.component.inject
 import kotlin.time.ExperimentalTime
 
 
 @ExperimentalTime
 @InternalCoroutinesApi
-class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
+class MediaPlaybackService : Service() {
 
     private var notificationManager: NotificationManager? = null
     private val notificationId: Int = 1024
-    private val mediaPlayerController: MediaPlayerController by inject()
+    private val binder: MediaPlaybackServiceBinder by lazy { MediaPlaybackServiceBinder(this) }
+    val mediaPlayerController: MediaPlayerController by lazy {
+        MediaPlayerController(
+            inject<SongsViewModel>().value,
+            inject<FolkAppPreferences>().value,
+            inject<AudioPlayer>().value,
+            inject<MenuActivity>().value,
+        )
+    }
     private var timer: CountDownTimer? = null
 
     override fun onCreate() {
         super.onCreate()
         EventBus.getDefault().register(this)
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        EventBus.getDefault().post(ServiceCreatedEvent())
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
-    }
-
-    override fun onPrepared(p0: MediaPlayer?) {
-
+    override fun onBind(intent: Intent?): IBinder {
+        handleMediaAction(intent?.action)
+        return binder
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -72,7 +81,7 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
     @Subscribe
     fun timerSet(event: SetTimerEvent) {
         val time = event.time * 60 * 1000
-        timer = object: CountDownTimer(time, 1000L){
+        timer = object : CountDownTimer(time, 1000L) {
             override fun onTick(p0: Long) {
 
             }
@@ -90,13 +99,14 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
         timer = null
     }
 
-    private fun handleMediaAction(action: String?, useMediaController: Boolean = true) {
+    fun handleMediaAction(action: String?, useMediaController: Boolean = true) {
         MediaPlaybackServiceManager.isRunning = true
         when (action) {
             PLAY_MEDIA -> {
                 mediaPlayerController.play()
                 showNotification(true)
             }
+
             PAUSE_OR_MEDIA -> {
                 if (useMediaController) {
                     if (mediaPlayerController.isPlaying()) {
@@ -110,12 +120,14 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
                     MediaPlaybackServiceManager.isRunning = false
                 showNotification()
             }
+
             STOP_MEDIA -> {
                 MediaPlaybackServiceManager.isRunning = false
                 if (useMediaController)
                     mediaPlayerController.stop()
                 stopForeground(true)
             }
+
             PREV_MEDIA -> {
                 if (useMediaController)
                     mediaPlayerController.previous()
@@ -123,6 +135,7 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
                 EventBus.getDefault()
                     .post(CurrentPlayingSong(mediaPlayerController.getCurrentSong()))
             }
+
             NEXT_MEDIA -> {
                 if (useMediaController)
                     mediaPlayerController.next()
@@ -130,6 +143,7 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
                 EventBus.getDefault()
                     .post(CurrentPlayingSong(mediaPlayerController.getCurrentSong()))
             }
+
             null
             -> {
                 if (mediaPlayerController.isPlaying()) {
@@ -159,10 +173,10 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
         EventBus.getDefault().post(CurrentPlayingSong(mediaPlayerController.getCurrentSong()))
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
-    fun onMessageEvent(event: RequestMediaControllerInstance?) {
-        EventBus.getDefault().postSticky(mediaPlayerController)
-    }
+//    @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
+//    fun onMessageEvent(event: RequestMediaControllerInstance?) {
+//        mediaPlayerController = event?.mediaPlayerController
+//    }
 
     @SuppressLint("RemoteViewLayout", "UnspecifiedImmutableFlag")
     private fun showNotification(showResumeIcon: Boolean = false) {
@@ -208,7 +222,10 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
                     NotificationManager.IMPORTANCE_NONE
                 )
                 channel.enableVibration(false)
-                notificationBuilder = NotificationCompat.Builder(this, getString(R.string.app_name_notification_channel))
+                notificationBuilder = NotificationCompat.Builder(
+                    this,
+                    getString(R.string.app_name_notification_channel)
+                )
                 notificationManager?.createNotificationChannel(channel)
             } else {
                 notificationBuilder = NotificationCompat.Builder(this)
@@ -247,7 +264,7 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
             )
         )
 
-        if (mediaPlayerController.isPlaying() || showResumeIcon) {
+        if (mediaPlayerController.isPlaying()!! || showResumeIcon) {
             notificationLayoutExpanded.setImageViewResource(
                 R.id.playPauseButton,
                 R.drawable.ic_baseline_pause_circle_outline_24
@@ -287,6 +304,10 @@ class MediaPlaybackService : Service(), MediaPlayer.OnPreparedListener {
                 flag
             )
         )
+    }
+
+
+    public class MediaPlaybackServiceBinder(val service: MediaPlaybackService) : Binder() {
     }
 
     companion object {

@@ -1,8 +1,11 @@
 package ge.baqar.gogia.goefolk.media
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityMenuBinding
@@ -40,6 +43,7 @@ class MediaPlayerController(
     private val audioPlayer: AudioPlayer,
     private val activity: MenuActivity?
 ) {
+
     var binding: ActivityMenuBinding? = null
     var artist: Artist? = null
     var playList: MutableList<Song>? = null
@@ -122,6 +126,16 @@ class MediaPlayerController(
                 resume()
             }
         }
+        binding?.mediaPlayerView?.onShare = {
+            val currentSong = getCurrentSong()
+            currentSong?.let {
+                ShareCompat.IntentBuilder(activity!!)
+                    .setType("text/plain")
+                    .setChooserTitle(it.name)
+                    .setText(it.path)
+                    .startChooser();
+            }
+        }
         binding?.mediaPlayerView?.onStop = {
             stop()
         }
@@ -158,15 +172,16 @@ class MediaPlayerController(
             folkAppPreferences.setTimerSet(timerSet)
             binding?.mediaPlayerView?.setTimer(timerSet)
 
-            val array = arrayOf(activity?.resources?.getString(R.string.unset), "5", "10", "30", "60")
+            val array =
+                arrayOf(activity?.resources?.getString(R.string.unset), "5 წთ", "10 წთ", "30 წთ", "60 წთ")
             var selectedPosition = 0
             val dialog = AlertDialog.Builder(activity!!)
-                .setTitle(R.string.app_name_georgian)
+                .setTitle(R.string.timer_title)
                 .setSingleChoiceItems(
                     array, 0
                 ) { _, position -> selectedPosition = position }
                 .setPositiveButton(
-                    activity?.resources?.getString(R.string.set)
+                    activity.resources?.getString(R.string.set)
                 ) { _, _ ->
                     val item = array[selectedPosition]
                     if (item == activity?.resources?.getString(R.string.unset)) {
@@ -337,5 +352,9 @@ class MediaPlayerController(
         position = 0
         play()
         pause()
+    }
+
+    fun showPlayer() {
+        binding?.mediaPlayerView?.show()
     }
 }

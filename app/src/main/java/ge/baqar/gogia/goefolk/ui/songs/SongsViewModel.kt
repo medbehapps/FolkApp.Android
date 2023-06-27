@@ -1,7 +1,8 @@
 package ge.baqar.gogia.goefolk.ui.songs
 
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
-import ge.baqar.gogia.goefolk.http.FolkApiRepository
+import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
+import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SongType
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 
 @InternalCoroutinesApi
 class SongsViewModel(
-    private val folkApiRepository: FolkApiRepository,
+    private val songsService: SongServiceImpl,
     private val folkApiDao: FolkApiDao,
     private val saveController: FileSaveController,
     private val fileExtensions: FileExtensions
@@ -29,7 +30,7 @@ class SongsViewModel(
             ArtistState.IS_LOADING
         }
 
-        folkApiRepository.songs(artist.id)
+        songsService.songs(artist.id)
             .collect { value ->
                 if (value is SucceedResult) {
                     val songs = folkApiDao.songsByEnsembleId(artist.id)

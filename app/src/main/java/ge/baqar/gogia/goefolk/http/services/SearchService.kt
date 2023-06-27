@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.http
+package ge.baqar.gogia.goefolk.http.services
 
 import ge.baqar.gogia.goefolk.model.SearchResult
 import retrofit2.http.GET

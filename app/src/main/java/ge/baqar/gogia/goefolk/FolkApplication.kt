@@ -4,11 +4,13 @@ import android.app.Activity
 import android.app.Application
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
 import androidx.annotation.RequiresApi
 import ge.baqar.gogia.goefolk.http.networkModule
 import ge.baqar.gogia.goefolk.media.mediaModule
 import ge.baqar.gogia.goefolk.storage.storageModule
 import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.account.login.loginModule
 import ge.baqar.gogia.goefolk.ui.activityModule
 import ge.baqar.gogia.goefolk.ui.ensembles.ensemblesModule
 import ge.baqar.gogia.goefolk.ui.favourites.favouritesModule
@@ -41,6 +43,7 @@ class FolkApplication : Application() {
                     mediaModule,
                     networkModule,
                     storageModule,
+                    loginModule,
                     ensemblesModule,
                     songsModule,
                     searchModule,
@@ -52,16 +55,16 @@ class FolkApplication : Application() {
         registerActivityLifecycleCallbacks(object :
             Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                activeActivity = activity as MenuActivity
+                assignMenuActivity(activity)
             }
 
             override fun onActivityStarted(activity: Activity) {
-                activeActivity = activity as MenuActivity
+                assignMenuActivity(activity)
             }
 
             @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
             override fun onActivityResumed(activity: Activity) {
-                activeActivity = activity as MenuActivity
+                assignMenuActivity(activity)
             }
 
             @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
@@ -82,4 +85,12 @@ class FolkApplication : Application() {
             }
         })
     }
+
+    @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
+    private fun assignMenuActivity(activity: Activity) {
+        if (activity is MenuActivity) {
+            activeActivity = activity
+        }
+    }
+
 }

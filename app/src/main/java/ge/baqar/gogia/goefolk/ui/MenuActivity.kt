@@ -2,15 +2,16 @@ package ge.baqar.gogia.goefolk.ui
 
 import android.Manifest
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
+import android.os.IBinder
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
@@ -26,18 +27,17 @@ import ge.baqar.gogia.goefolk.job.SyncFilesAndDatabaseJob
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService
 import ge.baqar.gogia.goefolk.media.MediaPlaybackServiceManager
 import ge.baqar.gogia.goefolk.media.MediaPlayerController
+import ge.baqar.gogia.goefolk.media.player.AudioPlayer
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
-import ge.baqar.gogia.goefolk.model.events.RequestMediaControllerInstance
-import ge.baqar.gogia.goefolk.model.events.ServiceCreatedEvent
+import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
+import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
 import ge.baqar.gogia.goefolk.utility.permission.BgPermission
 import ge.baqar.gogia.goefolk.widget.MediaPlayerView.Companion.OPENED
 import kotlinx.coroutines.InternalCoroutinesApi
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.dsl.module
 import kotlin.time.ExperimentalTime
 
@@ -48,24 +48,39 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     NavController.OnDestinationChangedListener {
 
     var destinationChanged: ((String) -> Unit)? = null
-    private var tempLastPlayedSong: Song? = null
     private var tempArtist: Artist? = null
     private var tempDataSource: MutableList<Song>? = null
     private var tempPosition: Int? = null
 
-    private var _playbackRequest: Boolean = false
+    private var mediaPlaybackService: MediaPlaybackService? = null
+    private val serviceConnection: ServiceConnection by lazy {
+        object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                (service as? MediaPlaybackService.MediaPlaybackServiceBinder)?.let {
+                    mediaPlaybackService = it.service
+                    mediaPlayerController = mediaPlaybackService?.mediaPlayerController
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                mediaPlaybackService = null
+            }
+        }
+    }
     private var _playMediaPlaybackAction: ((MutableList<Song>, Int, Artist) -> Unit)? =
         { songs, position, ensemble ->
+            mediaPlayerController?.binding = binding
             mediaPlayerController?.playList = songs
             mediaPlayerController?.artist = ensemble
             mediaPlayerController?.setInitialPosition(position)
-            val intent = Intent(this, MediaPlaybackService::class.java).apply {
-                action = MediaPlaybackService.PLAY_MEDIA
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
+
+            if (mediaPlaybackService != null)
+                mediaPlaybackService?.handleMediaAction(MediaPlaybackService.PLAY_MEDIA)
+            else {
+                val intent = Intent(this, MediaPlaybackService::class.java).apply {
+                    action = MediaPlaybackService.PLAY_MEDIA
+                }
+                bindService(intent, serviceConnection, BIND_AUTO_CREATE)
             }
         }
 
@@ -104,9 +119,9 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             }
         }
 
+        doBindService()
         if (MediaPlaybackServiceManager.isRunning) {
-            doBindService()
-            binding.mediaPlayerView.show()
+            mediaPlayerController?.showPlayer()
         }
 
         if (!notificationManager.areNotificationsEnabled()) {
@@ -122,7 +137,6 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
 
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this)
         SyncFilesAndDatabaseJob.triggerNow(this)
     }
 
@@ -143,11 +157,6 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         navController.removeOnDestinationChangedListener(this)
     }
 
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         val state = binding.mediaPlayerView.state
@@ -166,36 +175,6 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    fun onMessageEvent(event: MediaPlayerController) {
-        mediaPlayerController = event
-        mediaPlayerController?.binding = binding
-
-        if (tempLastPlayedSong != null) {
-            mediaPlayerController?.setCurrentSong(tempLastPlayedSong!!)
-            tempLastPlayedSong = null
-        }
-        if (_playbackRequest) {
-            _playMediaPlaybackAction?.invoke(
-                tempDataSource!!, tempPosition!!, tempArtist!!
-            )
-            tempDataSource = null
-            tempPosition = null
-            _playbackRequest = false
-            return
-        }
-        if (mediaPlayerController?.isPlaying() == true) {
-            mediaPlayerController?.updatePlayer()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun serviceCreated(event: ServiceCreatedEvent) {
-        EventBus.getDefault().post(RequestMediaControllerInstance())
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     fun playMediaPlayback(position: Int, songs: MutableList<Song>, artist: Artist) {
         (binding.navHostFragmentActivityMenuContainer.layoutParams as ConstraintLayout.LayoutParams).apply {
             bottomMargin = resources.getDimension(R.dimen.minimized_media_player_height).toInt()
@@ -206,21 +185,12 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             tempDataSource = songs
             tempPosition = position
             tempArtist = artist
-            _playbackRequest = true
             doBindService()
         }
     }
 
     private fun checkNotificationPermission() {
         if (!notificationManager.areNotificationsEnabled()) {
-//            val intent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
-//                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-//                putExtra(Settings.EXTRA_CHANNEL_ID,
-//                    getString(R.string.app_name_notification_channel))
-//            }
-//
-//            startActivity(intent)
-
             bgPermission = BgPermission.builder()
                 ?.requestCode(203)
                 ?.permission(Manifest.permission.POST_NOTIFICATIONS)
@@ -234,14 +204,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
 
     private fun doBindService() {
         val intent = Intent(this, MediaPlaybackService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent);
-        }
-
-        if (mediaPlayerController == null) EventBus.getDefault()
-            .postSticky(RequestMediaControllerInstance())
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE)
     }
 
     private fun doUnbindService() {

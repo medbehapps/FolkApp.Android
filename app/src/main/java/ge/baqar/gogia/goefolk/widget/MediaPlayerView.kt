@@ -9,9 +9,10 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ge.baqar.gogia.goefolk.R
-import ge.baqar.gogia.goefolk.databinding.ViewMediaPlayerContainerBinding
+import ge.baqar.gogia.goefolk.databinding.ViewMediaPlayerBinding
 import ge.baqar.gogia.goefolk.media.MediaPlaybackServiceManager
 import ge.baqar.gogia.goefolk.model.AutoPlayState
+
 
 class MediaPlayerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
@@ -27,6 +28,7 @@ class MediaPlayerView @JvmOverloads constructor(
     var onPrev: (() -> Unit)? = null
     var onStop: (() -> Unit)? = null
     var onPlayPause: (() -> Unit)? = null
+    var onShare: (() -> Unit)? = null
     var setFavButtonClickListener: (() -> Unit)? = null
     var openPlayListListener: (() -> Unit)? = null
     var setOnCloseListener: (() -> Unit)? = null
@@ -37,22 +39,24 @@ class MediaPlayerView @JvmOverloads constructor(
     var minimized = true
     private var measured = false
 
-    private var binding: ViewMediaPlayerContainerBinding =
-        ViewMediaPlayerContainerBinding.inflate(LayoutInflater.from(context), this, true)
+    private var binding: ViewMediaPlayerBinding =
+        ViewMediaPlayerBinding.inflate(LayoutInflater.from(context), this, true)
     private var calculatedHeight = 0
 
     private var actionButtons = arrayOf(
         binding.collapsedMediaPlayerView.playPauseButton,
-        binding.expandedMediaPlayerView.playPauseButton,
-        binding.collapsedMediaPlayerView.favBtn,
-        binding.expandedMediaPlayerView.favBtn,
         binding.collapsedMediaPlayerView.playerAutoPlayButton,
+        binding.collapsedMediaPlayerView.favBtn,
+        binding.collapsedMediaPlayerView.shareBtn,
+        binding.expandedMediaPlayerView.playPauseButton,
+        binding.expandedMediaPlayerView.favBtn,
         binding.expandedMediaPlayerView.playerAutoPlayButton,
         binding.expandedMediaPlayerView.playStopButton,
         binding.expandedMediaPlayerView.playNextButton,
         binding.expandedMediaPlayerView.playPrevButton,
         binding.expandedMediaPlayerView.timerBtn,
-        binding.expandedMediaPlayerView.playerPlaylistButton
+        binding.expandedMediaPlayerView.playerPlaylistButton,
+        binding.expandedMediaPlayerView.shareBtn
     )
 
     init {
@@ -85,7 +89,7 @@ class MediaPlayerView @JvmOverloads constructor(
     }
 
     override fun setOnClickListener(l: OnClickListener?) {
-        binding.mediaPlayerViewContainer.setOnClickListener(l)
+        binding.collapsedMediaPlayerViewContainer.setOnClickListener(l)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -167,6 +171,10 @@ class MediaPlayerView @JvmOverloads constructor(
             }
             false
         }
+
+        binding.expandedMediaPlayerView.shareBtn.setOnClickListener {
+            onShare?.invoke()
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -191,7 +199,7 @@ class MediaPlayerView @JvmOverloads constructor(
             onPlayPause?.invoke()
         }
         var initialY = 0f
-        binding.mediaPlayerViewContainer.setOnTouchListener { _, event ->
+        binding.collapsedMediaPlayerViewContainer.setOnTouchListener { _, event ->
             if (!MediaPlaybackServiceManager.isRunning)
                 return@setOnTouchListener false
 
@@ -215,6 +223,9 @@ class MediaPlayerView @JvmOverloads constructor(
                 }
             }
             false
+        }
+        binding.collapsedMediaPlayerView.shareBtn.setOnClickListener {
+            onShare?.invoke()
         }
     }
 
@@ -289,7 +300,7 @@ class MediaPlayerView @JvmOverloads constructor(
             .translationY(0F)
             .start()
 
-        binding.mediaPlayerViewContainer.animate()
+        binding.collapsedMediaPlayerViewContainer.animate()
             .setDuration(animationDuration)
             .alpha(0f)
             .start()
@@ -309,7 +320,7 @@ class MediaPlayerView @JvmOverloads constructor(
             .translationY(measuredHeight.toFloat())
             .start()
 
-        binding.mediaPlayerViewContainer.animate()
+        binding.collapsedMediaPlayerViewContainer.animate()
             .setDuration(animationDuration)
             .alpha(1f)
             .start()

@@ -20,51 +20,69 @@
         android:id="@+id/appCompatImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/playingTrackTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerViewCloseBtn"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_compact_disc_svgrepo_com" />
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/playerAutoPlayButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout2"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:padding="10dp"
-        android:src="@drawable/ic_baseline_repeat_24_off"
-        app:layout_constraintBottom_toBottomOf="@+id/timerBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/drawable_disabled_tint" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/favBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:padding="10dp"
-        android:src="@drawable/ic_baseline_favorite_border_24"
-        app:layout_constraintBottom_toBottomOf="@+id/timerBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/drawable_disabled_tint" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/timerBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:padding="10dp"
-        android:src="@drawable/ic_outline_timer_24"
+        android:divider="@drawable/empty_tall_divider"
+        android:dividerPadding="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:showDividers="middle"
         app:layout_constraintBottom_toTopOf="@+id/playerControlsView"
-        app:layout_constraintEnd_toStartOf="@+id/favBtn"
-        app:layout_constraintStart_toEndOf="@+id/playerAutoPlayButton"
-        app:tint="@color/drawable_disabled_tint" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/playerAutoPlayButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_repeat_24_off"
+            app:tint="@color/drawable_disabled_tint" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/favBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_favorite_border_24"
+            app:tint="@color/drawable_disabled_tint" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/shareBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_share_24"
+            app:tint="@color/drawable_disabled_tint" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/timerBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"
+            android:src="@drawable/ic_outline_timer_24"
+            app:tint="@color/drawable_disabled_tint" />
+    </LinearLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.3"
-        app:layout_constraintBottom_toTopOf="@+id/timerBtn"
+        app:layout_constraintBottom_toTopOf="@+id/layout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 

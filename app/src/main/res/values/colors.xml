@@ -18,4 +18,5 @@
     <color name="colorActiveSong">#4CC2A06C</color>
     <color name="green">#03A24B</color>
     <color name="lighterGreen">#4803A24B</color>
+    <color name="hintTextColor">#A3AF9E85</color>
 </resources>

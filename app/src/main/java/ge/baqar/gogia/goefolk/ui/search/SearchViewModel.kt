@@ -2,7 +2,8 @@ package ge.baqar.gogia.goefolk.ui.search
 
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
-import ge.baqar.gogia.goefolk.http.FolkApiRepository
+import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
+import ge.baqar.gogia.goefolk.http.service_implementations.SearchServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.ReactiveResult
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
 class SearchViewModel(
-    private val folkApiRepository: FolkApiRepository
+    private val searchService: SearchServiceImpl,
+    private val artistsService: ArtistsServiceImpl
 ) : ReactiveViewModel<SearchAction, SearchResultState, SearchState>(SearchState.DEFAULT) {
     override fun SearchAction.process(): Flow<() -> SearchResultState> {
         return when (this) {
@@ -38,7 +40,7 @@ class SearchViewModel(
             SearchState.LOADING
         }
 
-        folkApiRepository.search(term).collect(object :FlowCollector<ReactiveResult<String, SearchResult>>{
+        searchService.search(term).collect(object :FlowCollector<ReactiveResult<String, SearchResult>>{
             override suspend fun emit(result: ReactiveResult<String, SearchResult>) {
                 if (result is SucceedResult) {
                     emit {
@@ -55,7 +57,7 @@ class SearchViewModel(
 
     fun ensembleById(ensembleId: String, completion: (Artist?) -> Unit){
         viewModelScope.launch {
-            val ensemble = folkApiRepository.ensemble(ensembleId)
+            val ensemble = artistsService.ensemble(ensembleId)
             completion(ensemble)
         }
     }

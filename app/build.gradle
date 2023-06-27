@@ -86,8 +86,10 @@ dependencies {
     implementation 'io.github.reactivecircus.flowbinding:flowbinding-android:0.11.1'
     implementation 'androidx.core:core-splashscreen:1.0.1'
     implementation 'androidx.sqlite:sqlite-ktx:2.3.1'
-    implementation 'androidx.room:room-ktx:2.5.1'
+    implementation 'androidx.room:room-ktx:2.5.2'
 
     //Modules
-    kapt "androidx.room:room-compiler:2.5.1"
+    kapt "androidx.room:room-compiler:2.5.2"
+
+    implementation 'com.auth0:java-jwt:4.4.0'
 }

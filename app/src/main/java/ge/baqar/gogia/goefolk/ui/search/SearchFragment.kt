@@ -1,5 +1,6 @@
 package ge.baqar.gogia.goefolk.ui.search
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
@@ -86,7 +87,6 @@ class SearchFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun initializeIntents(inputs: Flow<SearchAction>) {
         viewModel.intents(inputs)
             .onEach { output ->
@@ -150,6 +150,7 @@ class SearchFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NewApi")
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
         (activity as MenuActivity).playMediaPlayback(position, songs, artist)
     }
