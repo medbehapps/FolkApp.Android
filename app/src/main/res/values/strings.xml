@@ -34,4 +34,7 @@
     <string name="account">მომხმარებელი</string>
     <string name="log_out">გამოსვლა</string>
     <string name="verify">დადასტურება</string>
+    <string name="code">დადასტურების კოდი: 1234</string>
+    <string name="lastName_placeholder">გვარი</string>
+    <string name="firstName_placeholder">სახელი</string>
 </resources>

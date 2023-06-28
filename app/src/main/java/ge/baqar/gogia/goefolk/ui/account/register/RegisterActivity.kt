@@ -28,7 +28,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         val registrationModel = RegistrationModel(
-            "b.gogia94@gmail.com", "avqsenti", "megrelidze", "12345678"
+            null, null, null, null
         )
         val verificationModel = VerificationModel(
             null

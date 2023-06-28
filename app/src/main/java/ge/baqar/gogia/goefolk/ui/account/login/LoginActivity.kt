@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import ge.baqar.gogia.goefolk.databinding.ActivityLoginBinding
+import ge.baqar.gogia.goefolk.model.LoginModel
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.ui.MenuActivity
 import ge.baqar.gogia.goefolk.ui.account.register.RegisterActivity
@@ -43,12 +44,13 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
+        binding?.loginModel = LoginModel(null, null)
         initializeIntents(
             binding?.loginButton?.clicks()
                 ?.map {
                     LoginRequested(
-                        binding?.emailEditText?.text?.toString()!!,
-                        binding?.passwordEditText?.text?.toString()!!,
+                        binding?.loginModel?.email!!,
+                        binding?.loginModel?.password!!,
                         deviceId.get()!!
                     )
                 }!!
