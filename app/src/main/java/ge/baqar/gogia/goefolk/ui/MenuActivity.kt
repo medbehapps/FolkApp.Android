@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
+import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageButton
@@ -20,25 +21,26 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import ge.baqar.gogia.goefolk.FolkApplication
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityMenuBinding
+import ge.baqar.gogia.goefolk.databinding.FragmentAccountBinding
 import ge.baqar.gogia.goefolk.job.SyncFilesAndDatabaseJob
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService
 import ge.baqar.gogia.goefolk.media.MediaPlaybackServiceManager
 import ge.baqar.gogia.goefolk.media.MediaPlayerController
-import ge.baqar.gogia.goefolk.media.player.AudioPlayer
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.ui.account.AccountActivity
-import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
+import ge.baqar.gogia.goefolk.utility.TokenValidator
 import ge.baqar.gogia.goefolk.utility.permission.BgPermission
 import ge.baqar.gogia.goefolk.widget.MediaPlayerView.Companion.OPENED
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import org.koin.dsl.module
 import kotlin.time.ExperimentalTime
 
@@ -94,6 +96,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     private lateinit var navController: NavController
     private var mediaPlayerController: MediaPlayerController? = null
     private var bgPermission: BgPermission? = null
+    private val folkAppPreferences: FolkAppPreferences by inject()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,6 +138,21 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                 ?.setOnClickListener {
                     checkNotificationPermission()
                 }
+        }
+
+        binding.showAccountBtn.setOnClickListener {
+            val bottomSheetDialog = BottomSheetDialog(this)
+
+            val token = folkAppPreferences.getToken()
+            token?.let {
+                val account = TokenValidator.parseAccountFromJwt(token)
+
+                val binding: FragmentAccountBinding = FragmentAccountBinding.inflate(layoutInflater)
+                binding.account = account
+                bottomSheetDialog.setContentView(binding.root)
+
+                bottomSheetDialog.show()
+            }
         }
     }
 

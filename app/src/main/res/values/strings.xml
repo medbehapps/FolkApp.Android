@@ -30,4 +30,5 @@
     <string name="password_placeholder">პაროლი</string>
     <string name="log_in">ავტორიზაცია</string>
     <string name="registration"><u>რეგისტრაცია</u></string>
+    <string name="account">მომხმარებელი</string>
 </resources>

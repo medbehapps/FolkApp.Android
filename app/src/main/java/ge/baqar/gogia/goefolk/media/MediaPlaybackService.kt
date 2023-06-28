@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import ge.baqar.gogia.goefolk.R
+import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import ge.baqar.gogia.goefolk.media.player.AudioPlayer
 import ge.baqar.gogia.goefolk.model.events.ArtistChanged
 import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
@@ -49,6 +50,7 @@ class MediaPlaybackService : Service() {
     val mediaPlayerController: MediaPlayerController by lazy {
         MediaPlayerController(
             inject<SongsViewModel>().value,
+            inject<SongServiceImpl>().value,
             inject<FolkAppPreferences>().value,
             inject<AudioPlayer>().value,
             inject<MenuActivity>().value,

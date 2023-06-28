@@ -3,6 +3,7 @@ package ge.baqar.gogia.goefolk.utility
 import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.DecodedJWT
+import ge.baqar.gogia.goefolk.model.Account
 import java.util.Date
 
 
@@ -34,8 +35,19 @@ class TokenValidator {
     companion object {
         fun isJWTExpired(token: String): Boolean {
             val jwt = JWT.decode(token)
+            jwt.claims.firstNotNullOf { a -> a.key == "id" }
             val expiresAt: Date = jwt.expiresAt
             return expiresAt.before(Date())
+        }
+
+        fun parseAccountFromJwt(token: String): Account {
+            val jwt = JWT.decode(token)
+            val id = jwt.claims["Id"]?.asString()
+            val email = jwt.claims["Email"]?.asString()
+            val firstName = jwt.claims["FirstName"]?.asString()
+            val lastName = jwt.claims["LastName"]?.asString()
+
+            return Account(id, email, firstName, lastName)
         }
     }
 }

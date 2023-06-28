@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityMenuBinding
+import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService.Companion.NEXT_MEDIA
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService.Companion.PAUSE_OR_MEDIA
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService.Companion.PLAY_MEDIA
@@ -27,6 +28,7 @@ import ge.baqar.gogia.goefolk.model.events.UnSetTimerEvent
 import ge.baqar.gogia.goefolk.storage.DownloadService
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.favourites.FavouritesViewModel
 import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
 import ge.baqar.gogia.goefolk.utility.asDownloadable
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -38,7 +40,8 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @InternalCoroutinesApi
 class MediaPlayerController(
-    private val viewModel: SongsViewModel,
+    private val songsViewModel: SongsViewModel,
+    private val songServiceImpl: SongServiceImpl,
     private val folkAppPreferences: FolkAppPreferences,
     private val audioPlayer: AudioPlayer,
     private val activity: MenuActivity?
@@ -76,7 +79,7 @@ class MediaPlayerController(
                 AutoPlayState.REPEAT_ONE -> {
                     binding?.mediaPlayerView?.setDuration(null, 0)
                     val repeatedSong = playList!![position]
-                    viewModel.viewModelScope.launch {
+                    songsViewModel.viewModelScope.launch {
                         audioPlayer.play(
                             repeatedSong.path,
                             repeatedSong.data
@@ -106,7 +109,7 @@ class MediaPlayerController(
 
     private fun initializeViewListeners() {
         binding?.mediaPlayerView?.setSeekListener = { progress ->
-            viewModel.viewModelScope.launch {
+            songsViewModel.viewModelScope.launch {
                 audioPlayer.playOn(progress)
             }
         }
@@ -197,8 +200,9 @@ class MediaPlayerController(
 
         binding?.mediaPlayerView?.setFavButtonClickListener = {
             val currentSong = getCurrentSong()!!
-            viewModel.viewModelScope.launch {
-                var isFav = viewModel.isSongFav(currentSong.id)
+            songsViewModel.viewModelScope.launch {
+                var isFav = songsViewModel.isSongFav(currentSong.id)
+                songServiceImpl.markAsFavourite(currentSong.id)
                 val downloadableSongs = currentSong.asDownloadable()
                 if (!isFav) {
                     val intent = Intent(activity, DownloadService::class.java).apply {
@@ -258,7 +262,7 @@ class MediaPlayerController(
             val song = playList!![this.position]
             initializeAudioPlayerChanges()
             initializeViewListeners()
-            viewModel.viewModelScope.launch {
+            songsViewModel.viewModelScope.launch {
                 audioPlayer.play(song.path, song.data) { onPrepareListener() }
             }
             binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
@@ -297,7 +301,7 @@ class MediaPlayerController(
         ++position
         val song = playList!![position]
         updateUI(song)
-        viewModel.viewModelScope.launch {
+        songsViewModel.viewModelScope.launch {
             audioPlayer.play(song.path, song.data) { onPrepareListener() }
             EventBus.getDefault().post(ArtistChanged(NEXT_MEDIA))
         }
@@ -307,7 +311,7 @@ class MediaPlayerController(
         --position
         val song = playList!![position]
         updateUI(song)
-        viewModel.viewModelScope.launch {
+        songsViewModel.viewModelScope.launch {
             audioPlayer.play(song.path, song.data) { onPrepareListener() }
             EventBus.getDefault().post(ArtistChanged(PREV_MEDIA))
         }

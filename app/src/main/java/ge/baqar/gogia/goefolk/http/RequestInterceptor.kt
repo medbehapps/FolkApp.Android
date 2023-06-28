@@ -1,13 +1,17 @@
 package ge.baqar.gogia.goefolk.http
 
 import android.app.Application
+import com.google.gson.Gson
 import ge.baqar.gogia.goefolk.FolkApplication
+import ge.baqar.gogia.goefolk.http.response.BaseError
+import ge.baqar.gogia.goefolk.http.response.ResponseBase
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.utility.NetworkStatus
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 
@@ -20,13 +24,16 @@ class RequestInterceptor constructor(
         val request = chain.request()
 
         if (!networkStatus.isOnline()) {
+            val response = Gson().toJson(ResponseBase("", null))
             chain.call().cancel()
             return Response.Builder()
-                .code(499)
+                .code(200)
                 .request(request)
                 .protocol(Protocol.HTTP_2)
-                .message("network error")
-                .body(ResponseBody.create("application/text".toMediaType(), "network error"))
+                .message("")
+                .body(
+                    ResponseBody.create("application/json".toMediaType(), response)
+                )
                 .build()
         }
 

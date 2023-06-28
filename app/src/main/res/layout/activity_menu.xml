@@ -43,4 +43,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/showAccountBtn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="-30dp"
+        android:background="@drawable/drawable_fab_style"
+        android:contentDescription="@string/account"
+        android:src="@drawable/ic_baseline_person_24"
+        android:padding="10dp"
+        android:translationZ="100dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

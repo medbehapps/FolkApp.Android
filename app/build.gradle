@@ -15,7 +15,7 @@ android {
         //noinspection OldTargetApi
         targetSdk 33
         versionCode 106
-        versionName "1.0.6"
+        versionName "1.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -45,6 +45,9 @@ android {
     buildFeatures {
         viewBinding true
     }
+    dataBinding {
+        android.buildFeatures.dataBinding = true
+    }
 }
 
 dependencies {
@@ -55,6 +58,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    implementation 'com.google.android.material:material:1.9.0'
 
     //Koin
     implementation "io.insert-koin:koin-core:3.1.2"

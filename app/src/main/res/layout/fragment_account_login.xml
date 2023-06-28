@@ -53,7 +53,7 @@
         android:inputType="textPassword"
         android:lines="1"
         android:padding="10dp"
-        android:text="1234"
+        android:text="12345678"
         android:textColor="@color/black"
         android:textColorHint="@color/hintTextColor"
         android:textSize="15dp"
