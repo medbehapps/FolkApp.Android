@@ -5,14 +5,14 @@ import android.app.Application
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.Menu
 import androidx.annotation.RequiresApi
 import ge.baqar.gogia.goefolk.http.networkModule
 import ge.baqar.gogia.goefolk.media.mediaModule
 import ge.baqar.gogia.goefolk.storage.storageModule
 import ge.baqar.gogia.goefolk.ui.MenuActivity
-import ge.baqar.gogia.goefolk.ui.account.AccountActivity
+import ge.baqar.gogia.goefolk.ui.account.login.LoginActivity
 import ge.baqar.gogia.goefolk.ui.account.login.loginModule
+import ge.baqar.gogia.goefolk.ui.account.register.registerModule
 import ge.baqar.gogia.goefolk.ui.activityModule
 import ge.baqar.gogia.goefolk.ui.ensembles.ensemblesModule
 import ge.baqar.gogia.goefolk.ui.favourites.favouritesModule
@@ -46,6 +46,7 @@ class FolkApplication : Application() {
                     networkModule,
                     storageModule,
                     loginModule,
+                    registerModule,
                     ensemblesModule,
                     songsModule,
                     searchModule,
@@ -55,7 +56,7 @@ class FolkApplication : Application() {
         }
 
         registerActivityLifecycleCallbacks(object :
-            Application.ActivityLifecycleCallbacks {
+            ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 assignMenuActivity(activity)
             }
@@ -96,7 +97,7 @@ class FolkApplication : Application() {
     }
 
     fun logOut() {
-        startActivity(Intent(this, AccountActivity::class.java).apply {
+        startActivity(Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
     }

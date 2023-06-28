@@ -16,6 +16,7 @@
         android:divider="@drawable/drawable_divider"
         android:dividerPadding="1dp"
         android:orientation="vertical"
+        android:padding="15dp"
         android:showDividers="middle">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -51,5 +52,22 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="200dp" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/drawable_account_activity_button"
+            android:fontFamily="@font/bpg_nino_mtavruli_bold"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/log_out"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/passwordEditText" />
+
     </LinearLayout>
 </layout>

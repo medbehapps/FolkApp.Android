@@ -37,8 +37,8 @@ class RequestInterceptor constructor(
                 .build()
         }
 
-        val response = chain.proceed(request)
         try {
+            val response = chain.proceed(request)
             if (!checkAuthorization(response)) {
                 (application as FolkApplication).let {
                     preferences.setToken(null)
@@ -57,10 +57,22 @@ class RequestInterceptor constructor(
                         .build()
                 }
             }
+            return response
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        return response
+        return Response.Builder()
+            .code(401)
+            .request(request)
+            .protocol(Protocol.HTTP_2)
+            .message("authentication error")
+            .body(
+                ResponseBody.create(
+                    "application/text".toMediaType(),
+                    "authentication error"
+                )
+            )
+            .build()
     }
 
     private fun checkAuthorization(response: Response): Boolean {

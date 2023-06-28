@@ -15,6 +15,6 @@
         android:id="@+id/navigation_register"
         android:name="ge.baqar.gogia.goefolk.ui.account.register.RegisterFragment"
         android:label="@string/registration"
-        tools:layout="@layout/fragment_account_register" />
+        tools:layout="@layout/activity_register" />
 
 </navigation>

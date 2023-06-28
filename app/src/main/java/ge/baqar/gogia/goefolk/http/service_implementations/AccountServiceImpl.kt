@@ -1,6 +1,8 @@
 package ge.baqar.gogia.goefolk.http.service_implementations
 
 import ge.baqar.gogia.goefolk.http.request.LoginRequest
+import ge.baqar.gogia.goefolk.http.request.RegisterAccountRequest
+import ge.baqar.gogia.goefolk.http.request.VerifyAccountRequest
 import ge.baqar.gogia.goefolk.http.response.BaseError
 import ge.baqar.gogia.goefolk.http.services.AccountService
 import ge.baqar.gogia.goefolk.model.ReactiveResult
@@ -27,6 +29,40 @@ class AccountServiceImpl(
                     accountService.login(LoginRequest(email, password, deviceId, 1))
                 val flow = callbackFlow {
                     trySend(mapToReactiveResult(loginResult))
+                    awaitClose { channel.close() }
+                }
+                return@coroutineScope flow
+            } catch (ex: HttpException) {
+                val response = escapeServerError(ex)
+                return@coroutineScope flowOf(response.error?.asError!!)
+            }
+        }
+    }
+
+    suspend fun register(registerRequest: RegisterAccountRequest): Flow<ReactiveResult<BaseError, String>> {
+        return coroutineScope {
+            try {
+                val result =
+                    accountService.register(registerRequest)
+                val flow = callbackFlow {
+                    trySend(mapToReactiveResult(result))
+                    awaitClose { channel.close() }
+                }
+                return@coroutineScope flow
+            } catch (ex: HttpException) {
+                val response = escapeServerError(ex)
+                return@coroutineScope flowOf(response.error?.asError!!)
+            }
+        }
+    }
+
+    suspend fun verify(request: VerifyAccountRequest, id: String): Flow<ReactiveResult<BaseError, Boolean>> {
+        return coroutineScope {
+            try {
+                val result =
+                    accountService.verify(request, id)
+                val flow = callbackFlow {
+                    trySend(mapToReactiveResult(result))
                     awaitClose { channel.close() }
                 }
                 return@coroutineScope flow

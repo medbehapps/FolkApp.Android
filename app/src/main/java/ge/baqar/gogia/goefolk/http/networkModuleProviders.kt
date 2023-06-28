@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import org.koin.java.KoinJavaComponent.inject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 
 private const val baseURL = "https://ammpjt8siw.us-east-1.awsapprunner.com/"
@@ -22,14 +23,20 @@ fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
 }
 
 fun provideOkHttpClient(): OkHttpClient {
-    val builder = OkHttpClient().newBuilder()
-    builder.addInterceptor(requestInterceptor)
+    val builder = OkHttpClient()
+        .newBuilder()
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .addInterceptor(requestInterceptor)
     return builder.build()
 }
 
 fun provideAuthorizedOkHttpClient(): OkHttpClient {
     val builder = OkHttpClient().newBuilder()
-    builder
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
         .addInterceptor(requestInterceptor)
         .addInterceptor(jwtTokenInterceptor)
     return builder.build()

@@ -98,10 +98,9 @@ class EnsemblesFragment : Fragment() {
 
     private fun render(state: ArtistsState) {
         if (state.error != null) {
-            val errorId = resources.getIdentifier(state.error, "string", context?.packageName)
-            val error = getString(errorId)
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-            Timber.i(error)
+            Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+            Timber.i(state.error)
+            return
         }
         if (state.isInProgress) {
             binding?.noRecordsView?.visibility = View.GONE

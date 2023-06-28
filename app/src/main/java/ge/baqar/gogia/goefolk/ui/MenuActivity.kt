@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
-import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageButton
@@ -33,7 +32,6 @@ import ge.baqar.gogia.goefolk.media.MediaPlayerController
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
-import ge.baqar.gogia.goefolk.ui.account.AccountActivity
 import ge.baqar.gogia.goefolk.utility.TokenValidator
 import ge.baqar.gogia.goefolk.utility.permission.BgPermission
 import ge.baqar.gogia.goefolk.widget.MediaPlayerView.Companion.OPENED
@@ -148,6 +146,10 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                 val account = TokenValidator.parseAccountFromJwt(token)
 
                 val binding: FragmentAccountBinding = FragmentAccountBinding.inflate(layoutInflater)
+                binding.logoutButton.setOnClickListener {
+                    folkAppPreferences.setToken(null)
+                    logOut()
+                }
                 binding.account = account
                 bottomSheetDialog.setContentView(binding.root)
 
@@ -239,9 +241,9 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         destinationChanged?.invoke(destination.javaClass.name)
     }
 
-    fun logOut() {
+    private fun logOut() {
         unbindService(serviceConnection)
-        startActivity(Intent(this, AccountActivity::class.java))
+        (application as FolkApplication).logOut()
         finish()
     }
 }

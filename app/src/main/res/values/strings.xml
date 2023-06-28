@@ -29,6 +29,9 @@
     <string name="email_placeholder">ელ. ფოსტა</string>
     <string name="password_placeholder">პაროლი</string>
     <string name="log_in">ავტორიზაცია</string>
-    <string name="registration"><u>რეგისტრაცია</u></string>
+    <string name="registration_underline"><u>რეგისტრაცია</u></string>
+    <string name="registration">რეგისტრაცია</string>
     <string name="account">მომხმარებელი</string>
+    <string name="log_out">გამოსვლა</string>
+    <string name="verify">დადასტურება</string>
 </resources>

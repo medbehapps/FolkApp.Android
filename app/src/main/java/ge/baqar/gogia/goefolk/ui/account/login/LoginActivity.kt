@@ -1,15 +1,18 @@
 package ge.baqar.gogia.goefolk.ui.account.login
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import ge.baqar.gogia.goefolk.databinding.FragmentAccountLoginBinding
-import ge.baqar.gogia.goefolk.ui.account.AccountActivity
+import ge.baqar.gogia.goefolk.databinding.ActivityLoginBinding
+import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
+import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.account.register.RegisterActivity
 import ge.baqar.gogia.goefolk.utility.DeviceId
+import ge.baqar.gogia.goefolk.utility.TokenValidator
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -20,18 +23,26 @@ import reactivecircus.flowbinding.android.view.clicks
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
-class LoginFragment : Fragment() {
-    private var binding: FragmentAccountLoginBinding? = null
+class LoginActivity : AppCompatActivity() {
+
     private val viewModel: LoginViewModel by viewModel()
+    private var binding: ActivityLoginBinding? = null
+    private val preferences: FolkAppPreferences by inject()
     private val deviceId: DeviceId by inject()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        installSplashScreen()
+        if (preferences.getToken() != null && !TokenValidator.isJWTExpired(preferences.getToken()!!)) {
+            startMenuActivity()
+            return
+        } else {
+            preferences.setToken(null)
+        }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentAccountLoginBinding.inflate(inflater, container, false)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding?.root)
+
         initializeIntents(
             binding?.loginButton?.clicks()
                 ?.map {
@@ -42,7 +53,10 @@ class LoginFragment : Fragment() {
                     )
                 }!!
         )
-        return binding?.root!!
+
+        binding?.registrationLinkText?.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
     }
 
     private fun initializeIntents(inputs: Flow<LoginActions>) {
@@ -55,7 +69,6 @@ class LoginFragment : Fragment() {
             .launchIn(lifecycleScope)
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun render(output: LoginState) {
         if (output.isInProgress) {
             disableUi()
@@ -64,16 +77,14 @@ class LoginFragment : Fragment() {
 
         enableUi()
         if (output.error != null) {
-            val errorId = resources.getIdentifier(output.error, "string", context?.packageName)
-            val error = getString(errorId)
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-            Timber.i(error)
+            Toast.makeText(this, output.error, Toast.LENGTH_SHORT).show()
+            Timber.i(output.error)
             return
         }
 
         output.token?.let {
             viewModel.storeToken(it)
-            (activity as? AccountActivity)?.startMenuActivity()
+            startMenuActivity()
         }
     }
 
@@ -87,5 +98,12 @@ class LoginFragment : Fragment() {
         binding?.loginButton?.isEnabled = false
         binding?.emailEditText?.isEnabled = false
         binding?.passwordEditText?.isEnabled = false
+    }
+
+    @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
+    fun startMenuActivity() {
+        val intent = Intent(this, MenuActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

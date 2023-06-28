@@ -17,7 +17,7 @@ interface AccountService {
     suspend fun register(@Body request: RegisterAccountRequest): ResponseBase<String>
 
     @PUT("account/verify/{id}")
-    suspend fun verify(@Body request: VerifyAccountRequest, @Path("id") id: String): ResponseBase<String>
+    suspend fun verify(@Body request: VerifyAccountRequest, @Path("id") id: String): ResponseBase<Boolean>
 
     @POST("account/login")
     suspend fun login(@Body request: LoginRequest): ResponseBase<String>

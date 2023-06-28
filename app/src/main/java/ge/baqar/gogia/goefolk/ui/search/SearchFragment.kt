@@ -87,7 +87,7 @@ class SearchFragment : Fragment() {
         }
     }
 
-    fun initializeIntents(inputs: Flow<SearchAction>) {
+    private fun initializeIntents(inputs: Flow<SearchAction>) {
         viewModel.intents(inputs)
             .onEach { output ->
                 when (output) {
@@ -99,12 +99,12 @@ class SearchFragment : Fragment() {
 
     private fun render(state: SearchState) {
         if (state.error != null) {
-            val errorId = resources.getIdentifier(state.error, "string", context?.packageName)
-            val error = getString(errorId)
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             binding?.searchProgressBar?.visibility = View.GONE
-            Timber.i(error)
+            Timber.i(state.error)
+            return
         }
+
         if (state.isInProgress) {
             binding?.searchProgressBar?.visibility = View.VISIBLE
             return

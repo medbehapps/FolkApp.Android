@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="registerModel"
+            type="ge.baqar.gogia.goefolk.model.RegistrationModel" />
+
+        <variable
+            name="verificationModel"
+            type="ge.baqar.gogia.goefolk.model.VerificationModel" />
+
+        <variable
+            name="showVerification"
+            type="Boolean" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/include"
+            layout="@layout/view_fragment_settings_toolbar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp"
+            app:visible="@{showVerification}">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:imeOptions="actionNext"
+                android:inputType="textWebEmailAddress"
+                android:lines="1"
+                android:padding="12dp"
+                android:text="@={verificationModel.code}"
+                android:textColor="@color/black" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/verifyButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/drawable_account_activity_button"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/verify"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp"
+            app:visible="@{!showVerification}">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:imeOptions="actionNext"
+                android:inputType="textWebEmailAddress"
+                android:lines="1"
+                android:padding="12dp"
+                android:text="@={registerModel.email}"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:lines="1"
+                android:padding="12dp"
+                android:text="@={registerModel.firstName}"
+                android:textColor="@color/black" />
+
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:lines="1"
+                android:padding="12dp"
+                android:text="@={registerModel.lastName}"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:lines="1"
+                android:padding="12dp"
+                android:text="@={registerModel.password}"
+                android:textColor="@color/black" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/registerButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/drawable_account_activity_button"
+                android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/registration"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

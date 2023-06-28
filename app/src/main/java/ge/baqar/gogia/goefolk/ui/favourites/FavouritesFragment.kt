@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import ge.baqar.gogia.goefolk.ui.MenuActivity
@@ -23,6 +24,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -79,6 +81,13 @@ class FavouritesFragment : Fragment() {
             binding?.favsProgressBar?.visibility = View.VISIBLE
             return
         }
+
+        if (state.error != null){
+            Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
+            Timber.i(state.error)
+            return
+        }
+
         binding?.favsProgressBar?.visibility = View.GONE
         if (state.favSongs.isNotEmpty()) {
             binding?.noRecordsView?.visibility = View.GONE
@@ -95,6 +104,7 @@ class FavouritesFragment : Fragment() {
         }
     }
 
+    @SuppressLint("NewApi")
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
         (activity as MenuActivity).playMediaPlayback(position, songs, artist)
     }
