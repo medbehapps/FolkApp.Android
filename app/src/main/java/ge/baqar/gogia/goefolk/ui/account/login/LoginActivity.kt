@@ -2,11 +2,17 @@ package ge.baqar.gogia.goefolk.ui.account.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.databinding.BindingAdapter
 import androidx.lifecycle.lifecycleScope
+import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityLoginBinding
 import ge.baqar.gogia.goefolk.model.LoginModel
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
@@ -28,7 +34,7 @@ import kotlin.time.ExperimentalTime
 class LoginActivity : AppCompatActivity() {
 
     private val viewModel: LoginViewModel by viewModel()
-    private var binding: ActivityLoginBinding? = null
+    private lateinit var binding: ActivityLoginBinding
     private val preferences: FolkAppPreferences by inject()
     private val deviceId: DeviceId by inject()
 
@@ -43,22 +49,32 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding?.root)
+        setContentView(binding.root)
 
-        binding?.loginModel = LoginModel(null, null)
+        binding.loginModel = LoginModel(null, null)
+        binding.viewPassword = false
         initializeIntents(
-            binding?.loginButton?.clicks()
-                ?.map {
+            binding.loginButton.clicks()
+                .map {
                     LoginRequested(
-                        binding?.loginModel?.email!!,
-                        binding?.loginModel?.password!!,
+                        binding.loginModel?.email!!,
+                        binding.loginModel?.password!!,
                         deviceId.get()!!
                     )
-                }!!
+                }
         )
 
-        binding?.registrationLinkText?.setOnClickListener {
+        binding.registrationLinkText.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        binding.showPasswordBtn.setOnClickListener {
+            val viewPassword: Boolean? = binding.viewPassword
+            if (viewPassword == true) {
+                binding.viewPassword = false
+            } else {
+                binding.viewPassword = true
+            }
         }
     }
 
@@ -92,17 +108,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun enableUi() {
-        binding?.progressBar?.visibility = View.GONE
-        binding?.loginButton?.isEnabled = true
-        binding?.emailEditText?.isEnabled = true
-        binding?.passwordEditText?.isEnabled = true
+        binding.progressBar.visibility = View.GONE
+        binding.loginButton.isEnabled = true
+        binding.emailEditText.isEnabled = true
+        binding.passwordEditText.isEnabled = true
     }
 
     private fun disableUi() {
-        binding?.progressBar?.visibility = View.VISIBLE
-        binding?.loginButton?.isEnabled = false
-        binding?.emailEditText?.isEnabled = false
-        binding?.passwordEditText?.isEnabled = false
+        binding.progressBar.visibility = View.VISIBLE
+        binding.loginButton.isEnabled = false
+        binding.emailEditText.isEnabled = false
+        binding.passwordEditText.isEnabled = false
     }
 
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
@@ -110,5 +126,25 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(this, MenuActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    companion object {
+        @JvmStatic
+        @BindingAdapter("app:showPassword")
+        fun showPassword(view: AppCompatEditText, showPassword: Boolean) {
+            if (showPassword)
+                view.transformationMethod = null
+            else
+                view.transformationMethod = PasswordTransformationMethod()
+        }
+
+        @JvmStatic
+        @BindingAdapter("app:showPasswordIcon")
+        fun showPasswordIcon(view: AppCompatImageView, showPassword: Boolean) {
+            if (showPassword)
+                view.setImageResource(R.drawable.baseline_visibility_off_24)
+            else
+                view.setImageResource(R.drawable.baseline_visibility_on_24)
+        }
     }
 }

@@ -1,11 +1,15 @@
 package ge.baqar.gogia.goefolk.ui.account.register
 
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.lifecycleScope
+import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityRegisterBinding
 import ge.baqar.gogia.goefolk.model.RegistrationModel
 import ge.baqar.gogia.goefolk.model.VerificationModel
@@ -19,13 +23,13 @@ import reactivecircus.flowbinding.android.view.clicks
 import timber.log.Timber
 
 class RegisterActivity : AppCompatActivity() {
-    private var binding: ActivityRegisterBinding? = null
+    private lateinit var binding: ActivityRegisterBinding
     private val viewModel: RegisterViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
-        setContentView(binding?.root)
+        setContentView(binding.root)
 
         val registrationModel = RegistrationModel(
             null, null, null, null
@@ -33,33 +37,43 @@ class RegisterActivity : AppCompatActivity() {
         val verificationModel = VerificationModel(
             null
         )
-        binding?.showVerification = false
-        binding?.registerModel = registrationModel
-        binding?.verificationModel = verificationModel
+        binding.showVerification = false
+        binding.viewPassword = false
+        binding.registerModel = registrationModel
+        binding.verificationModel = verificationModel
         initializeIntents(
-            binding?.registerButton?.clicks()
-                ?.map {
+            binding.registerButton.clicks()
+                .map {
                     RegisterRequested(
-                        binding?.registerModel?.email,
-                        binding?.registerModel?.firstName,
-                        binding?.registerModel?.lastName,
-                        binding?.registerModel?.password,
+                        binding.registerModel?.email,
+                        binding.registerModel?.firstName,
+                        binding.registerModel?.lastName,
+                        binding.registerModel?.password,
                     )
-                }!!
+                }
         )
 
-        binding?.verifyButton?.setOnClickListener {
+        binding.verifyButton.setOnClickListener {
             initializeIntents(
                 flowOf(
                     VerificationRequested(
-                        binding?.verificationModel?.code,
+                        binding.verificationModel?.code,
                         viewModel.state.accountId!!
                     )
                 )
             )
         }
-        binding?.include?.tabBackImageView?.setOnClickListener {
+        binding.include.tabBackImageView.setOnClickListener {
             finish()
+        }
+
+        binding.showPasswordBtn.setOnClickListener {
+            val viewPassword: Boolean? = binding.viewPassword
+            if (viewPassword == true) {
+                binding.viewPassword = false
+            } else {
+                binding.viewPassword = true
+            }
         }
     }
 
@@ -87,7 +101,7 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         if (state.accountId != null) {
-            binding?.showVerification = true
+            binding.showVerification = true
             return
         }
 
@@ -97,13 +111,13 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun enableUi() {
-        binding?.progressBar?.visibility = View.GONE
-        binding?.disableUi = false
+        binding.progressBar.visibility = View.GONE
+        binding.disableUi = false
     }
 
     private fun disableUi() {
-        binding?.progressBar?.visibility = View.VISIBLE
-        binding?.disableUi = true
+        binding.progressBar.visibility = View.VISIBLE
+        binding.disableUi = true
     }
 
     companion object {
@@ -116,6 +130,24 @@ class RegisterActivity : AppCompatActivity() {
             } else {
                 view.visibility = View.GONE
             }
+        }
+
+        @JvmStatic
+        @BindingAdapter("app:showPassword")
+        fun showPassword(view: AppCompatEditText, showPassword: Boolean) {
+            if (showPassword)
+                view.transformationMethod = null
+            else
+                view.transformationMethod = PasswordTransformationMethod()
+        }
+
+        @JvmStatic
+        @BindingAdapter("app:showPasswordIcon")
+        fun showPasswordIcon(view: AppCompatImageView, showPassword: Boolean) {
+            if (showPassword)
+                view.setImageResource(R.drawable.baseline_visibility_off_24)
+            else
+                view.setImageResource(R.drawable.baseline_visibility_on_24)
         }
     }
 }

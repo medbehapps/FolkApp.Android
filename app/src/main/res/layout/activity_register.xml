@@ -5,7 +5,15 @@
     <data>
 
         <variable
+            name="viewPassword"
+            type="Boolean" />
+
+        <variable
             name="disableUi"
+            type="Boolean" />
+
+        <variable
+            name="showVerification"
             type="Boolean" />
 
         <variable
@@ -15,10 +23,6 @@
         <variable
             name="verificationModel"
             type="ge.baqar.gogia.goefolk.model.VerificationModel" />
-
-        <variable
-            name="showVerification"
-            type="Boolean" />
 
     </data>
 
@@ -46,6 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:background="@drawable/drawable_account_activity_input"
                     android:enabled="@{!disableUi}"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
                     android:hint="@string/code"
@@ -86,6 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:background="@drawable/drawable_account_activity_input"
                     android:enabled="@{!disableUi}"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
                     android:hint="@string/email_placeholder"
@@ -101,6 +107,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:background="@drawable/drawable_account_activity_input"
                     android:enabled="@{!disableUi}"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
                     android:hint="@string/firstName_placeholder"
@@ -117,6 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:background="@drawable/drawable_account_activity_input"
                     android:enabled="@{!disableUi}"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
                     android:hint="@string/lastName_placeholder"
@@ -128,21 +136,41 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintTextColor" />
 
-                <androidx.appcompat.widget.AppCompatEditText
+
+                <LinearLayout
+                    android:id="@+id/passwordLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:enabled="@{!disableUi}"
-                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                    android:hint="@string/password_placeholder"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    android:lines="1"
-                    android:padding="12dp"
-                    android:text="@={registerModel.password}"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/hintTextColor" />
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/drawable_account_activity_input">
 
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/passwordEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:enabled="@{!disableUi}"
+                        android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                        android:gravity="center_vertical"
+                        android:hint="@string/password_placeholder"
+                        android:imeOptions="actionNext"
+                        android:lines="1"
+                        android:padding="12dp"
+                        android:text="@={registerModel.password}"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/hintTextColor"
+                        android:textSize="15sp"
+                        app:showPassword="@{viewPassword}" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/showPasswordBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="7dp"
+                        app:showPasswordIcon="@{viewPassword}" />
+                </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/registerButton"
@@ -153,6 +181,7 @@
                     android:enabled="@{!disableUi}"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
                     android:gravity="center"
+                    android:imeOptions="actionDone"
                     android:padding="12dp"
                     android:text="@string/registration"
                     android:textColor="@color/white" />
