@@ -1,11 +1,9 @@
 package ge.baqar.gogia.goefolk.media
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityMenuBinding
@@ -27,9 +25,8 @@ import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.UnSetTimerEvent
 import ge.baqar.gogia.goefolk.storage.DownloadService
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
-import ge.baqar.gogia.goefolk.ui.MenuActivity
-import ge.baqar.gogia.goefolk.ui.favourites.FavouritesViewModel
-import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
+import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.songs.SongsViewModel
 import ge.baqar.gogia.goefolk.utility.asDownloadable
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch

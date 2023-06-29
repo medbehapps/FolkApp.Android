@@ -2,6 +2,7 @@ package ge.baqar.gogia.goefolk.ui.account.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -9,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import ge.baqar.gogia.goefolk.databinding.ActivityLoginBinding
 import ge.baqar.gogia.goefolk.model.LoginModel
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
-import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.ui.account.register.RegisterActivity
 import ge.baqar.gogia.goefolk.utility.DeviceId
 import ge.baqar.gogia.goefolk.utility.TokenValidator
@@ -91,12 +92,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun enableUi() {
+        binding?.progressBar?.visibility = View.GONE
         binding?.loginButton?.isEnabled = true
         binding?.emailEditText?.isEnabled = true
         binding?.passwordEditText?.isEnabled = true
     }
 
     private fun disableUi() {
+        binding?.progressBar?.visibility = View.VISIBLE
         binding?.loginButton?.isEnabled = false
         binding?.emailEditText?.isEnabled = false
         binding?.passwordEditText?.isEnabled = false

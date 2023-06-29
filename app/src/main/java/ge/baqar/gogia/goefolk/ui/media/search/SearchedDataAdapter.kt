@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.search
+package ge.baqar.gogia.goefolk.ui.media.search
 
 import android.view.LayoutInflater
 import android.view.View

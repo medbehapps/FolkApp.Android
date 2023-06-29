@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="loginModel"
             type="ge.baqar.gogia.goefolk.model.LoginModel" />
@@ -15,6 +16,18 @@
         <include
             android:id="@+id/include"
             layout="@layout/view_fragment_artists_toolbar" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:indeterminate="false"
+            android:indeterminateTint="@color/colorAccent"
+            android:progress="50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/appCompatImageView2"
@@ -37,8 +50,8 @@
             android:imeOptions="actionNext"
             android:inputType="textEmailAddress"
             android:lines="1"
-            android:text="@={loginModel.email}"
             android:padding="12dp"
+            android:text="@={loginModel.email}"
             android:textAllCaps="false"
             android:textColor="@color/black"
             android:textColorHint="@color/hintTextColor"
@@ -57,11 +70,11 @@
             android:background="@drawable/drawable_account_activity_input"
             android:fontFamily="@font/bpg_nino_mtavruli_bold"
             android:hint="@string/password_placeholder"
-            android:text="@={loginModel.password}"
             android:imeOptions="actionNext"
             android:inputType="textPassword"
             android:lines="1"
             android:padding="12dp"
+            android:text="@={loginModel.password}"
             android:textColor="@color/black"
             android:textColorHint="@color/hintTextColor"
             android:textSize="15sp"

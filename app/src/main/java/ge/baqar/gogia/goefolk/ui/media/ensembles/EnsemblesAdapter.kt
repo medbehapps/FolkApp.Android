@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.ensembles
+package ge.baqar.gogia.goefolk.ui.media.ensembles
 
 import android.view.LayoutInflater
 import android.view.View
@@ -27,13 +27,13 @@ class EnsemblesAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EnsembleViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EnsemblesAdapter.EnsembleViewHolder {
         return EnsembleViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_artist, parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: EnsembleViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: EnsemblesAdapter.EnsembleViewHolder, position: Int) {
         holder.bind(dataSource[position])
     }
 

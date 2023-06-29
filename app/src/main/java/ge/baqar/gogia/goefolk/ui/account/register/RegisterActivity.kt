@@ -75,9 +75,11 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun render(state: RegisterState) {
         if (state.isInProgress) {
+            disableUi()
             return
         }
 
+        enableUi()
         if (state.error != null) {
             Toast.makeText(this, state.error, Toast.LENGTH_LONG).show()
             Timber.i(state.error)
@@ -92,6 +94,16 @@ class RegisterActivity : AppCompatActivity() {
         if (state.verified) {
             finish()
         }
+    }
+
+    private fun enableUi() {
+        binding?.progressBar?.visibility = View.GONE
+        binding?.disableUi = false
+    }
+
+    private fun disableUi() {
+        binding?.progressBar?.visibility = View.VISIBLE
+        binding?.disableUi = true
     }
 
     companion object {

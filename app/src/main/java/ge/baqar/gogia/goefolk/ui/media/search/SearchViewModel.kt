@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.search
+package ge.baqar.gogia.goefolk.ui.media.search
 
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel

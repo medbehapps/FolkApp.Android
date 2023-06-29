@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.songs
+package ge.baqar.gogia.goefolk.ui.media.songs
 
 import ge.baqar.gogia.goefolk.model.Song
 

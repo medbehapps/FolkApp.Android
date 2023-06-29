@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.songs
+package ge.baqar.gogia.goefolk.ui.media.songs
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -18,7 +18,7 @@ import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
 import ge.baqar.gogia.goefolk.model.events.GetCurrentSong
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
-import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.databinding.FragmentArtistBinding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.onEach
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import kotlin.time.ExperimentalTime

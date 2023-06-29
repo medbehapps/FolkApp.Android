@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.ensembles
+package ge.baqar.gogia.goefolk.ui.media.ensembles
 
 import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
 import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl

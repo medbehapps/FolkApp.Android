@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.favourites
+package ge.baqar.gogia.goefolk.ui.media.favourites
 
 import ge.baqar.gogia.goefolk.model.Song
 

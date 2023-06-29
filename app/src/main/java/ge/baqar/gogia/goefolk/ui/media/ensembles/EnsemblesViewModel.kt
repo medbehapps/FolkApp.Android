@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.ensembles
+package ge.baqar.gogia.goefolk.ui.media.ensembles
 
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 class EnsemblesViewModel(
     private val alazaniRepository: ArtistsServiceImpl,
     private val folkApiDao: FolkApiDao
-) : ReactiveViewModel<EnsemblesAction, EnsemblesResult, ArtistsState>(ArtistsState.DEFAULT) {
+) : ReactiveViewModel<ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesAction, EnsemblesResult, ArtistsState>(ArtistsState.DEFAULT) {
 
     fun ensembles() = update {
         emit {
@@ -66,9 +66,9 @@ class EnsemblesViewModel(
         }
     }
 
-    override fun EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
+    override fun ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
         return when (this) {
-            is EnsemblesLoaded -> update {
+            is ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesLoaded -> update {
                 emit {
                     state.copy(
                         isInProgress = false,
@@ -77,10 +77,10 @@ class EnsemblesViewModel(
                     )
                 }
             }
-            is EnsemblesRequested -> {
+            is ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesRequested -> {
                 ensembles()
             }
-            is OldRecordingsRequested -> {
+            is ge.baqar.gogia.goefolk.ui.media.ensembles.OldRecordingsRequested -> {
                 oldRecordings()
             }
             else -> update {

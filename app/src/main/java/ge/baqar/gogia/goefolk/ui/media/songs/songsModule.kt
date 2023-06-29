@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.songs
+package ge.baqar.gogia.goefolk.ui.media.songs
 
 import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import kotlinx.coroutines.InternalCoroutinesApi

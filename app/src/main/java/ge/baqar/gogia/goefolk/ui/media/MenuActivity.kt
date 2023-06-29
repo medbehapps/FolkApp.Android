@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui
+package ge.baqar.gogia.goefolk.ui.media
 
 import android.Manifest
 import android.app.NotificationManager
@@ -147,6 +147,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
 
                 val binding: FragmentAccountBinding = FragmentAccountBinding.inflate(layoutInflater)
                 binding.logoutButton.setOnClickListener {
+                    mediaPlayerController?.stop()
                     folkAppPreferences.setToken(null)
                     logOut()
                 }
@@ -154,6 +155,22 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                 bottomSheetDialog.setContentView(binding.root)
 
                 bottomSheetDialog.show()
+            }
+        }
+
+        binding.mediaPlayerView.onSizeChange = {
+            if (it) {
+                binding.showAccountBtn.animate()
+                    .alpha(0f)
+                    .setDuration(500)
+                    .start()
+                binding.showAccountBtn.visibility = View.GONE
+            } else {
+                binding.showAccountBtn.animate()
+                    .alpha(1f)
+                    .setDuration(500)
+                    .start()
+                binding.showAccountBtn.visibility = View.VISIBLE
             }
         }
     }

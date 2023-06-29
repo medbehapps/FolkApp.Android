@@ -18,11 +18,12 @@ class MediaPlayerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs) {
 
-    var state: Int = HIDDEN
+    var state: Int = HALF_OPENED
     private lateinit var bottomNavigationView: BottomNavigationView
 
     private var seeking: Boolean = false
     var onAutoPlayChanged: (() -> Unit)? = null
+    var onSizeChange: ((Boolean) -> Unit)? = null
     var onTimerSetRequested: (() -> Unit)? = null
     var onNext: (() -> Unit)? = null
     var onPrev: (() -> Unit)? = null
@@ -310,6 +311,7 @@ class MediaPlayerView @JvmOverloads constructor(
             .translationY(translate)
             .start()
         state = OPENED
+        onSizeChange?.invoke(true)
     }
 
     fun minimize() {
@@ -330,6 +332,7 @@ class MediaPlayerView @JvmOverloads constructor(
             .translationY(0F)
             .start()
         state = HALF_OPENED
+        onSizeChange?.invoke(false)
     }
 
     fun show() {
@@ -351,6 +354,5 @@ class MediaPlayerView @JvmOverloads constructor(
     companion object {
         const val OPENED = 1
         const val HALF_OPENED = 2
-        const val HIDDEN = 3
     }
 }

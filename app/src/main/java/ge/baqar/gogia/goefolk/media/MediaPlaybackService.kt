@@ -6,12 +6,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.media.MediaPlayer
 import android.os.Binder
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
-import android.provider.MediaStore.Audio.Media
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -22,21 +20,18 @@ import ge.baqar.gogia.goefolk.media.player.AudioPlayer
 import ge.baqar.gogia.goefolk.model.events.ArtistChanged
 import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
 import ge.baqar.gogia.goefolk.model.events.GetCurrentSong
-import ge.baqar.gogia.goefolk.model.events.RequestMediaControllerInstance
-import ge.baqar.gogia.goefolk.model.events.ServiceCreatedEvent
 import ge.baqar.gogia.goefolk.model.events.SetTimerEvent
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.UnSetTimerEvent
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
-import ge.baqar.gogia.goefolk.ui.MenuActivity
-import ge.baqar.gogia.goefolk.ui.songs.SongsViewModel
+import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.songs.SongsViewModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
-import org.koin.core.component.inject
 import kotlin.time.ExperimentalTime
 
 

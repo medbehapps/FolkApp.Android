@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import ge.baqar.gogia.goefolk.R
-import ge.baqar.gogia.goefolk.ui.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.model.DownloadableSong
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite

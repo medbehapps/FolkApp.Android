@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.search
+package ge.baqar.gogia.goefolk.ui.media.search
 
 import ge.baqar.gogia.goefolk.model.SearchResult
 

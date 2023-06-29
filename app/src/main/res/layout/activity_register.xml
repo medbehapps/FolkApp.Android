@@ -5,6 +5,10 @@
     <data>
 
         <variable
+            name="disableUi"
+            type="Boolean" />
+
+        <variable
             name="registerModel"
             type="ge.baqar.gogia.goefolk.model.RegistrationModel" />
 
@@ -27,122 +31,145 @@
             android:id="@+id/include"
             layout="@layout/view_fragment_settings_toolbar" />
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="15dp"
-            app:visible="@{showVerification}">
+            android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:hint="@string/code"
-                android:imeOptions="actionNext"
-                android:inputType="number"
-                android:maxLength="4"
-                android:maxLines="1"
-                android:minLines="1"
-                android:padding="12dp"
-                android:text="@={verificationModel.code}"
-                android:textColor="@color/black"
-                android:textColorHint="@color/hintTextColor" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="15dp"
+                app:visible="@{showVerification}">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:hint="@string/code"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:maxLines="1"
+                    android:minLines="1"
+                    android:padding="12dp"
+                    android:text="@={verificationModel.code}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintTextColor" />
 
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/verifyButton"
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/verifyButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/drawable_account_activity_button"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="@string/verify"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/drawable_account_activity_button"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:gravity="center"
-                android:padding="12dp"
-                android:text="@string/verify"
-                android:textColor="@color/white" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="15dp"
+                app:visible="@{!showVerification}">
 
-        </LinearLayout>
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:hint="@string/email_placeholder"
+                    android:imeOptions="actionNext"
+                    android:inputType="textWebEmailAddress"
+                    android:lines="1"
+                    android:padding="12dp"
+                    android:text="@={registerModel.email}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintTextColor" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="15dp"
-            app:visible="@{!showVerification}">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:hint="@string/email_placeholder"
-                android:imeOptions="actionNext"
-                android:inputType="textWebEmailAddress"
-                android:lines="1"
-                android:padding="12dp"
-                android:text="@={registerModel.email}"
-                android:textColor="@color/black"
-                android:textColorHint="@color/hintTextColor" />
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:imeOptions="actionNext"
-                android:hint="@string/firstName_placeholder"
-                android:inputType="text"
-                android:lines="1"
-                android:padding="12dp"
-                android:text="@={registerModel.firstName}"
-                android:textColor="@color/black"
-                android:textColorHint="@color/hintTextColor" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:hint="@string/firstName_placeholder"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:padding="12dp"
+                    android:text="@={registerModel.firstName}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintTextColor" />
 
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:imeOptions="actionNext"
-                android:hint="@string/lastName_placeholder"
-                android:inputType="text"
-                android:lines="1"
-                android:padding="12dp"
-                android:text="@={registerModel.lastName}"
-                android:textColor="@color/black"
-                android:textColorHint="@color/hintTextColor" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:hint="@string/lastName_placeholder"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:padding="12dp"
+                    android:text="@={registerModel.lastName}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintTextColor" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:hint="@string/password_placeholder"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword"
-                android:lines="1"
-                android:padding="12dp"
-                android:text="@={registerModel.password}"
-                android:textColor="@color/black"
-                android:textColorHint="@color/hintTextColor" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:hint="@string/password_placeholder"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:lines="1"
+                    android:padding="12dp"
+                    android:text="@={registerModel.password}"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/hintTextColor" />
 
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/registerButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/drawable_account_activity_button"
-                android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:gravity="center"
-                android:padding="12dp"
-                android:text="@string/registration"
-                android:textColor="@color/white" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/registerButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/drawable_account_activity_button"
+                    android:enabled="@{!disableUi}"
+                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                    android:gravity="center"
+                    android:padding="12dp"
+                    android:text="@string/registration"
+                    android:textColor="@color/white" />
 
-        </LinearLayout>
+            </LinearLayout>
+
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:indeterminate="false"
+                android:indeterminateTint="@color/colorAccent"
+                android:progress="50" />
+
+        </FrameLayout>
 
     </LinearLayout>
 </layout>
