@@ -2,6 +2,7 @@ package ge.baqar.gogia.goefolk.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import ge.baqar.gogia.goefolk.storage.CharConverter
 import kotlinx.parcelize.Parcelize
 
 
@@ -9,13 +10,17 @@ import kotlinx.parcelize.Parcelize
 data class Artist(
     override val id: String,
     val name: String,
-    var nameEng: String,
     var artistType: ArtistType,
     var isPlaying: Boolean = false
 ) : SearchedItem, Parcelable {
     override fun detailedName(): String {
         return name
     }
+
+    val nameEng: String
+        get() {
+            return CharConverter.toEng(name)
+        }
 
     override fun hashCode(): Int {
         return id.hashCode()
@@ -40,6 +45,7 @@ data class Artist(
 enum class ArtistType {
     @SerializedName("2")
     ENSEMBLE,
+
     @SerializedName("1")
     OLD_RECORDING
 }

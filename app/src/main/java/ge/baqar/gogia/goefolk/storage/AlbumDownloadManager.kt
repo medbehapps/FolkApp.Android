@@ -50,7 +50,7 @@ class AlbumDownloadManager internal constructor(
                     UUID.randomUUID().toString(),
                     _artist.id,
                     _artist.name,
-                    _artist.nameEng,
+                    _artist.nameEng!!,
                     _artist.artistType,
                     false
                 )
@@ -71,7 +71,7 @@ class AlbumDownloadManager internal constructor(
             for (song in filtered) {
                 if (canceled) return@launch
 
-                val exists = saveController.exists(_artist.nameEng, song.nameEng)
+                val exists = saveController.exists(_artist.nameEng!!, song.nameEng)
                 if (!exists) {
                     val result = songService.downloadSong(song.referenceId)
                     if (result is SucceedResult<ByteArray>) {

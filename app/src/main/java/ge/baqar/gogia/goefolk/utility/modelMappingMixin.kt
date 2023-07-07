@@ -1,11 +1,9 @@
 package ge.baqar.gogia.goefolk.utility
 
-import ge.baqar.gogia.goefolk.storage.model.DbEnsemble
-import ge.baqar.gogia.goefolk.storage.model.DbSong
 import ge.baqar.gogia.goefolk.model.DownloadableSong
-import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
-import java.util.*
+import ge.baqar.gogia.goefolk.storage.model.DbSong
+import java.util.UUID
 
 
 fun DownloadableSong.toDb(): DbSong {
@@ -19,21 +17,6 @@ fun DownloadableSong.toDb(): DbSong {
         this.songType,
         "",
         false
-    )
-}
-
-
-fun Song.toDb(isCurrentPlaying: Boolean = false): DbSong {
-    return DbSong(
-        UUID.randomUUID().toString(),
-        this.id,
-        this.name,
-        this.nameEng,
-        this.path,
-        this.artistId,
-        this.songType,
-        "",
-        isCurrentPlaying
     )
 }
 
@@ -60,29 +43,5 @@ fun DbSong.toModel(ensembleName: String, data: ByteArray?): Song {
         false,
         data = data,
         isFav = true
-    )
-}
-
-
-
-fun Artist.toDb(isCurrentPlaying: Boolean = false): DbEnsemble {
-    return DbEnsemble(
-        UUID.randomUUID().toString(),
-        this.id,
-        this.name,
-        this.nameEng,
-        this.artistType,
-        isCurrentPlaying
-    )
-}
-
-
-fun DbEnsemble.toModel(): Artist {
-    return Artist(
-        this.id,
-        this.name,
-        this.nameEng,
-        this.artistType,
-        this.isCurrent
     )
 }

@@ -19,7 +19,9 @@ class LoginViewModel(
             is LoginRequested -> {
                 login(email, password, deviceId)
             }
-
+            is LoginByTokenRequested -> {
+                loginByToken(token, deviceId)
+            }
             else -> update {
 
             }
@@ -42,6 +44,21 @@ class LoginViewModel(
         }
     }
 
+    private fun loginByToken(token: String, deviceId: String) = update {
+        emit {
+            state.copy(isInProgress = true)
+        }
+        accountService.loginByToken(token, deviceId).collect { value ->
+            if (value is SucceedResult) {
+                emit {
+                    state.copy(isInProgress = false, token = value.value, error = null)
+                }
+            }
+            if (value is FailedResult) {
+                emit { state.copy(isInProgress = false, error = value.value.message) }
+            }
+        }
+    }
     fun storeToken(token: String?) {
         preferences.setToken(token)
     }

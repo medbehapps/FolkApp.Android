@@ -2,7 +2,6 @@ package ge.baqar.gogia.goefolk.ui.account.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
@@ -16,12 +15,13 @@ import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityLoginBinding
 import ge.baqar.gogia.goefolk.model.LoginModel
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.ui.account.register.RegisterActivity
+import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.utility.DeviceId
 import ge.baqar.gogia.goefolk.utility.TokenValidator
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -41,10 +41,20 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
-        if (preferences.getToken() != null && !TokenValidator.isJWTExpired(preferences.getToken()!!)) {
-            startMenuActivity()
-            return
-        } else {
+        if (preferences.getToken() != null) {
+            if (!TokenValidator.isJWTExpired(preferences.getToken()!!)) {
+                startMenuActivity()
+                return
+            }
+
+            initializeIntents(
+                flowOf(
+                    LoginByTokenRequested(
+                        preferences.getToken()!!,
+                        deviceId.get()!!
+                    )
+                )
+            )
             preferences.setToken(null)
         }
 
@@ -142,9 +152,9 @@ class LoginActivity : AppCompatActivity() {
         @BindingAdapter("app:showPasswordIcon")
         fun showPasswordIcon(view: AppCompatImageView, showPassword: Boolean) {
             if (showPassword)
-                view.setImageResource(R.drawable.baseline_visibility_off_24)
-            else
                 view.setImageResource(R.drawable.baseline_visibility_on_24)
+            else
+                view.setImageResource(R.drawable.baseline_visibility_off_24)
         }
     }
 }

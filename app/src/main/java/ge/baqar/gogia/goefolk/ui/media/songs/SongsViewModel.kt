@@ -58,7 +58,7 @@ class SongsViewModel(
                         .filter { it.songType == SongType.Song.index }
                         .map {
                             val fileSystemSong =
-                                saveController.getFile(artist.nameEng, it.nameEng)
+                                saveController.getFile(artist.nameEng!!, it.nameEng)
                             it.toModel(artist.name, fileExtensions.read(fileSystemSong?.data))
                         }
                         .toMutableList()
@@ -67,7 +67,7 @@ class SongsViewModel(
                         .filter { it.songType == SongType.Chant.index }
                         .map {
                             val fileSystemSong =
-                                saveController.getFile(artist.nameEng, it.nameEng)
+                                saveController.getFile(artist.nameEng!!, it.nameEng)
                             it.toModel(artist.name, fileExtensions.read(fileSystemSong?.data))
                         }
                         .toMutableList()

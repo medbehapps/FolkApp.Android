@@ -1,5 +1,6 @@
 package ge.baqar.gogia.goefolk.http.services
 
+import ge.baqar.gogia.goefolk.http.request.LoginByTokenRequest
 import ge.baqar.gogia.goefolk.http.request.LoginRequest
 import ge.baqar.gogia.goefolk.http.request.RegisterAccountRequest
 import ge.baqar.gogia.goefolk.http.request.VerifyAccountRequest
@@ -21,4 +22,7 @@ interface AccountService {
 
     @POST("account/login")
     suspend fun login(@Body request: LoginRequest): ResponseBase<String>
+
+    @POST("account/login-by-token")
+    suspend fun loginByToken(@Body request: LoginByTokenRequest): ResponseBase<String>
 }

@@ -145,9 +145,9 @@ class RegisterActivity : AppCompatActivity() {
         @BindingAdapter("app:showPasswordIcon")
         fun showPasswordIcon(view: AppCompatImageView, showPassword: Boolean) {
             if (showPassword)
-                view.setImageResource(R.drawable.baseline_visibility_off_24)
-            else
                 view.setImageResource(R.drawable.baseline_visibility_on_24)
+            else
+                view.setImageResource(R.drawable.baseline_visibility_off_24)
         }
     }
 }

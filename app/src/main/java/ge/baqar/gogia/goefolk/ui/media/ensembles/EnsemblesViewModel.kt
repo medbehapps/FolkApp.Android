@@ -5,7 +5,6 @@ import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SucceedResult
-import ge.baqar.gogia.goefolk.storage.CharConverter
 import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 class EnsemblesViewModel(
     private val alazaniRepository: ArtistsServiceImpl,
     private val folkApiDao: FolkApiDao
-) : ReactiveViewModel<ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesAction, EnsemblesResult, ArtistsState>(ArtistsState.DEFAULT) {
+) : ReactiveViewModel<EnsemblesAction, EnsemblesResult, ArtistsState>(ArtistsState.DEFAULT) {
 
     fun ensembles() = update {
         emit {
@@ -24,9 +23,6 @@ class EnsemblesViewModel(
             if (value is SucceedResult) {
                 emit {
                     value.value.sortBy { it.name }
-                    value.value.forEach {
-                        it.nameEng = CharConverter.toEng(it.name)
-                    }
                     state.copy(isInProgress = false, artists = value.value)
                 }
             }
@@ -37,7 +33,6 @@ class EnsemblesViewModel(
                         Artist(
                             it.referenceId,
                             it.name,
-                            it.nameEng,
                             it.artistType
                         )
                     }.toMutableList()
@@ -66,7 +61,7 @@ class EnsemblesViewModel(
         }
     }
 
-    override fun ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
+    override fun EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
         return when (this) {
             is ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesLoaded -> update {
                 emit {
