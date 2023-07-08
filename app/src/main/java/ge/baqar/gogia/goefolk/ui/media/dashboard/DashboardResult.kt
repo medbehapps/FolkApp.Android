@@ -1,6 +1,6 @@
 package ge.baqar.gogia.goefolk.ui.media.dashboard
 
-import ge.baqar.gogia.goefolk.model.HolidaySong
+import ge.baqar.gogia.goefolk.http.response.HolidaySongData
 import ge.baqar.gogia.goefolk.model.Song
 
 
@@ -10,7 +10,7 @@ data class DashboardState(
     val isInProgress: Boolean,
     val daySong: Song?,
     val dayChant: Song?,
-    val holidaySongs: Array<HolidaySong>?,
+    val holdayData: HolidaySongData?,
     val error: String?
 ) : DashboardResult() {
 
@@ -20,7 +20,7 @@ data class DashboardState(
             error = null,
             dayChant = null,
             daySong = null,
-            holidaySongs = null
+            holdayData = null
         )
     }
 }

@@ -21,7 +21,7 @@ class DashboardViewModel(private val dashboardService: DashboardServiceImpl) :
                                 error = null,
                                 daySong = it.value.daySong,
                                 dayChant = it.value.dayChant,
-                                holidaySongs = it.value.holidaySongs
+                                holdayData = it.value.holidaySongData
                             )
                         }
                     }

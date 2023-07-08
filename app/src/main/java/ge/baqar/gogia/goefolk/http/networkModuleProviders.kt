@@ -61,5 +61,5 @@ fun provideSearchService(): SearchService {
 }
 
 fun provideDashboardService(): DashboardService {
-    return provideAlazaniAPIRetrofit(provideOkHttpClient()).create(DashboardService::class.java)
+    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(DashboardService::class.java)
 }
