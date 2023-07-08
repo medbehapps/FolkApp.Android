@@ -1,8 +1,6 @@
 package ge.baqar.gogia.goefolk.model
 
-import com.google.gson.annotations.SerializedName
-
-data class Song(
+class HolidaySong(
     override val id: String,
     val name: String,
     var nameEng: String,
@@ -10,6 +8,7 @@ data class Song(
     val songType: Int,
     val artistId: String,
     val artistName: String,
+    var holidayImagePath: String,
     var isPlaying: Boolean = false,
     var data: ByteArray? = null,
     var isFav: Boolean = false
@@ -32,12 +31,4 @@ data class Song(
     override fun hashCode(): Int {
         return path.hashCode()
     }
-}
-
-enum class SongType(val index: Int) {
-    @SerializedName("0")
-    Song(0),
-
-    @SerializedName("1")
-    Chant(1)
 }

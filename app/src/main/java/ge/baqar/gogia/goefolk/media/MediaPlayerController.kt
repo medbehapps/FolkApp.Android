@@ -7,6 +7,8 @@ import androidx.core.app.ShareCompat
 import androidx.lifecycle.viewModelScope
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ActivityMenuBinding
+import ge.baqar.gogia.goefolk.http.request.downloadLogType
+import ge.baqar.gogia.goefolk.http.request.playedLogType
 import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService.Companion.NEXT_MEDIA
 import ge.baqar.gogia.goefolk.media.MediaPlaybackService.Companion.PAUSE_OR_MEDIA
@@ -84,6 +86,7 @@ class MediaPlayerController(
                         EventBus.getDefault().post(ArtistChanged(PLAY_MEDIA))
                     }
                     updateUI(repeatedSong)
+                    logPlayedSong(repeatedSong)
                 }
 
                 AutoPlayState.REPEAT_ALBUM -> {
@@ -200,6 +203,7 @@ class MediaPlayerController(
             songsViewModel.viewModelScope.launch {
                 var isFav = songsViewModel.isSongFav(currentSong.id)
                 songServiceImpl.markAsFavourite(currentSong.id)
+                songsViewModel.log(currentSong.id, downloadLogType)
                 val downloadableSongs = currentSong.asDownloadable()
                 if (!isFav) {
                     val intent = Intent(activity, DownloadService::class.java).apply {
@@ -266,6 +270,7 @@ class MediaPlayerController(
             binding?.mediaPlayerView?.show()
             checkAutoPlayEnabled()
             updateFavouriteMarkFor(song)
+            logPlayedSong(song)
         }
     }
 
@@ -298,6 +303,7 @@ class MediaPlayerController(
         ++position
         val song = playList!![position]
         updateUI(song)
+        logPlayedSong(song)
         songsViewModel.viewModelScope.launch {
             audioPlayer.play(song.path, song.data) { onPrepareListener() }
             EventBus.getDefault().post(ArtistChanged(NEXT_MEDIA))
@@ -308,6 +314,7 @@ class MediaPlayerController(
         --position
         val song = playList!![position]
         updateUI(song)
+        logPlayedSong(song)
         songsViewModel.viewModelScope.launch {
             audioPlayer.play(song.path, song.data) { onPrepareListener() }
             EventBus.getDefault().post(ArtistChanged(PREV_MEDIA))
@@ -328,13 +335,6 @@ class MediaPlayerController(
         return audioPlayer.isPlaying()
     }
 
-    fun updatePlayer() {
-        playList?.let {
-            val song = playList!![position]
-            updateUI(song)
-        }
-    }
-
     private fun updateUI(song: Song) {
         checkAutoPlayEnabled()
         binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
@@ -344,15 +344,14 @@ class MediaPlayerController(
         binding?.mediaPlayerView?.show()
     }
 
-    fun setInitialPosition(position: Int) {
-        this.position = position
+    private fun logPlayedSong(song: Song){
+        songsViewModel.viewModelScope.launch {
+            songsViewModel.log(song.id, playedLogType)
+        }
     }
 
-    fun setCurrentSong(song: Song) {
-        playList = mutableListOf(song)
-        position = 0
-        play()
-        pause()
+    fun setInitialPosition(position: Int) {
+        this.position = position
     }
 
     fun showPlayer() {

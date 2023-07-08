@@ -114,6 +114,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+        binding.navView.isSelected = false
         navController.addOnDestinationChangedListener(this)
         binding.mediaPlayerView.setupWithBottomNavigation(binding.navView)
         binding.mediaPlayerView.setOnClickListener {

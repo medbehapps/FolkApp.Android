@@ -6,7 +6,7 @@
 
     <include
         android:id="@+id/include"
-        layout="@layout/view_fragment_artists_toolbar" />
+        layout="@layout/view_fragment_artist_toolbar" />
 
     <ProgressBar
         android:id="@+id/artistsProgressbar"

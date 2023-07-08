@@ -3,6 +3,7 @@ package ge.baqar.gogia.goefolk.http
 import com.google.gson.GsonBuilder
 import ge.baqar.gogia.goefolk.http.services.AccountService
 import ge.baqar.gogia.goefolk.http.services.ArtistsService
+import ge.baqar.gogia.goefolk.http.services.DashboardService
 import ge.baqar.gogia.goefolk.http.services.SearchService
 import ge.baqar.gogia.goefolk.http.services.SongService
 import okhttp3.OkHttpClient
@@ -13,11 +14,12 @@ import java.util.concurrent.TimeUnit
 
 
 private const val baseURL = "https://ammpjt8siw.us-east-1.awsapprunner.com/"
+
 private var gson = GsonBuilder().setLenient().create()
 private val jwtTokenInterceptor by inject<JwtTokenInterceptor>(JwtTokenInterceptor::class.java)
 private val requestInterceptor by inject<RequestInterceptor>(RequestInterceptor::class.java)
 
-fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+fun provideAlazaniAPIRetrofit(okHttpClient: OkHttpClient): Retrofit {
     return Retrofit.Builder().baseUrl(baseURL).client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson)).build()
 }
@@ -43,17 +45,21 @@ fun provideAuthorizedOkHttpClient(): OkHttpClient {
 }
 
 fun provideArtistsService(): ArtistsService {
-    return provideRetrofit(provideAuthorizedOkHttpClient()).create(ArtistsService::class.java)
+    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(ArtistsService::class.java)
 }
 
 fun provideAccountService(): AccountService {
-    return provideRetrofit(provideOkHttpClient()).create(AccountService::class.java)
+    return provideAlazaniAPIRetrofit(provideOkHttpClient()).create(AccountService::class.java)
 }
 
 fun provideSongsService(): SongService {
-    return provideRetrofit(provideAuthorizedOkHttpClient()).create(SongService::class.java)
+    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(SongService::class.java)
 }
 
 fun provideSearchService(): SearchService {
-    return provideRetrofit(provideAuthorizedOkHttpClient()).create(SearchService::class.java)
+    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(SearchService::class.java)
+}
+
+fun provideDashboardService(): DashboardService {
+    return provideAlazaniAPIRetrofit(provideOkHttpClient()).create(DashboardService::class.java)
 }

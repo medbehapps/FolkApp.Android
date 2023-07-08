@@ -1,5 +1,6 @@
 package ge.baqar.gogia.goefolk.http.service_implementations
 
+import ge.baqar.gogia.goefolk.http.request.LogPlayedSongRequest
 import ge.baqar.gogia.goefolk.http.response.BaseError
 import ge.baqar.gogia.goefolk.http.services.SongService
 import ge.baqar.gogia.goefolk.model.ReactiveResult
@@ -72,4 +73,19 @@ class SongServiceImpl(
         }
     }
 
+    suspend fun log(songId: String, logType: Int): Flow<ReactiveResult<BaseError, Boolean>> {
+        return coroutineScope {
+            try {
+                val result = songService.log(songId, LogPlayedSongRequest(logType))
+                val flow = callbackFlow {
+                    trySend(mapToReactiveResult(result))
+                    awaitClose { channel.close() }
+                }
+                return@coroutineScope flow
+            } catch (ex: HttpException) {
+                val baseError = escapeServerError(ex)
+                return@coroutineScope flowOf(baseError.error?.asError!!)
+            }
+        }
+    }
 }

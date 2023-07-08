@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @InternalCoroutinesApi
 class EnsemblesViewModel(
-    private val alazaniRepository: ArtistsServiceImpl,
+    private val artistsService: ArtistsServiceImpl,
     private val folkApiDao: FolkApiDao
 ) : ReactiveViewModel<EnsemblesAction, EnsemblesResult, ArtistsState>(ArtistsState.DEFAULT) {
 
@@ -19,7 +19,7 @@ class EnsemblesViewModel(
         emit {
             state.copy(isInProgress = true)
         }
-        alazaniRepository.ensembles().collect { value ->
+        artistsService.ensembles().collect { value ->
             if (value is SucceedResult) {
                 emit {
                     value.value.sortBy { it.name }
@@ -49,7 +49,7 @@ class EnsemblesViewModel(
         emit {
             state.copy(isInProgress = true)
         }
-        alazaniRepository.oldRecordings().collect { result ->
+        artistsService.oldRecordings().collect { result ->
             if (result is SucceedResult) {
                 emit {
                     state.copy(isInProgress = false, artists = result.value)
@@ -63,7 +63,7 @@ class EnsemblesViewModel(
 
     override fun EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
         return when (this) {
-            is ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesLoaded -> update {
+            is EnsemblesLoaded -> update {
                 emit {
                     state.copy(
                         isInProgress = false,
@@ -72,10 +72,10 @@ class EnsemblesViewModel(
                     )
                 }
             }
-            is ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesRequested -> {
+            is EnsemblesRequested -> {
                 ensembles()
             }
-            is ge.baqar.gogia.goefolk.ui.media.ensembles.OldRecordingsRequested -> {
+            is OldRecordingsRequested -> {
                 oldRecordings()
             }
             else -> update {

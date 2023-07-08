@@ -37,4 +37,9 @@
     <string name="code">დადასტურების კოდი: 1234</string>
     <string name="lastName_placeholder">გვარი</string>
     <string name="firstName_placeholder">სახელი</string>
+    <string name="song">სიმღერა</string>
+    <string name="chant">გალობა</string>
+    <string name="daily">დღის</string>
+    <string name="upcoming_holidays">მომავალი დღესასწაულები</string>
+    <string name="dashboard">სივრცე</string>
 </resources>

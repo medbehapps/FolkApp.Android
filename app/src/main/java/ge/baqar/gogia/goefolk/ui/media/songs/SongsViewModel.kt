@@ -13,6 +13,7 @@ import ge.baqar.gogia.goefolk.utility.FileExtensions
 import ge.baqar.gogia.goefolk.utility.toModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 
 @InternalCoroutinesApi
 class SongsViewModel(
@@ -100,5 +101,11 @@ class SongsViewModel(
 
     suspend fun isSongFav(songId: String): Boolean {
         return folkApiDao.song(songId) != null
+    }
+
+    suspend fun log(songId: String, logType: Int) {
+        songsService.log(songId, logType).collect {
+
+        }
     }
 }

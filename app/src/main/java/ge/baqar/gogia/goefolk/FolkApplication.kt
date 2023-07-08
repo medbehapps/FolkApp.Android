@@ -14,6 +14,7 @@ import ge.baqar.gogia.goefolk.ui.account.login.LoginActivity
 import ge.baqar.gogia.goefolk.ui.account.login.loginModule
 import ge.baqar.gogia.goefolk.ui.account.register.registerModule
 import ge.baqar.gogia.goefolk.ui.media.activityModule
+import ge.baqar.gogia.goefolk.ui.media.dashboard.dashboardModule
 import ge.baqar.gogia.goefolk.ui.media.ensembles.ensemblesModule
 import ge.baqar.gogia.goefolk.ui.media.favourites.favouritesModule
 import ge.baqar.gogia.goefolk.ui.media.search.searchModule
@@ -46,6 +47,7 @@ class FolkApplication : Application() {
                     networkModule,
                     storageModule,
                     loginModule,
+                    dashboardModule,
                     registerModule,
                     ensemblesModule,
                     songsModule,

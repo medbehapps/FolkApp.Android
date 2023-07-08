@@ -59,6 +59,11 @@ class EnsemblesFragment : Fragment() {
                 initializeIntents(loadFlow)
             }
             _view = binding?.root
+
+            binding?.include?.tabBackImageView?.setOnClickListener {
+                findNavController().navigateUp()
+            }
+
             return _view!!
         }
         return _view!!
