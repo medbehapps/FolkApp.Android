@@ -63,15 +63,6 @@ class EnsemblesViewModel(
 
     override fun EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
         return when (this) {
-            is EnsemblesLoaded -> update {
-                emit {
-                    state.copy(
-                        isInProgress = false,
-                        artists = state.artists,
-                        error = null
-                    )
-                }
-            }
             is EnsemblesRequested -> {
                 ensembles()
             }

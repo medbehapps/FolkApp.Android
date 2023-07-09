@@ -5,8 +5,16 @@
     <data>
 
         <variable
-            name="dashboardModel"
-            type="ge.baqar.gogia.goefolk.ui.media.dashboard.DashboardModel" />
+            name="daySong"
+            type="String" />
+
+        <variable
+            name="dayChant"
+            type="String" />
+
+        <variable
+            name="holidayTitle"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,6 +60,7 @@
             app:layout_constraintTop_toBottomOf="@id/view">
 
             <LinearLayout
+                android:id="@+id/daySongLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -72,16 +81,17 @@
                     android:src="@drawable/ic_compact_disc_svgrepo_com" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                    android:text="@{dashboardModel.daySong.detailedName()}"
+                    android:text="@{daySong}"
                     android:textColor="@color/black" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/dayChantLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -102,12 +112,12 @@
                     android:src="@drawable/ic_compact_disc_svgrepo_com" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:ellipsize="end"
                     android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                    android:text="@{dashboardModel.dayChant.detailedName()}"
+                    android:text="@{dayChant}"
                     android:textColor="@color/black" />
             </LinearLayout>
         </LinearLayout>
@@ -125,32 +135,43 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/linearLayout1" />
 
+        <View
+            android:id="@+id/view1"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/colorGray"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appCompatTextView1" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/appCompatTextView1">
+            app:layout_constraintTop_toBottomOf="@id/view1">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                android:text="@{dashboardModel.upcomingHoliday}"
+                android:text="@{holidayTitle}"
                 android:textColor="@color/black"
                 android:textSize="15sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/linearLayout1" />
 
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/holidaySongsListView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>
 

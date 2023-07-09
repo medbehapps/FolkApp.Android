@@ -1,11 +1,13 @@
 package ge.baqar.gogia.goefolk.ui.media.dashboard
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import ge.baqar.gogia.goefolk.databinding.FragmentDashboardBinding
@@ -31,15 +33,27 @@ class DashboardFragment: Fragment()  {
 
     private val viewModel: DashboardViewModel by viewModel()
     private var binding: FragmentDashboardBinding? = null
-    private var _currentSong: Song? = null
 
+    @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        binding?.dashboardModel = DashboardModel(null, null, null, arrayOf())
+        binding?.daySongLayout?.setOnClickListener {
+            (activity as MenuActivity).playMediaPlayback(0,
+                mutableListOf(viewModel.state.daySong!!),
+                Artist(viewModel.state.daySong?.artistId!!, viewModel.state.daySong?.artistName!!, ArtistType.ENSEMBLE, true)
+            )
+        }
+        binding?.dayChantLayout?.setOnClickListener {
+            (activity as MenuActivity).playMediaPlayback(0,
+                mutableListOf(viewModel.state.dayChant!!),
+                Artist(viewModel.state.dayChant?.artistId!!, viewModel.state.dayChant?.artistName!!, ArtistType.ENSEMBLE, true)
+            )
+        }
         initializeIntents(flowOf(DashboardDataRequested()))
         return binding?.root!!
     }
@@ -65,9 +79,9 @@ class DashboardFragment: Fragment()  {
             return
         }
 
-        binding?.dashboardModel?.daySong = state.daySong
-        binding?.dashboardModel?.dayChant = state.dayChant
-
+        binding?.daySong = state.daySong?.detailedName()
+        binding?.dayChant = state.dayChant?.detailedName()
+        binding?.holidayTitle = state.holdayData?.title
 
         binding?.holidaySongsListView?.adapter = SongsAdapter(state.holdayData?.holidaySongs!!) { song, index ->
             play(index, song)
@@ -77,6 +91,6 @@ class DashboardFragment: Fragment()  {
     @SuppressLint("NewApi")
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
     private fun play(position: Int, song: Song) {
-        (activity as MenuActivity).playMediaPlayback(position, mutableListOf(), Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true))
+        (activity as MenuActivity).playMediaPlayback(position, viewModel.state.holdayData?.holidaySongs!!, Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true))
     }
 }
