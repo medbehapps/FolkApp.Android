@@ -122,10 +122,8 @@ class AudioPlayer(private val context: Context) {
     }
 
     private fun reset() {
-        if (mediaPlayer?.isPlaying != null){
-            mediaPlayer?.reset()
-            timer?.cancel()
-            mediaPlayerIsPlayingCallback?.invoke(isPlaying())
-        }
+        mediaPlayer?.reset()
+        timer?.cancel()
+        mediaPlayerIsPlayingCallback?.invoke(isPlaying())
     }
 }
