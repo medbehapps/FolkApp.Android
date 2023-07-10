@@ -42,7 +42,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.dsl.module
 import kotlin.time.ExperimentalTime
 
-
 @InternalCoroutinesApi
 @ExperimentalTime
 class MenuActivity : AppCompatActivity(), KoinComponent,
@@ -106,6 +105,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
         navController = findNavController(R.id.nav_host_fragment_activity_menu)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
+                R.id.navigation_dashboard,
                 R.id.navigation_ensembles,
                 R.id.navigation_oldRecordings,
                 R.id.navigation_search,
@@ -113,10 +113,10 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        binding.navView.setupWithNavController(navController)
-        binding.navView.isSelected = false
+        binding.bottomNavigationView.setupWithNavController(navController)
+        binding.bottomNavigationView.isSelected = false
         navController.addOnDestinationChangedListener(this)
-        binding.mediaPlayerView.setupWithBottomNavigation(binding.navView)
+        binding.mediaPlayerView.setupWithBottomNavigation(binding.bottomNavigationView)
         binding.mediaPlayerView.setOnClickListener {
             val state = binding.mediaPlayerView.state
             if (state != OPENED) {

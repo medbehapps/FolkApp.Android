@@ -20,7 +20,7 @@ import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.AutoPlayState
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.model.events.ArtistChanged
-import ge.baqar.gogia.goefolk.model.events.OpenArtistFragment
+import ge.baqar.gogia.goefolk.model.events.OpenEnsembleFragment
 import ge.baqar.gogia.goefolk.model.events.SetTimerEvent
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
@@ -164,7 +164,7 @@ class MediaPlayerController(
             folkAppPreferences.setPlayerState(binding?.mediaPlayerView?.minimized!!)
         }
         binding?.mediaPlayerView?.openPlayListListener = {
-            EventBus.getDefault().post(OpenArtistFragment(artist!!, getCurrentSong()))
+            EventBus.getDefault().post(OpenEnsembleFragment(artist!!, getCurrentSong()))
             binding?.mediaPlayerView?.minimize()
         }
 

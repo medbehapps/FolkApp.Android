@@ -11,12 +11,16 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import ge.baqar.gogia.goefolk.databinding.FragmentArtistsBinding
 import ge.baqar.gogia.goefolk.databinding.FragmentDashboardBinding
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.ArtistType
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesRequested
+import ge.baqar.gogia.goefolk.ui.media.ensembles.OldRecordingsRequested
 import ge.baqar.gogia.goefolk.ui.media.songs.SongsAdapter
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +34,8 @@ import kotlin.time.ExperimentalTime
 class DashboardFragment : Fragment() {
 
     private val viewModel: DashboardViewModel by viewModel()
-    private var binding: FragmentDashboardBinding? = null
+    private lateinit var binding: FragmentDashboardBinding
+    private var _view: View? = null
 
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
     @RequiresApi(Build.VERSION_CODES.O)
@@ -39,33 +44,37 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        binding?.daySongLayout?.setOnClickListener {
-            (activity as MenuActivity).playMediaPlayback(
-                0,
-                mutableListOf(viewModel.state.daySong!!),
-                Artist(
-                    viewModel.state.daySong?.artistId!!,
-                    viewModel.state.daySong?.artistName!!,
-                    ArtistType.ENSEMBLE,
-                    true
+        if (_view == null) {
+            binding = FragmentDashboardBinding.inflate(inflater, container, false)
+            binding.daySongLayout.setOnClickListener {
+                (activity as MenuActivity).playMediaPlayback(
+                    0,
+                    mutableListOf(viewModel.state.daySong!!),
+                    Artist(
+                        viewModel.state.daySong?.artistId!!,
+                        viewModel.state.daySong?.artistName!!,
+                        ArtistType.ENSEMBLE,
+                        true
+                    )
                 )
-            )
-        }
-        binding?.dayChantLayout?.setOnClickListener {
-            (activity as MenuActivity).playMediaPlayback(
-                0,
-                mutableListOf(viewModel.state.dayChant!!),
-                Artist(
-                    viewModel.state.dayChant?.artistId!!,
-                    viewModel.state.dayChant?.artistName!!,
-                    ArtistType.ENSEMBLE,
-                    true
+            }
+            binding.dayChantLayout.setOnClickListener {
+                (activity as MenuActivity).playMediaPlayback(
+                    0,
+                    mutableListOf(viewModel.state.dayChant!!),
+                    Artist(
+                        viewModel.state.dayChant?.artistId!!,
+                        viewModel.state.dayChant?.artistName!!,
+                        ArtistType.ENSEMBLE,
+                        true
+                    )
                 )
-            )
+            }
+            initializeIntents(flowOf(DashboardDataRequested()))
+            _view = binding.root
+            return _view!!
         }
-        initializeIntents(flowOf(DashboardDataRequested()))
-        return binding?.root!!
+        return _view!!
     }
 
     private fun initializeIntents(inputs: Flow<DashboardAction>) {
@@ -80,25 +89,25 @@ class DashboardFragment : Fragment() {
 
     private fun render(state: DashboardState) {
         if (state.isInProgress) {
-            binding?.loading = true
+            binding.loading = true
             return
         }
 
-        binding?.loading = false
+        binding.loading = false
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             Timber.i(state.error)
             return
         }
 
-        binding?.daySong = state.daySong?.detailedName()
-        binding?.dayChant = state.dayChant?.detailedName()
-        binding?.holidayTitle = state.holdayData?.title
+        binding.daySong = state.daySong?.detailedName()
+        binding.dayChant = state.dayChant?.detailedName()
+        binding.holidayTitle = state.holdayData?.title
         Glide.with(requireActivity())
             .load(state.holdayData?.imagePath)
-            .into(binding?.holidayImageView!!)
+            .into(binding.holidayImageView)
 
-        binding?.holidaySongsListView?.adapter =
+        binding.holidaySongsListView.adapter =
             SongsAdapter(state.holdayData?.holidaySongs!!) { song, index ->
                 play(index, song)
             }

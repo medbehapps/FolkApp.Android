@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/nav_view"
+        android:id="@+id/bottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="@dimen/bottom_navigation_heght"
         android:layout_marginStart="0dp"
@@ -21,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="@dimen/minimized_media_player_height"
-        app:layout_constraintBottom_toTopOf="@id/nav_view"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
-        app:layout_constraintBottom_toTopOf="@id/nav_view"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -48,13 +48,13 @@
         android:id="@+id/showAccountBtn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginBottom="-30dp"
+        android:layout_marginBottom="-10dp"
         android:background="@drawable/drawable_fab_style"
         android:contentDescription="@string/account"
         android:padding="10dp"
         android:src="@drawable/ic_baseline_person_24"
         android:translationZ="100dp"
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

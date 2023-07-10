@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/dashboard" />
+    <item
         android:id="@+id/navigation_ensembles"
         android:icon="@drawable/ic_baseline_people_24"
         android:title="@string/ensembles" />

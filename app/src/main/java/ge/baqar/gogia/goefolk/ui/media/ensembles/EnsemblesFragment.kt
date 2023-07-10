@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.FragmentArtistsBinding
 import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
-import ge.baqar.gogia.goefolk.model.events.OpenArtistFragment
+import ge.baqar.gogia.goefolk.model.events.OpenEnsembleFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -29,7 +29,7 @@ import timber.log.Timber
 class EnsemblesFragment : Fragment() {
 
     private val viewModel: EnsemblesViewModel by viewModel()
-    private var binding: FragmentArtistsBinding? = null
+    private lateinit var binding: FragmentArtistsBinding
     private var _view: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +49,7 @@ class EnsemblesFragment : Fragment() {
     ): View {
         if (_view == null) {
             binding = FragmentArtistsBinding.inflate(inflater, container, false)
-            if (binding?.artistsListView?.adapter == null) {
+            if (binding.artistsListView.adapter == null) {
                 val action = if (arguments?.get("artistType")?.toString()?.equals("1") == true) {
                     EnsemblesRequested()
                 } else {
@@ -58,19 +58,19 @@ class EnsemblesFragment : Fragment() {
                 val loadFlow = flowOf(action)
                 initializeIntents(loadFlow)
             }
-            _view = binding?.root
 
-            binding?.include?.tabBackImageView?.setOnClickListener {
+            binding.include?.tabBackImageView?.setOnClickListener {
                 findNavController().navigateUp()
             }
 
+            _view = binding.root
             return _view!!
         }
         return _view!!
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun openArtistFragment(event: OpenArtistFragment) {
+    fun openEnsembleFragment(event: OpenEnsembleFragment) {
         val navController = findNavController()
         navController.navigate(
             R.id.navigation_artists_details,
@@ -107,27 +107,22 @@ class EnsemblesFragment : Fragment() {
             return
         }
         if (state.isInProgress) {
-            binding?.noRecordsView?.visibility = View.GONE
-            binding?.artistsProgressbar?.visibility = View.VISIBLE
+            binding.noRecordsView.visibility = View.GONE
+            binding.artistsProgressbar.visibility = View.VISIBLE
             return
         }
 
-        binding?.artistsProgressbar?.visibility = View.GONE
+        binding.artistsProgressbar.visibility = View.GONE
         if (state.artists.isNotEmpty()) {
-            binding?.noRecordsView?.visibility = View.GONE
-            binding?.artistsListView?.visibility = View.VISIBLE
-            binding?.artistsListView?.adapter =
+            binding.noRecordsView.visibility = View.GONE
+            binding.artistsListView.visibility = View.VISIBLE
+            binding.artistsListView.adapter =
                 EnsemblesAdapter(state.artists) {
-                    openArtistFragment(OpenArtistFragment(it))
+                    openEnsembleFragment(OpenEnsembleFragment(it))
                 }
         } else {
-            binding?.artistsListView?.visibility = View.GONE
-            binding?.noRecordsView?.visibility = View.VISIBLE
+            binding.artistsListView.visibility = View.GONE
+            binding.noRecordsView.visibility = View.VISIBLE
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
     }
 }

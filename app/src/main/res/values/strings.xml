@@ -39,7 +39,7 @@
     <string name="firstName_placeholder">სახელი</string>
     <string name="song">სიმღერა</string>
     <string name="chant">გალობა</string>
-    <string name="daily">დღის</string>
-    <string name="upcoming_holidays">მომავალი დღესასწაულები</string>
+    <string name="top">ტოპ</string>
+    <string name="upcoming_holidays">ხსენება/დღესასწაული</string>
     <string name="dashboard">სივრცე</string>
 </resources>
