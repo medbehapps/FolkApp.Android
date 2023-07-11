@@ -42,4 +42,5 @@
     <string name="top">ტოპ</string>
     <string name="upcoming_holidays">ხსენება/დღესასწაული</string>
     <string name="dashboard">სივრცე</string>
+    <string name="holidays_are_empty">სია ცარიელია</string>
 </resources>

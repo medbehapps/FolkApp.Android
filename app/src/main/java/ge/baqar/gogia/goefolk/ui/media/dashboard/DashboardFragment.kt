@@ -8,13 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import ge.baqar.gogia.goefolk.databinding.FragmentArtistsBinding
 import ge.baqar.gogia.goefolk.databinding.FragmentDashboardBinding
+import ge.baqar.gogia.goefolk.http.response.HolidaySongData
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.ArtistType
 import ge.baqar.gogia.goefolk.model.Song
@@ -102,25 +105,9 @@ class DashboardFragment : Fragment() {
 
         binding.daySong = state.daySong?.detailedName()
         binding.dayChant = state.dayChant?.detailedName()
-        binding.holidayTitle = state.holdayData?.title
-        Glide.with(requireActivity())
-            .load(state.holdayData?.imagePath)
-            .into(binding.holidayImageView)
 
-        binding.holidaySongsListView.adapter =
-            SongsAdapter(state.holdayData?.holidaySongs!!) { song, index ->
-                play(index, song)
-            }
-    }
-
-    @SuppressLint("NewApi")
-    @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
-    private fun play(position: Int, song: Song) {
-        (activity as MenuActivity).playMediaPlayback(
-            position,
-            viewModel.state.holdayData?.holidaySongs!!,
-            Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true)
-        )
+        binding.holidaysViewPager.adapter = HolidaysPagerAdapter(state.holidayItems!!, childFragmentManager)
+        binding.hasHolidays = state.holidayItems.any()
     }
 
     companion object {
@@ -128,6 +115,16 @@ class DashboardFragment : Fragment() {
         @BindingAdapter("app:loading")
         fun loading(view: View, loading: Boolean) {
             if (loading) {
+                view.visibility = View.VISIBLE
+            } else {
+                view.visibility = View.GONE
+            }
+        }
+
+        @JvmStatic
+        @BindingAdapter("app:areHolidaysAvailable")
+        fun areHolidaysAvailable(view: View, holidays: Boolean) {
+            if (holidays) {
                 view.visibility = View.VISIBLE
             } else {
                 view.visibility = View.GONE

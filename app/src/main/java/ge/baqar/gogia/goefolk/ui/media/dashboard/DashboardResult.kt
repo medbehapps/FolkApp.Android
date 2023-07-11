@@ -10,7 +10,7 @@ data class DashboardState(
     val isInProgress: Boolean,
     val daySong: Song?,
     val dayChant: Song?,
-    val holdayData: HolidaySongData?,
+    val holidayItems: MutableList<HolidaySongData>?,
     val error: String?
 ) : DashboardResult() {
 
@@ -20,7 +20,7 @@ data class DashboardState(
             error = null,
             dayChant = null,
             daySong = null,
-            holdayData = null
+            holidayItems = null
         )
     }
 }
