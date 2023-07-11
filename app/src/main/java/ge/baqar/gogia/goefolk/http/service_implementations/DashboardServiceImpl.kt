@@ -17,10 +17,11 @@ class DashboardServiceImpl(
 ) : ServiceBase() {
 
     suspend fun dashboardData(
+        date: String
     ): Flow<ReactiveResult<BaseError, DashboardDataResponse>> {
         return coroutineScope {
             try {
-                val result = dashboardService.dashboardData()
+                val result = dashboardService.dashboardData(date)
                 val flow = callbackFlow {
                     trySend(mapToReactiveResult(result))
                     awaitClose { channel.close() }

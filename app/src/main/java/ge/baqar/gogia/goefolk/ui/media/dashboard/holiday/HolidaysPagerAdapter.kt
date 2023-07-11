@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.media.dashboard
+package ge.baqar.gogia.goefolk.ui.media.dashboard.holiday
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

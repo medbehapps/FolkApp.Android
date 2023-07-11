@@ -1,6 +1,5 @@
 package ge.baqar.gogia.goefolk.ui.media.dashboard
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,23 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.viewpager.widget.ViewPager
-import com.bumptech.glide.Glide
-import ge.baqar.gogia.goefolk.databinding.FragmentArtistsBinding
 import ge.baqar.gogia.goefolk.databinding.FragmentDashboardBinding
-import ge.baqar.gogia.goefolk.http.response.HolidaySongData
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.ArtistType
-import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.ui.media.MenuActivity
-import ge.baqar.gogia.goefolk.ui.media.ensembles.EnsemblesRequested
-import ge.baqar.gogia.goefolk.ui.media.ensembles.OldRecordingsRequested
-import ge.baqar.gogia.goefolk.ui.media.songs.SongsAdapter
+import ge.baqar.gogia.goefolk.ui.media.dashboard.holiday.HolidaysPagerAdapter
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

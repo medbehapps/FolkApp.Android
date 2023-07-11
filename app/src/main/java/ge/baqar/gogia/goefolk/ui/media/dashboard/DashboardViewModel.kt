@@ -1,10 +1,12 @@
 package ge.baqar.gogia.goefolk.ui.media.dashboard
 
+import android.icu.util.Calendar
 import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.DashboardServiceImpl
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SucceedResult
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 class DashboardViewModel(private val dashboardService: DashboardServiceImpl) :
     ReactiveViewModel<DashboardAction, DashboardResult, DashboardState>(
@@ -13,7 +15,9 @@ class DashboardViewModel(private val dashboardService: DashboardServiceImpl) :
     override fun DashboardAction.process(): Flow<() -> DashboardResult> {
         return when (this) {
             is DashboardDataRequested -> update {
-                dashboardService.dashboardData().collect {
+                val time = Calendar.getInstance()
+                val date = "${time.get(Calendar.YEAR)}/${time.get(Calendar.MONTH) + 1}/${time.get(Calendar.DAY_OF_MONTH)}"
+                dashboardService.dashboardData(date).collect {
                     if (it is SucceedResult) {
                         emit {
                             state.copy(
