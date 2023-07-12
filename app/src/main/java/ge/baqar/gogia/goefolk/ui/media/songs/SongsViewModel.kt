@@ -6,14 +6,12 @@ import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SongType
 import ge.baqar.gogia.goefolk.model.SucceedResult
-import ge.baqar.gogia.goefolk.storage.CharConverter
 import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
 import ge.baqar.gogia.goefolk.storage.usecase.FileSaveController
 import ge.baqar.gogia.goefolk.utility.FileExtensions
 import ge.baqar.gogia.goefolk.utility.toModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 
 @InternalCoroutinesApi
 class SongsViewModel(
@@ -36,12 +34,10 @@ class SongsViewModel(
                     val songs = folkApiDao.songsByEnsembleId(artist.id)
 
                     value.value.chants.forEach { song ->
-                        song.nameEng = CharConverter.toEng(song.name)
                         song.isFav =
                             songs.firstOrNull { it.referenceId == song.id } != null
                     }
                     value.value.songs.forEach { song ->
-                        song.nameEng = CharConverter.toEng(song.name)
                         song.isFav =
                             songs.firstOrNull { it.referenceId == song.id } != null
                     }
@@ -59,7 +55,7 @@ class SongsViewModel(
                         .filter { it.songType == SongType.Song.index }
                         .map {
                             val fileSystemSong =
-                                saveController.getFile(artist.nameEng!!, it.nameEng)
+                                saveController.getFile(artist.nameEng, it.nameEng)
                             it.toModel(artist.name, fileExtensions.read(fileSystemSong?.data))
                         }
                         .toMutableList()

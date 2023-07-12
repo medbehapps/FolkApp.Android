@@ -176,7 +176,13 @@ class MediaPlayerController(
             binding?.mediaPlayerView?.setTimer(timerSet)
 
             val array =
-                arrayOf(activity?.resources?.getString(R.string.unset), "5 წთ", "10 წთ", "30 წთ", "60 წთ")
+                arrayOf(
+                    activity?.resources?.getString(R.string.unset),
+                    "5 წთ",
+                    "10 წთ",
+                    "30 წთ",
+                    "60 წთ"
+                )
             var selectedPosition = 0
             val dialog = AlertDialog.Builder(activity!!)
                 .setTitle(R.string.timer_title)
@@ -187,7 +193,7 @@ class MediaPlayerController(
                     activity.resources?.getString(R.string.set)
                 ) { _, _ ->
                     val item = array[selectedPosition]
-                    if (item == activity?.resources?.getString(R.string.unset)) {
+                    if (item == activity.resources?.getString(R.string.unset)) {
                         EventBus.getDefault().post(UnSetTimerEvent)
                     } else {
                         val time = item?.toLong()
@@ -201,11 +207,16 @@ class MediaPlayerController(
         binding?.mediaPlayerView?.setFavButtonClickListener = {
             val currentSong = getCurrentSong()!!
             songsViewModel.viewModelScope.launch {
-                var isFav = songsViewModel.isSongFav(currentSong.id)
+                var isFav = currentSong.isFav || songsViewModel.isSongFav(currentSong.id)
                 songServiceImpl.markAsFavourite(currentSong.id)
-                songsViewModel.log(currentSong.id, downloadLogType)
                 val downloadableSongs = currentSong.asDownloadable()
                 if (!isFav) {
+                    updateFavouriteMarkFor(currentSong.also {
+                        isFav = true
+                    })
+                    EventBus.getDefault().post(SongsMarkedAsFavourite(mutableListOf(downloadableSongs)))
+
+                    songsViewModel.log(currentSong.id, downloadLogType)
                     val intent = Intent(activity, DownloadService::class.java).apply {
                         action = DownloadService.DOWNLOAD_SONGS
                         putExtra("ensemble", artist)
@@ -220,6 +231,11 @@ class MediaPlayerController(
                         activity?.startService(intent)
                     }
                 } else {
+                    updateFavouriteMarkFor(currentSong.also {
+                        isFav = false
+                    })
+                    EventBus.getDefault().post(SongsUnmarkedAsFavourite(mutableListOf(downloadableSongs)))
+
                     val intent = Intent(activity, DownloadService::class.java).apply {
                         action = DownloadService.STOP_DOWNLOADING
                         putExtra("ensemble", artist)
@@ -233,10 +249,6 @@ class MediaPlayerController(
                     } else {
                         activity?.startService(intent)
                     }
-
-                    updateFavouriteMarkFor(currentSong.also {
-                        isFav = false
-                    })
                 }
             }
         }
@@ -324,6 +336,7 @@ class MediaPlayerController(
     private fun updateFavouriteMarkFor(song: Song?) {
         song?.let {
             binding?.mediaPlayerView?.setIsFav(song.isFav)
+            playList?.firstOrNull { it.id == song.id }?.isFav = song.isFav
         }
     }
 
@@ -344,7 +357,7 @@ class MediaPlayerController(
         binding?.mediaPlayerView?.show()
     }
 
-    private fun logPlayedSong(song: Song){
+    private fun logPlayedSong(song: Song) {
         songsViewModel.viewModelScope.launch {
             songsViewModel.log(song.id, playedLogType)
         }

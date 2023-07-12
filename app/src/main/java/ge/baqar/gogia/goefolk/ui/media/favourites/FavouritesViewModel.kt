@@ -24,10 +24,14 @@ class FavouritesViewModel(
             is FavouritesList -> update {
                 if (networkStatus.isOnline()) {
                     songService.favourites().collect {
-                        if (it is SucceedResult)
+                        if (it is SucceedResult) {
+                            it.value.forEach {
+                                it.isFav = true
+                            }
                             emit {
                                 state.copy(isInProgress = false, error = null, favSongs = it.value)
                             }
+                        }
                     }
                 } else {
                     val favSongs = folkApiDao.songs().groupBy {
@@ -40,7 +44,6 @@ class FavouritesViewModel(
                             Song(
                                 song.referenceId,
                                 song.name,
-                                song.nameEng,
                                 song.filePath,
                                 song.songType,
                                 song.ensembleId,

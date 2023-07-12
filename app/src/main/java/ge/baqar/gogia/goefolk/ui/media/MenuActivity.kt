@@ -237,7 +237,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                 ?.permission(Manifest.permission.POST_NOTIFICATIONS)
                 ?.callBack({ granted ->
 
-                }, { denied -> }, { failure -> })
+                }, { }, { failure -> })
 
             bgPermission?.request(this)
         }

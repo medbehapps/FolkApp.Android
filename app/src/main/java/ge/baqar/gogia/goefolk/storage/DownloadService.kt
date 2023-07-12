@@ -57,10 +57,9 @@ class DownloadService : Service() {
 
     private fun cancelDownloads(artist: Artist, songs: ArrayList<DownloadableSong>) {
         val albumDownloadManager = albumDownloadProvider.tryGet(artist.id)
-        albumDownloadManager.clearDownloads(artist.id, songs, artist.nameEng!!)
+        albumDownloadManager.clearDownloads(artist.id, songs, artist.nameEng)
         albumDownloadManager.cancel()
         albumDownloadProvider.dispose(albumDownloadManager)
-        EventBus.getDefault().post(SongsUnmarkedAsFavourite(songs.toMutableList()))
     }
 
     private fun downloadSongs(artist: Artist, songs: ArrayList<DownloadableSong>): Int {

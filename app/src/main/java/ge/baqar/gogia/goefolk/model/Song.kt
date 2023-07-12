@@ -1,11 +1,11 @@
 package ge.baqar.gogia.goefolk.model
 
 import com.google.gson.annotations.SerializedName
+import ge.baqar.gogia.goefolk.storage.CharConverter
 
 data class Song(
     override val id: String,
     val name: String,
-    var nameEng: String,
     val path: String,
     val songType: Int,
     val artistId: String,
@@ -15,12 +15,14 @@ data class Song(
     var isFav: Boolean = false
 ) : SearchedItem {
 
+    val nameEng: String
+        get() {
+            return CharConverter.toEng(name)
+        }
+
     override fun equals(other: Any?): Boolean {
         if (other is Song) {
-            return other.name == name
-                    && other.path == path
-                    && other.artistId == artistId
-                    && other.songType == songType
+            return other.name == name && other.path == path && other.artistId == artistId && other.songType == songType
         }
         return super.equals(other)
     }

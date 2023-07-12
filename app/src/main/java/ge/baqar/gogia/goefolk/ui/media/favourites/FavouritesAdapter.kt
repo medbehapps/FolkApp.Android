@@ -14,11 +14,11 @@ class FavouritesAdapter(
 
     inner class FavouritesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val songName: AppCompatTextView by lazy {
-            itemView.findViewById(R.id.songNameText)
+            itemView.findViewById(R.id.songTitle)
         }
 
         fun bind(position: Int, song: Song) {
-            songName.text = "${song.name} - ${song.artistName}"
+            songName.text = song.detailedName()
             itemView.setOnClickListener {
                 callback(position, song)
             }

@@ -20,7 +20,7 @@ fun DownloadableSong.toDb(): DbSong {
     )
 }
 
-fun Song. asDownloadable(): DownloadableSong {
+fun Song.asDownloadable(): DownloadableSong {
     return DownloadableSong(
         this.id,
         this.name,
@@ -35,7 +35,6 @@ fun DbSong.toModel(ensembleName: String, data: ByteArray?): Song {
     return Song(
         this.referenceId,
         this.name,
-        this.nameEng,
         this.filePath,
         this.songType,
         this.ensembleId,
