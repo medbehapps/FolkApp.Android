@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission
+        android:name="android.permission.BIND_APPWIDGET"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -28,6 +31,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
         android:usesCleartextTraffic="false">
+        <receiver
+            android:name=".widget.FolkAppPlayerWidget"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/folk_app_player_widget_info" />
+        </receiver>
+
         <activity
             android:name=".ui.account.login.LoginActivity"
             android:exported="true"
@@ -36,6 +51,7 @@
             android:theme="@style/Theme.MFolk.NoActionBar">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
@@ -45,23 +61,20 @@
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.MFolk"
-            android:windowSoftInputMode="adjustResize"/>
-
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.account.register.RegisterActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.MFolk.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".media.MediaPlaybackService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback" />
-
-
         <service
             android:name=".storage.DownloadService"
             android:enabled="true"

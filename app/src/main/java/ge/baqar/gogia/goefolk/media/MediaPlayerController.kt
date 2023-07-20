@@ -196,8 +196,8 @@ class MediaPlayerController(
                     if (item == activity.resources?.getString(R.string.unset)) {
                         EventBus.getDefault().post(UnSetTimerEvent)
                     } else {
-                        val time = item?.toLong()
-                        EventBus.getDefault().post(SetTimerEvent(time!!))
+                        val time = item?.split(' ')!![0].toLong()
+                        EventBus.getDefault().post(SetTimerEvent(time))
                     }
                 }
                 .create()

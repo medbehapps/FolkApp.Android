@@ -34,7 +34,7 @@ import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.utility.TokenValidator
 import ge.baqar.gogia.goefolk.utility.permission.BgPermission
-import ge.baqar.gogia.goefolk.widget.MediaPlayerView.Companion.OPENED
+import ge.baqar.gogia.goefolk.view.MediaPlayerView.Companion.OPENED
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidApplication

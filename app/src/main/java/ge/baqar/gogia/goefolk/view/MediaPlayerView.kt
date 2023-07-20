@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.widget
+package ge.baqar.gogia.goefolk.view
 
 import android.annotation.SuppressLint
 import android.content.Context

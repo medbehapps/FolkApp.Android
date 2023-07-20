@@ -5,6 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Binder
 import android.os.Build
@@ -27,6 +29,7 @@ import ge.baqar.gogia.goefolk.model.events.UnSetTimerEvent
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.ui.media.songs.SongsViewModel
+import ge.baqar.gogia.goefolk.widget.FolkAppPlayerWidget
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -170,11 +173,6 @@ class MediaPlaybackService : Service() {
         EventBus.getDefault().post(CurrentPlayingSong(mediaPlayerController.getCurrentSong()))
     }
 
-//    @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
-//    fun onMessageEvent(event: RequestMediaControllerInstance?) {
-//        mediaPlayerController = event?.mediaPlayerController
-//    }
-
     @SuppressLint("RemoteViewLayout", "UnspecifiedImmutableFlag")
     private fun showNotification(showResumeIcon: Boolean = false) {
         val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -190,6 +188,7 @@ class MediaPlaybackService : Service() {
         )
         val currentSong = mediaPlayerController.getCurrentSong()
         currentSong?.let {
+            val widgetLayout = RemoteViews(packageName, R.layout.widget_folk_app_player)
             val notificationLayout = RemoteViews(packageName, R.layout.view_notification_small)
             val notificationLayoutExpanded =
                 RemoteViews(packageName, R.layout.view_notification_large)
@@ -199,9 +198,16 @@ class MediaPlaybackService : Service() {
                 R.id.notification_title,
                 currentSong.name
             )
-
+            widgetLayout.setTextViewText(
+                R.id.widget_title,
+                currentSong.name
+            )
             notificationLayout.setOnClickPendingIntent(
                 R.id.notification_view_small,
+                contentIntent
+            )
+            notificationLayout.setOnClickPendingIntent(
+                R.id.widget_view_large,
                 contentIntent
             )
             notificationLayoutExpanded.setOnClickPendingIntent(
@@ -210,6 +216,7 @@ class MediaPlaybackService : Service() {
             )
 
             initRemoteViewClicks(notificationLayoutExpanded, contentIntent, showResumeIcon, flag)
+            initWidgetRemoteViewClicks(widgetLayout, contentIntent, showResumeIcon, flag)
 
             val notificationBuilder: NotificationCompat.Builder
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -261,7 +268,7 @@ class MediaPlaybackService : Service() {
             )
         )
 
-        if (mediaPlayerController.isPlaying()!! || showResumeIcon) {
+        if (mediaPlayerController.isPlaying() || showResumeIcon) {
             notificationLayoutExpanded.setImageViewResource(
                 R.id.playPauseButton,
                 R.drawable.ic_baseline_pause_circle_outline_24
@@ -304,8 +311,74 @@ class MediaPlaybackService : Service() {
     }
 
 
-    public class MediaPlaybackServiceBinder(val service: MediaPlaybackService) : Binder() {
+    @SuppressLint("UnspecifiedImmutableFlag")
+    private fun initWidgetRemoteViewClicks(
+        widgetViews: RemoteViews,
+        contentIntent: PendingIntent,
+        showResumeIcon: Boolean = false,
+        flag: Int
+    ) {
+        widgetViews.setOnClickPendingIntent(
+            R.id.widget_view_large,
+            contentIntent
+        )
+        widgetViews.setOnClickPendingIntent(
+            R.id.playStopButton, PendingIntent.getService(
+                this, 0,
+                Intent(this, MediaPlaybackService::class.java).apply {
+                    action = STOP_MEDIA
+                },
+                flag
+            )
+        )
+
+        if (mediaPlayerController.isPlaying() || showResumeIcon) {
+            widgetViews.setImageViewResource(
+                R.id.playPauseButton,
+                R.drawable.ic_baseline_pause_circle_outline_24
+            )
+        } else {
+            widgetViews.setImageViewResource(
+                R.id.playPauseButton,
+                R.drawable.ic_baseline_play_circle_outline_24
+            )
+        }
+
+        widgetViews.setOnClickPendingIntent(
+            R.id.playPauseButton,
+            PendingIntent.getService(
+                this, 0,
+                Intent(this, MediaPlaybackService::class.java).apply {
+                    action = PAUSE_OR_MEDIA
+                },
+                flag
+            )
+        )
+        widgetViews.setOnClickPendingIntent(
+            R.id.playPrevButton, PendingIntent.getService(
+                this, 0,
+                Intent(this, MediaPlaybackService::class.java).apply {
+                    action = PREV_MEDIA
+                },
+                flag
+            )
+        )
+        widgetViews.setOnClickPendingIntent(
+            R.id.playNextButton, PendingIntent.getService(
+                this, 0,
+                Intent(this, MediaPlaybackService::class.java).apply {
+                    action = NEXT_MEDIA
+                },
+                flag
+            )
+        )
+
+        val appWidgetManager = AppWidgetManager.getInstance(this)
+        val thisWidget = ComponentName(this, FolkAppPlayerWidget::class.java)
+        appWidgetManager.updateAppWidget(thisWidget, widgetViews)
     }
+
+    class MediaPlaybackServiceBinder(val service: MediaPlaybackService) : Binder()
 
     companion object {
         const val PLAY_MEDIA = "PLAY_MEDIA"
