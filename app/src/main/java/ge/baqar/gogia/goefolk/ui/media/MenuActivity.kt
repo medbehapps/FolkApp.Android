@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -30,14 +31,19 @@ import ge.baqar.gogia.goefolk.media.MediaPlaybackService
 import ge.baqar.gogia.goefolk.media.MediaPlaybackServiceManager
 import ge.baqar.gogia.goefolk.media.MediaPlayerController
 import ge.baqar.gogia.goefolk.model.Artist
+import ge.baqar.gogia.goefolk.model.ArtistType
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
+import ge.baqar.gogia.goefolk.ui.media.songs.SongsViewModel
 import ge.baqar.gogia.goefolk.utility.TokenValidator
 import ge.baqar.gogia.goefolk.utility.permission.BgPermission
 import ge.baqar.gogia.goefolk.view.MediaPlayerView.Companion.OPENED
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidApplication
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import org.koin.dsl.module
 import kotlin.time.ExperimentalTime
@@ -69,18 +75,19 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
             }
         }
     }
-    private var _playMediaPlaybackAction: ((MutableList<Song>, Int, Artist) -> Unit)? =
-        { songs, position, ensemble ->
-            mediaPlayerController?.binding = binding
+    private var _playMediaPlaybackAction: ((MutableList<Song>, Int, Artist, Boolean) -> Unit)? =
+        { songs, position, ensemble, playInitially ->
             mediaPlayerController?.playList = songs
             mediaPlayerController?.artist = ensemble
             mediaPlayerController?.setInitialPosition(position)
 
+            val serviceAction = if(!playInitially) MediaPlaybackService.INITIALIZE else MediaPlaybackService.PLAY_MEDIA
+
             if (mediaPlaybackService != null)
-                mediaPlaybackService?.handleMediaAction(MediaPlaybackService.PLAY_MEDIA)
+                mediaPlaybackService?.handleMediaAction(serviceAction)
             else {
                 val intent = Intent(this, MediaPlaybackService::class.java).apply {
-                    action = MediaPlaybackService.PLAY_MEDIA
+                    action = serviceAction
                 }
                 bindService(intent, serviceConnection, BIND_AUTO_CREATE)
             }
@@ -89,11 +96,12 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     private val notificationManager by lazy {
         getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     }
-    private lateinit var binding: ActivityMenuBinding
+    lateinit var binding: ActivityMenuBinding
     private lateinit var navController: NavController
     private var mediaPlayerController: MediaPlayerController? = null
     private var bgPermission: BgPermission? = null
     private val folkAppPreferences: FolkAppPreferences by inject()
+    private val songsViewModel: SongsViewModel by viewModel()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,6 +147,11 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                 }
         }
 
+        initUi()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initUi() {
         binding.showAccountBtn.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(this)
 
@@ -172,6 +185,29 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                     .setDuration(500)
                     .start()
                 binding.showAccountBtn.visibility = View.VISIBLE
+            }
+        }
+
+        fetchPlayedMusic()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun fetchPlayedMusic() {
+        val currentSongId = folkAppPreferences.getCurrentSong()
+        val currentArtistId = folkAppPreferences.getCurrentArtist()
+        currentSongId?.let {
+            lifecycleScope.launch {
+                songsViewModel.fetchSong(currentArtistId!!, currentSongId) {
+                    playMediaPlayback(
+                        0, mutableListOf(it), Artist(
+                            it.artistId,
+                            it.artistName,
+                            ArtistType.ENSEMBLE,
+                            false
+                        ),
+                        playInitially = false
+                    )
+                }
             }
         }
     }
@@ -216,12 +252,17 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun playMediaPlayback(position: Int, songs: MutableList<Song>, artist: Artist) {
+    fun playMediaPlayback(
+        position: Int,
+        songs: MutableList<Song>,
+        artist: Artist,
+        playInitially: Boolean = true
+    ) {
         (binding.navHostFragmentActivityMenuContainer.layoutParams as ConstraintLayout.LayoutParams).apply {
             bottomMargin = resources.getDimension(R.dimen.minimized_media_player_height).toInt()
         }
         if (mediaPlayerController != null) {
-            _playMediaPlaybackAction?.invoke(songs, position, artist)
+            _playMediaPlaybackAction?.invoke(songs, position, artist, playInitially)
         } else {
             tempDataSource = songs
             tempPosition = position
@@ -269,4 +310,5 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
 @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
 val activityModule = module {
     single { (androidApplication() as FolkApplication).activeActivity }
+    viewModel { SongsViewModel(get(), get(), get(), get()) }
 }

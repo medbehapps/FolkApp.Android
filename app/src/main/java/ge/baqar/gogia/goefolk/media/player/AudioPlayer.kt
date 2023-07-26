@@ -16,6 +16,11 @@ class AudioPlayer(private val context: Context) {
     private var timer: CountDownTimer? = null
     private var mediaPlayerIsPlayingCallback: ((Boolean) -> Unit)? = null
 
+    val isInitialized: Boolean
+        get() {
+            return mediaPlayer != null
+        }
+
     fun listenPlayer(callback: (Boolean) -> Unit) {
         mediaPlayerIsPlayingCallback = callback
     }
@@ -62,6 +67,12 @@ class AudioPlayer(private val context: Context) {
         fos.write(dataStream)
         fos.close()
         return FileInputStream(tempMp3)
+    }
+
+    fun stop() {
+        mediaPlayer?.pause()
+        mediaPlayer?.seekTo(0)
+        mediaPlayerIsPlayingCallback?.invoke(isPlaying())
     }
 
     fun pause() {

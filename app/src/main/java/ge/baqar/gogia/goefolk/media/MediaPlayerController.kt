@@ -46,7 +46,9 @@ class MediaPlayerController(
     private val activity: MenuActivity?
 ) {
 
-    var binding: ActivityMenuBinding? = null
+    private val binding: ActivityMenuBinding? by lazy {
+        activity?.binding
+    }
     var artist: Artist? = null
     var playList: MutableList<Song>? = null
 
@@ -126,7 +128,10 @@ class MediaPlayerController(
             if (audioPlayer.isPlaying()) {
                 pause()
             } else {
-                resume()
+                if (audioPlayer.isInitialized)
+                    resume()
+                else
+                    play()
             }
         }
         binding?.mediaPlayerView?.onShare = {
@@ -286,13 +291,25 @@ class MediaPlayerController(
         }
     }
 
+    fun initialize() {
+        playList?.let {
+            val song = playList!![this.position]
+            initializeAudioPlayerChanges()
+            initializeViewListeners()
+            binding?.mediaPlayerView?.setTrackTitle(song.name, artist?.name)
+            binding?.mediaPlayerView?.show()
+            checkAutoPlayEnabled()
+            updateFavouriteMarkFor(song)
+        }
+    }
+
     fun pause() {
         EventBus.getDefault().post(ArtistChanged(PAUSE_OR_MEDIA))
         audioPlayer.pause()
     }
 
     fun stop() {
-        pause()
+        audioPlayer.stop()
         EventBus.getDefault().post(ArtistChanged(STOP_MEDIA))
         binding?.mediaPlayerView?.setProgress(null, 0)
         binding?.mediaPlayerView?.minimize()
@@ -369,5 +386,12 @@ class MediaPlayerController(
 
     fun showPlayer() {
         binding?.mediaPlayerView?.show()
+    }
+
+    fun storeCurrentSong() {
+        getCurrentSong()?.let {
+            folkAppPreferences.setCurrentSong(it.id)
+            folkAppPreferences.setCurrentArtist(it.artistId)
+        }
     }
 }

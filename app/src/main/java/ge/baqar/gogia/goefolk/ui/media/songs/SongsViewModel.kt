@@ -4,6 +4,7 @@ import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.SongServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
+import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.model.SongType
 import ge.baqar.gogia.goefolk.model.SucceedResult
 import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
@@ -12,6 +13,7 @@ import ge.baqar.gogia.goefolk.utility.FileExtensions
 import ge.baqar.gogia.goefolk.utility.toModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 
 @InternalCoroutinesApi
 class SongsViewModel(
@@ -64,7 +66,7 @@ class SongsViewModel(
                         .filter { it.songType == SongType.Chant.index }
                         .map {
                             val fileSystemSong =
-                                saveController.getFile(artist.nameEng!!, it.nameEng)
+                                saveController.getFile(artist.nameEng, it.nameEng)
                             it.toModel(artist.name, fileExtensions.read(fileSystemSong?.data))
                         }
                         .toMutableList()
@@ -102,6 +104,21 @@ class SongsViewModel(
     suspend fun log(songId: String, logType: Int) {
         songsService.log(songId, logType).collect {
 
+        }
+    }
+
+    suspend fun fetchSong(artistId: String, songId: String, callback: (Song) -> Unit) {
+        songsService.songs(artistId).collect { value ->
+            if (value is SucceedResult) {
+
+                val song = value.value.chants.firstOrNull { song ->
+                    song.id == songId
+                } ?: value.value.songs.firstOrNull { song ->
+                    song.id == songId
+                }
+
+                callback.invoke(song!!)
+            }
         }
     }
 }
