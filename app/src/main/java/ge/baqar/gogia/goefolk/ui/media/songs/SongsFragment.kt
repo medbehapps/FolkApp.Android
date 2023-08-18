@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.model.SongType
@@ -20,6 +21,7 @@ import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
 import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.databinding.FragmentArtistBinding
+import ge.baqar.gogia.goefolk.ui.media.playlist.AddSongToPlayListDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.onEach
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
@@ -43,6 +46,7 @@ class SongsFragment : Fragment() {
     private var _artist: Artist? = null
 
     private val viewModel: SongsViewModel by viewModel()
+    private val addSongDialog: AddSongToPlayListDialog by inject()
     private var binding: FragmentArtistBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +67,7 @@ class SongsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentArtistBinding.inflate(inflater, container, false)
+
         _artist = arguments?.getParcelable("ensemble")
         binding?.toolbarInclude?.tabTitleView?.text = _artist?.name
 
@@ -192,10 +197,12 @@ class SongsFragment : Fragment() {
         binding?.progressbar?.visibility = View.GONE
         if (state.songs.size > 0) {
             currentPlayingSong(CurrentPlayingSong(_currentSong))
-            binding?.songsListView?.adapter = SongsAdapter(state.songs) { song, index ->
+            binding?.songsListView?.adapter = SongsAdapter(state.songs, { song, index ->
                 play(index, state.songs)
                 currentPlayingSong(CurrentPlayingSong(song))
-            }
+            }, {
+                addSongDialog.showPlayListDialog(requireActivity(), mutableListOf(it))
+            })
             _currentSong?.let {
                 if (_currentSong?.songType == SongType.Song.index) {
                     (binding?.songsListView?.adapter as? SongsAdapter)?.apply {
@@ -222,10 +229,12 @@ class SongsFragment : Fragment() {
         }
         if (state.chants.size > 0) {
             currentPlayingSong(CurrentPlayingSong(_currentSong))
-            binding?.chantsListView?.adapter = SongsAdapter(state.chants) { song, index ->
+            binding?.chantsListView?.adapter = SongsAdapter(state.chants, { song, index ->
                 play(index, state.chants)
                 currentPlayingSong(CurrentPlayingSong(song))
-            }
+            }, {
+                addSongDialog.showPlayListDialog(requireActivity(), mutableListOf(it))
+            })
             _currentSong?.let {
                 if (_currentSong?.songType == SongType.Chant.index) {
                     (binding?.chantsListView?.adapter as? SongsAdapter)?.apply {

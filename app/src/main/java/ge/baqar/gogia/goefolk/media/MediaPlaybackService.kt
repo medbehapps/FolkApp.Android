@@ -52,7 +52,7 @@ class MediaPlaybackService : Service() {
             inject<SongServiceImpl>().value,
             inject<FolkAppPreferences>().value,
             inject<AudioPlayer>().value,
-            inject<MenuActivity>().value,
+            inject<MenuActivity>().value
         )
     }
     private var timer: CountDownTimer? = null
@@ -108,17 +108,28 @@ class MediaPlaybackService : Service() {
                 mediaPlayerController.play()
                 updateNotificationAndWidgetUI(true)
             }
+
             INITIALIZE -> {
                 mediaPlayerController.initialize()
-                showWidgetData(getFlag(), getContentIntent(), mediaPlayerController.getCurrentSong())
+                showWidgetData(
+                    getFlag(),
+                    getContentIntent(),
+                    mediaPlayerController.getCurrentSong()
+                )
             }
+
             PAUSE_OR_MEDIA -> {
                 if (useMediaController) {
-                    if (mediaPlayerController.isPlaying()) {
-                        mediaPlayerController.pause()
-                        MediaPlaybackServiceManager.isRunning = false
-                    } else
-                        mediaPlayerController.resume()
+                    if (mediaPlayerController.isInitialized) {
+                        if (mediaPlayerController.isPlaying()) {
+                            mediaPlayerController.pause()
+                            MediaPlaybackServiceManager.isRunning = false
+                        } else
+                            mediaPlayerController.resume()
+                    } else {
+                        mediaPlayerController.play()
+                        updateNotificationAndWidgetUI(true)
+                    }
                 }
                 mediaPlayerController.storeCurrentSong()
 
@@ -133,7 +144,11 @@ class MediaPlaybackService : Service() {
                     mediaPlayerController.stop()
                 mediaPlayerController.storeCurrentSong()
                 stopForeground(true)
-                showWidgetData(getFlag(), getContentIntent(), mediaPlayerController.getCurrentSong())
+                showWidgetData(
+                    getFlag(),
+                    getContentIntent(),
+                    mediaPlayerController.getCurrentSong()
+                )
             }
 
             PREV_MEDIA -> {
@@ -200,7 +215,7 @@ class MediaPlaybackService : Service() {
     }
 
     private fun updateNotificationAndWidgetUI(showResumeIcon: Boolean = false) {
-        val flag =  getFlag()
+        val flag = getFlag()
         val contentIntent = getContentIntent()
         val currentSong = mediaPlayerController.getCurrentSong()
         currentSong?.let {

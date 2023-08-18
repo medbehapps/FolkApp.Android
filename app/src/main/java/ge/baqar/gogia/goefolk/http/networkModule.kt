@@ -8,6 +8,7 @@ val networkModule = module {
     single { provideSongsService() }
     single { provideSearchService() }
     single { provideDashboardService() }
+    single { providePlaylistService() }
     single { JwtTokenInterceptor(get(), get()) }
     single { RequestInterceptor(get(), get(), get()) }
 }

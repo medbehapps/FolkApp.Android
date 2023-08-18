@@ -5,9 +5,11 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.CountDownTimer
 import android.os.PowerManager
+import android.util.Log
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+
 
 class AudioPlayer(private val context: Context) {
     private var completionListenerCallback: (() -> Unit)? = null
@@ -32,8 +34,8 @@ class AudioPlayer(private val context: Context) {
     fun play(audioData: String?, dataStream: ByteArray?, callback: () -> Unit) {
         if (audioData.isNullOrEmpty() && dataStream == null) return
         reset()
-        if (mediaPlayer == null) mediaPlayer = MediaPlayer()
 
+        mediaPlayer = MediaPlayer()
         mediaPlayer?.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK)
         mediaPlayer?.setAudioAttributes(
             AudioAttributes.Builder()
@@ -53,6 +55,9 @@ class AudioPlayer(private val context: Context) {
             startTimer()
             callback.invoke()
             mediaPlayerIsPlayingCallback?.invoke(isPlaying())
+        }
+        mediaPlayer?.setOnErrorListener { _, _, _ ->
+            true
         }
         mediaPlayer?.setOnCompletionListener {
             completionListenerCallback?.invoke()
@@ -81,6 +86,9 @@ class AudioPlayer(private val context: Context) {
     }
 
     fun resume() {
+        if (mediaPlayer == null) {
+            return
+        }
         mediaPlayer?.start()
         mediaPlayerIsPlayingCallback?.invoke(isPlaying())
         startTimer()
@@ -134,6 +142,7 @@ class AudioPlayer(private val context: Context) {
 
     private fun reset() {
         mediaPlayer?.reset()
+        mediaPlayer = null
         timer?.cancel()
         mediaPlayerIsPlayingCallback?.invoke(isPlaying())
     }

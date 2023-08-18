@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -49,7 +50,19 @@
 
             <include
                 android:id="@+id/include"
-                layout="@layout/view_fragment_artists_toolbar" />
+                layout="@layout/view_fragment_artists_toolbar"
+                tools:layout_editor_absoluteX="50dp"
+                tools:layout_editor_absoluteY="-1dp" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/searchBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="@id/include"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:padding="10dp"
+                app:srcCompat="@drawable/ic_baseline_search_24" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/appCompatTextView"
@@ -174,25 +187,25 @@
                 android:id="@+id/holidaysViewPager"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                app:areHolidaysAvailable="@{hasHolidays}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/view1"
-                app:areHolidaysAvailable="@{hasHolidays}"/>
+                app:layout_constraintTop_toBottomOf="@id/view1" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/holidaysIsEmptyTextView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:fontFamily="@font/bpg_nino_mtavruli_bold"
+                android:gravity="center"
                 android:text="@string/holidays_are_empty"
                 android:textColor="@color/black"
-                android:gravity="center"
+                app:areHolidaysAvailable="@{!hasHolidays}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/view1"
-                app:areHolidaysAvailable="@{!hasHolidays}" />
+                app:layout_constraintTop_toBottomOf="@id/view1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

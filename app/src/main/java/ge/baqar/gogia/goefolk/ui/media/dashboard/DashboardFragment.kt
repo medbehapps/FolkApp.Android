@@ -10,6 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.FragmentDashboardBinding
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.ArtistType
@@ -63,6 +65,10 @@ class DashboardFragment : Fragment() {
                     )
                 )
             }
+            binding.searchBtn.setOnClickListener {
+                findNavController().navigate(R.id.navigation_search)
+            }
+
             initializeIntents(flowOf(DashboardDataRequested()))
             _view = binding.root
             return _view!!
@@ -96,7 +102,8 @@ class DashboardFragment : Fragment() {
         binding.daySong = state.daySong?.detailedName()
         binding.dayChant = state.dayChant?.detailedName()
 
-        binding.holidaysViewPager.adapter = HolidaysPagerAdapter(state.holidayItems!!, childFragmentManager)
+        binding.holidaysViewPager.adapter =
+            HolidaysPagerAdapter(state.holidayItems!!, childFragmentManager)
         binding.hasHolidays = state.holidayItems.any()
     }
 

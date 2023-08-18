@@ -116,7 +116,7 @@ class MenuActivity : AppCompatActivity(), KoinComponent,
                 R.id.navigation_dashboard,
                 R.id.navigation_ensembles,
                 R.id.navigation_oldRecordings,
-                R.id.navigation_search,
+                R.id.navigation_playlist,
                 R.id.navigation_favs
             )
         )

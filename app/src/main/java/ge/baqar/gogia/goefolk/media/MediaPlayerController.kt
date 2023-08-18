@@ -46,6 +46,9 @@ class MediaPlayerController(
     private val activity: MenuActivity?
 ) {
 
+    val isInitialized: Boolean by lazy {
+        audioPlayer.isInitialized
+    }
     private val binding: ActivityMenuBinding? by lazy {
         activity?.binding
     }
@@ -79,7 +82,7 @@ class MediaPlayerController(
 
                 AutoPlayState.REPEAT_ONE -> {
                     binding?.mediaPlayerView?.setDuration(null, 0)
-                    val repeatedSong = playList!![position]
+                    val repeatedSong = getCurrentSong()!!
                     songsViewModel.viewModelScope.launch {
                         audioPlayer.play(
                             repeatedSong.path,
@@ -219,7 +222,8 @@ class MediaPlayerController(
                     updateFavouriteMarkFor(currentSong.also {
                         isFav = true
                     })
-                    EventBus.getDefault().post(SongsMarkedAsFavourite(mutableListOf(downloadableSongs)))
+                    EventBus.getDefault()
+                        .post(SongsMarkedAsFavourite(mutableListOf(downloadableSongs)))
 
                     songsViewModel.log(currentSong.id, downloadLogType)
                     val intent = Intent(activity, DownloadService::class.java).apply {
@@ -239,7 +243,8 @@ class MediaPlayerController(
                     updateFavouriteMarkFor(currentSong.also {
                         isFav = false
                     })
-                    EventBus.getDefault().post(SongsUnmarkedAsFavourite(mutableListOf(downloadableSongs)))
+                    EventBus.getDefault()
+                        .post(SongsUnmarkedAsFavourite(mutableListOf(downloadableSongs)))
 
                     val intent = Intent(activity, DownloadService::class.java).apply {
                         action = DownloadService.STOP_DOWNLOADING
@@ -305,6 +310,7 @@ class MediaPlayerController(
 
     fun pause() {
         EventBus.getDefault().post(ArtistChanged(PAUSE_OR_MEDIA))
+
         audioPlayer.pause()
     }
 

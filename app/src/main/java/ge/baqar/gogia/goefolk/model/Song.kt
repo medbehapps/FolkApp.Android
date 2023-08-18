@@ -1,7 +1,9 @@
 package ge.baqar.gogia.goefolk.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import ge.baqar.gogia.goefolk.storage.CharConverter
+import kotlinx.android.parcel.Parcelize
 
 data class Song(
     override val id: String,
@@ -12,7 +14,8 @@ data class Song(
     val artistName: String,
     var isPlaying: Boolean = false,
     var data: ByteArray? = null,
-    var isFav: Boolean = false
+    var isFav: Boolean = false,
+    var isSelected: Boolean = false
 ) : SearchedItem {
 
     val nameEng: String

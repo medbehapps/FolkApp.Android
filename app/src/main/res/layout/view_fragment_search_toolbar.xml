@@ -14,7 +14,7 @@
         android:id="@+id/ensemblesSearchTab"
         style="@style/ArtistTabViewStyle"
         android:background="?attr/selectableItemBackground"
-        android:text="@string/ensembles"
+        android:text="@string/artists"
         android:textColor="@color/black" />
 
     <View

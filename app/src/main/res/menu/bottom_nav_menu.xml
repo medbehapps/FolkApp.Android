@@ -8,16 +8,17 @@
     <item
         android:id="@+id/navigation_ensembles"
         android:icon="@drawable/ic_baseline_people_24"
-        android:title="@string/ensembles" />
+        android:title="@string/artists" />
 
     <item
         android:id="@+id/navigation_oldRecordings"
         android:icon="@drawable/ic_baseline_archive_24"
         android:title="@string/oldRecordings" />
     <item
-        android:id="@+id/navigation_search"
-        android:icon="@drawable/ic_baseline_search_24"
-        android:title="@string/search" />
+        android:id="@+id/navigation_playlist"
+        android:icon="@drawable/ic_baseline_playlist_play_24_black"
+        android:title="@string/play_list" />
+
     <item
         android:id="@+id/navigation_favs"
         android:icon="@drawable/ic_baseline_favorite_24_black"

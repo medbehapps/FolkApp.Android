@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import ge.baqar.gogia.goefolk.http.services.AccountService
 import ge.baqar.gogia.goefolk.http.services.ArtistsService
 import ge.baqar.gogia.goefolk.http.services.DashboardService
+import ge.baqar.gogia.goefolk.http.services.PlayListService
 import ge.baqar.gogia.goefolk.http.services.SearchService
 import ge.baqar.gogia.goefolk.http.services.SongService
 import okhttp3.OkHttpClient
@@ -62,4 +63,8 @@ fun provideSearchService(): SearchService {
 
 fun provideDashboardService(): DashboardService {
     return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(DashboardService::class.java)
+}
+
+fun providePlaylistService(): PlayListService {
+    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(PlayListService::class.java)
 }

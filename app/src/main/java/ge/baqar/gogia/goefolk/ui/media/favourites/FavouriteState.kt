@@ -16,6 +16,5 @@ data class FavouriteState(
             error = null,
             favSongs = mutableListOf()
         )
-
     }
 }

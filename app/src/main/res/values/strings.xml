@@ -2,7 +2,7 @@
     <string name="app_name">Georgian Folk</string>
     <string name="app_name_notification_channel">Georgian Folk Notification channel</string>
     <string name="app_name_georgian">ფოლკორი</string>
-    <string name="ensembles">ანსამბლები</string>
+    <string name="artists">ანსამბლები</string>
     <string name="artistDetails">ანსამბლის დეტალები</string>
     <string name="settings">პარამეტრები</string>
     <string name="states">კუთხეები</string>
@@ -46,4 +46,11 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
+    <string name="play_list">სია</string>
+    <string name="new_list">ახალი სიის შექმნა</string>
+    <string name="play_list_name">სიის სახელი</string>
+    <string name="add_to_playlist">სიაში დამატება</string>
+    <string name="add_to_playlist_action">დამატება</string>
+    <string name="music_is_added_to_playlist">სიმღერა \"%s\" დაემატა \"%s\" სიაში</string>
+    <string name="musics_is_added_to_playlist">სიმღერები \"%s\" დაემატა \"%s\" სიაში</string>
 </resources>

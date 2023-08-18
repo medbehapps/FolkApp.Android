@@ -10,10 +10,10 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @InternalCoroutinesApi
-class EnsemblesViewModel(
+class ArtistsViewModel(
     private val artistsService: ArtistsServiceImpl,
     private val folkApiDao: FolkApiDao
-) : ReactiveViewModel<EnsemblesAction, EnsemblesResult, ArtistsState>(ArtistsState.DEFAULT) {
+) : ReactiveViewModel<ArtistsAction, ArtistsResult, ArtistsState>(ArtistsState.DEFAULT) {
 
     fun ensembles() = update {
         emit {
@@ -61,9 +61,9 @@ class EnsemblesViewModel(
         }
     }
 
-    override fun EnsemblesAction.process(): Flow<() -> EnsemblesResult> {
+    override fun ArtistsAction.process(): Flow<() -> ArtistsResult> {
         return when (this) {
-            is EnsemblesRequested -> {
+            is ArtistsRequested -> {
                 ensembles()
             }
             is OldRecordingsRequested -> {

@@ -26,9 +26,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 @InternalCoroutinesApi
-class EnsemblesFragment : Fragment() {
+class ArtistsFragment : Fragment() {
 
-    private val viewModel: EnsemblesViewModel by viewModel()
+    private val viewModel: ArtistsViewModel by viewModel()
     private lateinit var binding: FragmentArtistsBinding
     private var _view: View? = null
 
@@ -49,9 +49,11 @@ class EnsemblesFragment : Fragment() {
     ): View {
         if (_view == null) {
             binding = FragmentArtistsBinding.inflate(inflater, container, false)
+            binding.include.tabTitleView.text = getString(R.string.artists)
+
             if (binding.artistsListView.adapter == null) {
                 val action = if (arguments?.get("artistType")?.toString()?.equals("1") == true) {
-                    EnsemblesRequested()
+                    ArtistsRequested()
                 } else {
                     OldRecordingsRequested()
                 }
@@ -59,7 +61,7 @@ class EnsemblesFragment : Fragment() {
                 initializeIntents(loadFlow)
             }
 
-            binding.include?.tabBackImageView?.setOnClickListener {
+            binding.include.tabBackImageView.setOnClickListener {
                 findNavController().navigateUp()
             }
 
@@ -77,7 +79,8 @@ class EnsemblesFragment : Fragment() {
             Bundle().apply {
                 putParcelable("ensemble", event.artist)
             })
-        navController.addOnDestinationChangedListener(object: NavController.OnDestinationChangedListener{
+        navController.addOnDestinationChangedListener(object :
+            NavController.OnDestinationChangedListener {
             override fun onDestinationChanged(
                 controller: NavController,
                 destination: NavDestination,
@@ -90,7 +93,7 @@ class EnsemblesFragment : Fragment() {
         })
     }
 
-    private fun initializeIntents(inputs: Flow<EnsemblesAction>) {
+    private fun initializeIntents(inputs: Flow<ArtistsAction>) {
         viewModel.intents(inputs)
             .onEach { output ->
                 when (output) {
@@ -117,7 +120,7 @@ class EnsemblesFragment : Fragment() {
             binding.noRecordsView.visibility = View.GONE
             binding.artistsListView.visibility = View.VISIBLE
             binding.artistsListView.adapter =
-                EnsemblesAdapter(state.artists) {
+                ArtistsAdapter(state.artists) {
                     openEnsembleFragment(OpenEnsembleFragment(it))
                 }
         } else {

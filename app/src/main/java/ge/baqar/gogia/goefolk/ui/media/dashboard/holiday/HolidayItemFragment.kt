@@ -18,6 +18,7 @@ import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
 import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
 import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.playlist.AddSongToPlayListDialog
 import ge.baqar.gogia.goefolk.ui.media.songs.SongsAdapter
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -30,6 +31,8 @@ import kotlin.time.ExperimentalTime
 class HolidayItemFragment : Fragment() {
     lateinit var data: HolidaySongData
     private lateinit var binding: FragmentHolidayItemBinding
+
+    private val addSongDialog: AddSongToPlayListDialog by inject()
     private val folkApiDao: FolkApiDao by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,13 +58,15 @@ class HolidayItemFragment : Fragment() {
             .into(binding.holidayImageView)
 
         binding.holidaySongsListView.adapter =
-            SongsAdapter(data.holidaySongs) { song, index ->
+            SongsAdapter(data.holidaySongs, { song, index ->
                 lifecycleScope.launch {
                     song.isFav = folkApiDao.song(song.id) != null
                     play(index, song)
                     currentPlayingSong(CurrentPlayingSong(song))
                 }
-            }
+            }, {
+                addSongDialog.showPlayListDialog(requireActivity(), mutableListOf(it))
+            })
 
         return binding.root
     }

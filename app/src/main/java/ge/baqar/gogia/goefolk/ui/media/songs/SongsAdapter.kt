@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ge.baqar.gogia.goefolk.model.Song
@@ -12,7 +13,8 @@ import ge.baqar.gogia.goefolk.R
 
 class SongsAdapter(
     val dataSource: MutableList<Song>,
-    val clicked: SongsAdapter.(Song, Int) -> Unit
+    val clicked: SongsAdapter.(Song, Int) -> Unit,
+    val addToPlayListRequested: (Song) -> Unit
 ) : RecyclerView.Adapter<SongsAdapter.SongViewHolder>() {
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -49,6 +51,16 @@ class SongsAdapter(
                 clicked.invoke(this@SongsAdapter, song, position)
                 song.isPlaying = true
                 notifyItemChanged(position)
+            }
+            itemView.setOnLongClickListener {
+                PopupMenu(it.context, it).apply {
+                    menuInflater.inflate(R.menu.popup_menu, menu)
+                    setOnMenuItemClickListener { item ->
+                        addToPlayListRequested.invoke(song)
+                        true
+                    }
+                }.show()
+                true
             }
         }
     }
