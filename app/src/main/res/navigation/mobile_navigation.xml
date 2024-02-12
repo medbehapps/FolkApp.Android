@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="ge.baqar.gogia.goefolk.ui.media.dashboard.DashboardFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.dashboard.DashboardFragment"
         android:label="@string/dashboard"
         tools:layout="@layout/fragment_dashboard">
 
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/navigation_ensembles"
-        android:name="ge.baqar.gogia.goefolk.ui.media.artists.ArtistsFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.artists.ArtistsFragment"
         android:label="@string/artists"
         tools:layout="@layout/fragment_artists">
         <argument
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/navigation_oldRecordings"
-        android:name="ge.baqar.gogia.goefolk.ui.media.artists.ArtistsFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.artists.ArtistsFragment"
         android:label="@string/oldRecordings"
         tools:layout="@layout/fragment_artists">
 
@@ -36,25 +36,25 @@
 
     <fragment
         android:id="@+id/navigation_artists_details"
-        android:name="ge.baqar.gogia.goefolk.ui.media.songs.SongsFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.songs.SongsFragment"
         android:label="@string/artistDetails"
         tools:layout="@layout/fragment_artist" />
 
     <fragment
         android:id="@+id/navigation_search"
-        android:name="ge.baqar.gogia.goefolk.ui.media.search.SearchFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.search.SearchFragment"
         android:label="@string/search"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/navigation_playlist"
-        android:name="ge.baqar.gogia.goefolk.ui.media.playlist.PlayListFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.playlist.PlayListFragment"
         android:label="@string/play_list"
         tools:layout="@layout/fragment_playlist" />
 
     <fragment
         android:id="@+id/navigation_favs"
-        android:name="ge.baqar.gogia.goefolk.ui.media.favourites.FavouritesFragment"
+        android:name="ge.baqar.gogia.gefolk.ui.media.favourites.FavouritesFragment"
         android:label="@string/favourites"
         tools:layout="@layout/fragment_favourites" />
 

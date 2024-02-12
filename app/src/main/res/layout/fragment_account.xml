@@ -6,7 +6,7 @@
 
         <variable
             name="account"
-            type="ge.baqar.gogia.goefolk.model.Account" />
+            type="ge.baqar.gogia.gefolk.model.Account" />
     </data>
 
     <LinearLayout

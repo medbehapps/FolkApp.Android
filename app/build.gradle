@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace 'ge.baqar.gogia.goefolk'
+    namespace 'ge.baqar.gogia.gefolk'
     compileSdk 34
 
     defaultConfig {

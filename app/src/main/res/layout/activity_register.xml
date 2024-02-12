@@ -18,11 +18,11 @@
 
         <variable
             name="registerModel"
-            type="ge.baqar.gogia.goefolk.model.RegistrationModel" />
+            type="ge.baqar.gogia.gefolk.model.RegistrationModel" />
 
         <variable
             name="verificationModel"
-            type="ge.baqar.gogia.goefolk.model.VerificationModel" />
+            type="ge.baqar.gogia.gefolk.model.VerificationModel" />
 
     </data>
 

@@ -6,7 +6,7 @@
 
         <variable
             name="loginModel"
-            type="ge.baqar.gogia.goefolk.model.LoginModel" />
+            type="ge.baqar.gogia.gefolk.model.LoginModel" />
 
         <variable
             name="viewPassword"
