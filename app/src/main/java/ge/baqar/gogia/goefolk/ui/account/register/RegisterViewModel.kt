@@ -1,6 +1,6 @@
 package ge.baqar.gogia.goefolk.ui.account.register
 
-import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
+import ge.baqar.gogia.goefolk.ui.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.request.RegisterAccountRequest
 import ge.baqar.gogia.goefolk.http.request.VerifyAccountRequest
 import ge.baqar.gogia.goefolk.http.service_implementations.AccountServiceImpl

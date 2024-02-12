@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.media.ensembles
+package ge.baqar.gogia.goefolk.ui.media.artists
 
 import ge.baqar.gogia.goefolk.model.Artist
 

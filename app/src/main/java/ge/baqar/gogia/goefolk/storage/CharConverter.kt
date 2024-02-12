@@ -1,7 +1,7 @@
 package ge.baqar.gogia.goefolk.storage
 
 object CharConverter {
-    private val charMap = hashMapOf<Char, String>(
+    private val charMap = hashMapOf(
         'ა' to "a",
         'ბ' to "b",
         'გ' to "g",

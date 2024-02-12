@@ -1,12 +1,11 @@
 package ge.baqar.gogia.goefolk.ui.media.dashboard
 
 import android.icu.util.Calendar
-import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
+import ge.baqar.gogia.goefolk.ui.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.DashboardServiceImpl
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SucceedResult
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 class DashboardViewModel(private val dashboardService: DashboardServiceImpl) :
     ReactiveViewModel<DashboardAction, DashboardResult, DashboardState>(

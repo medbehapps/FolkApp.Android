@@ -1,109 +1,46 @@
 package ge.baqar.gogia.goefolk.media.player
 
 import android.content.Context
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.os.CountDownTimer
-import android.os.PowerManager
-import android.util.Log
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.Player.DISCONTINUITY_REASON_AUTO_TRANSITION
+import androidx.media3.exoplayer.ExoPlayer
 
 
-class AudioPlayer(private val context: Context) {
-    private var completionListenerCallback: (() -> Unit)? = null
-    private var updateCallback: ((Long, String?) -> Unit)? = null
-    private var mediaPlayer: MediaPlayer? = null
+class AudioPlayer(private val context: Context, private val player: ExoPlayer) {
+    val position: Int
+        get() = player.currentMediaItemIndex
+
+    var onTrackChange: ((Int) -> Unit)? = null
+    var onReady: ((Int, String?) -> Unit)? = null
+    var updateCallback: ((Long, String?) -> Unit)? = null
+    var onPlayPause: ((Boolean) -> Unit)? = null
+
     private var timer: CountDownTimer? = null
-    private var mediaPlayerIsPlayingCallback: ((Boolean) -> Unit)? = null
-
-    val isInitialized: Boolean
-        get() {
-            return mediaPlayer != null
-        }
-
-    fun listenPlayer(callback: (Boolean) -> Unit) {
-        mediaPlayerIsPlayingCallback = callback
-    }
+    private var durationSet: Boolean = false
+    var initialized = false
 
     fun isPlaying(): Boolean {
-        return mediaPlayer?.isPlaying == true
+        return player.isPlaying
     }
 
-    fun play(audioData: String?, dataStream: ByteArray?, callback: () -> Unit) {
-        if (audioData.isNullOrEmpty() && dataStream == null) return
-        reset()
-
-        mediaPlayer = MediaPlayer()
-        mediaPlayer?.setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK)
-        mediaPlayer?.setAudioAttributes(
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-        )
-
-        if (dataStream != null) {
-            val fis = getTempSongFile(dataStream)
-            mediaPlayer?.setDataSource(fis.fd)
-        } else {
-            mediaPlayer?.setDataSource(audioData)
-        }
-        mediaPlayer?.prepareAsync()
-        mediaPlayer?.setOnPreparedListener {
-            it.start()
-            startTimer()
-            callback.invoke()
-            mediaPlayerIsPlayingCallback?.invoke(isPlaying())
-        }
-        mediaPlayer?.setOnErrorListener { _, _, _ ->
-            true
-        }
-        mediaPlayer?.setOnCompletionListener {
-            completionListenerCallback?.invoke()
-            timer?.cancel()
-        }
+    fun addMediaData(data: List<MediaItem>) {
+        player.clearMediaItems()
+        player.addMediaItems(data)
     }
 
-    private fun getTempSongFile(dataStream: ByteArray): FileInputStream {
-        val tempMp3: File = File.createTempFile("temp_song", "mp3", context.cacheDir)
-        tempMp3.deleteOnExit()
-        val fos = FileOutputStream(tempMp3)
-        fos.write(dataStream)
-        fos.close()
-        return FileInputStream(tempMp3)
-    }
-
-    fun stop() {
-        mediaPlayer?.pause()
-        mediaPlayer?.seekTo(0)
-        mediaPlayerIsPlayingCallback?.invoke(isPlaying())
-    }
-
-    fun pause() {
-        mediaPlayer?.pause()
-        mediaPlayerIsPlayingCallback?.invoke(isPlaying())
-    }
-
-    fun resume() {
-        if (mediaPlayer == null) {
-            return
-        }
-        mediaPlayer?.start()
-        mediaPlayerIsPlayingCallback?.invoke(isPlaying())
-        startTimer()
-    }
-
-    fun updateTimeHandler(callback: (Long, String?) -> Unit) {
-        updateCallback = callback
+    fun play(position: Int) {
+        player.prepare()
+        player.seekToDefaultPosition(position)
+        player.play()
     }
 
     private fun startTimer() {
-        timer = object : CountDownTimer(getDuration(), 1000.toLong()) {
-            override fun onTick(p0: Long) {
-                val currentDuration = mediaPlayer?.currentPosition?.toLong()!!
-                val durationString = getTimeString(currentDuration)
-                updateCallback?.invoke(currentDuration, durationString)
+        timer = object : CountDownTimer(player.duration, 1000.toLong()) {
+            override fun onTick(currentDuration: Long) {
+                val durationString = getTimeString(player.currentPosition)
+                updateCallback?.invoke(player.currentPosition, durationString)
             }
 
             override fun onFinish() {
@@ -112,22 +49,9 @@ class AudioPlayer(private val context: Context) {
         timer?.start()
     }
 
-    fun completed(callback: () -> Unit) {
-        completionListenerCallback = callback
-    }
-
-    fun getDurationString(): String {
-        val totalDuration = mediaPlayer?.duration?.toLong()
-        return getTimeString(totalDuration!!)
-    }
-
-    fun getDuration(): Long {
-        val totalDuration = mediaPlayer?.duration?.toLong()
-        return totalDuration!!
-    }
-
-    fun playOn(progress: Int?) {
-        mediaPlayer?.seekTo(progress!!)
+    fun getDurationString(duration: Long): String {
+        val totalDuration = duration
+        return getTimeString(totalDuration)
     }
 
     private fun getTimeString(millis: Long): String {
@@ -140,10 +64,69 @@ class AudioPlayer(private val context: Context) {
         return buf.toString()
     }
 
-    private fun reset() {
-        mediaPlayer?.reset()
-        mediaPlayer = null
-        timer?.cancel()
-        mediaPlayerIsPlayingCallback?.invoke(isPlaying())
+    fun initialize() {
+        initialized = true
+        player.addListener(object : Player.Listener {
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                onPlayPause?.invoke(isPlaying)
+            }
+
+
+            override fun onPositionDiscontinuity(
+                oldPosition: Player.PositionInfo,
+                newPosition: Player.PositionInfo,
+                reason: Int
+            ) {
+                super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+                if (reason == DISCONTINUITY_REASON_AUTO_TRANSITION) {
+                    onTrackChange?.invoke(newPosition.mediaItemIndex)
+                    timer?.cancel()
+                }
+            }
+
+            override fun onPlaybackStateChanged(state: Int) {
+                when (state) {
+                    Player.STATE_ENDED -> {
+                    }
+
+                    Player.STATE_BUFFERING -> {
+                    }
+
+                    Player.STATE_IDLE -> {
+                    }
+
+                    Player.STATE_READY -> {
+                        durationSet = true
+                        player.playWhenReady = true
+                        onReady?.invoke(player.duration.toInt(), getDurationString(player.duration))
+                        startTimer()
+                    }
+                }
+            }
+        })
+    }
+
+    fun pause() {
+        player.playWhenReady = false
+    }
+
+    fun resume() {
+        player.playWhenReady = true
+    }
+
+    fun stop() {
+        initialized = false
+        pause()
+        player.seekTo(0)
+    }
+
+    fun rewind(position: Int) {
+        player.seekTo(position.toLong())
+    }
+
+    fun forceUpdateCallback() {
+        onReady?.invoke(player.duration.toInt(), getDurationString(player.duration))
+        startTimer()
     }
 }

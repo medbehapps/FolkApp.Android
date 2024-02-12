@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.FragmentPlaylistBinding
@@ -18,7 +18,7 @@ import ge.baqar.gogia.goefolk.http.response.PlayList
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.ArtistType
 import ge.baqar.gogia.goefolk.model.Song
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -30,7 +30,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.time.ExperimentalTime
 
 
-class PlayListFragment : Fragment() {
+@androidx.annotation.OptIn(UnstableApi::class)
+class PlayListFragment : AuthorizedFragment() {
 
     private var selectedPlayList: PlayList? = null
     private lateinit var binding: FragmentPlaylistBinding
@@ -225,6 +226,7 @@ class PlayListFragment : Fragment() {
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
     @SuppressLint("NewApi")
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
-        (activity as MenuActivity).playMediaPlayback(position, songs, artist)
+        folkPlayerController.artist = artist
+        authorizedActivity.playMediaPlayback(position, songs)
     }
 }

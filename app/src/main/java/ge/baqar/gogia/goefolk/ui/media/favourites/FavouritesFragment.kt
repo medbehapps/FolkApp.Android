@@ -6,15 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.annotation.OptIn
 import androidx.lifecycle.lifecycleScope
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
-import ge.baqar.gogia.goefolk.model.ArtistType
+import androidx.media3.common.util.UnstableApi
+import ge.baqar.gogia.goefolk.databinding.FragmentFavouritesBinding
 import ge.baqar.gogia.goefolk.model.Artist
+import ge.baqar.gogia.goefolk.model.ArtistType
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
-import ge.baqar.gogia.goefolk.databinding.FragmentFavouritesBinding
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -26,9 +27,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
+@OptIn(UnstableApi::class)
 @ExperimentalTime
 @InternalCoroutinesApi
-class FavouritesFragment : Fragment() {
+class FavouritesFragment : AuthorizedFragment() {
     private val viewModel: FavouritesViewModel by viewModel()
     private var binding: FragmentFavouritesBinding? = null
 
@@ -81,7 +83,7 @@ class FavouritesFragment : Fragment() {
             return
         }
 
-        if (state.error != null){
+        if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             Timber.i(state.error)
             return
@@ -90,13 +92,14 @@ class FavouritesFragment : Fragment() {
         binding?.favsProgressBar?.visibility = View.GONE
         if (state.favSongs.isNotEmpty()) {
             binding?.noRecordsView?.visibility = View.GONE
-            binding?.favSongsListView?.adapter = FavouritesAdapter(state.favSongs) { position, song ->
-                play(
-                    position,
-                    Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true),
-                    state.favSongs
-                )
-            }
+            binding?.favSongsListView?.adapter =
+                FavouritesAdapter(state.favSongs) { position, song ->
+                    play(
+                        position,
+                        Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true),
+                        state.favSongs
+                    )
+                }
             binding?.favSongsListView?.visibility = View.VISIBLE
         } else {
             binding?.noRecordsView?.visibility = View.VISIBLE
@@ -105,6 +108,7 @@ class FavouritesFragment : Fragment() {
 
     @SuppressLint("NewApi")
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
-        (activity as MenuActivity).playMediaPlayback(position, songs, artist)
+        folkPlayerController.artist = artist
+        authorizedActivity.playMediaPlayback(position, songs)
     }
 }

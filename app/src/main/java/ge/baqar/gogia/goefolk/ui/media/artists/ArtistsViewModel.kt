@@ -1,18 +1,15 @@
-package ge.baqar.gogia.goefolk.ui.media.ensembles
+package ge.baqar.gogia.goefolk.ui.media.artists
 
-import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
-import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SucceedResult
-import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
+import ge.baqar.gogia.goefolk.ui.ReactiveViewModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @InternalCoroutinesApi
 class ArtistsViewModel(
-    private val artistsService: ArtistsServiceImpl,
-    private val folkApiDao: FolkApiDao
+    private val artistsService: ArtistsServiceImpl
 ) : ReactiveViewModel<ArtistsAction, ArtistsResult, ArtistsState>(ArtistsState.DEFAULT) {
 
     fun ensembles() = update {
@@ -27,19 +24,6 @@ class ArtistsViewModel(
                 }
             }
             if (value is FailedResult) {
-                val cachedEnsembles = folkApiDao.ensembles()
-                if (cachedEnsembles.isNotEmpty()) {
-                    val mapped = cachedEnsembles.map {
-                        Artist(
-                            it.referenceId,
-                            it.name,
-                            it.artistType
-                        )
-                    }.toMutableList()
-                    emit {
-                        state.copy(isInProgress = false, artists = mapped)
-                    }
-                }
                 emit { state.copy(isInProgress = false, error = value.value.message) }
             }
         }

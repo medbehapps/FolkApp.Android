@@ -87,10 +87,10 @@ class BgPermission {
         private val allPermissions = HashMap<Int, String>()
 
         fun builder(): Builder? {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return builder
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                builder
             } else {
-                return null
+                null
             }
         }
     }

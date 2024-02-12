@@ -1,4 +1,4 @@
-package ge.baqar.gogia.goefolk.ui.media.ensembles
+package ge.baqar.gogia.goefolk.ui.media.artists
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.FragmentArtistsBinding
-import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
+import ge.baqar.gogia.goefolk.media.FolkPlayerController
 import ge.baqar.gogia.goefolk.model.events.OpenEnsembleFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -22,13 +20,17 @@ import kotlinx.coroutines.flow.onEach
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import kotlin.time.ExperimentalTime
 
 @InternalCoroutinesApi
+@OptIn(ExperimentalTime::class)
 class ArtistsFragment : Fragment() {
 
     private val viewModel: ArtistsViewModel by viewModel()
+    private val folkPlayerController: FolkPlayerController by inject()
     private lateinit var binding: FragmentArtistsBinding
     private var _view: View? = null
 
@@ -75,22 +77,20 @@ class ArtistsFragment : Fragment() {
     fun openEnsembleFragment(event: OpenEnsembleFragment) {
         val navController = findNavController()
         navController.navigate(
-            R.id.navigation_artists_details,
-            Bundle().apply {
-                putParcelable("ensemble", event.artist)
-            })
-        navController.addOnDestinationChangedListener(object :
-            NavController.OnDestinationChangedListener {
-            override fun onDestinationChanged(
-                controller: NavController,
-                destination: NavDestination,
-                arguments: Bundle?
-            ) {
-                EventBus.getDefault()
-                    .post(CurrentPlayingSong(event.playingSong))
-                navController.removeOnDestinationChangedListener(this)
-            }
-        })
+            R.id.navigation_artists_details)
+
+//        navController.addOnDestinationChangedListener(object :
+//            NavController.OnDestinationChangedListener {
+//            override fun onDestinationChanged(
+//                controller: NavController,
+//                destination: NavDestination,
+//                arguments: Bundle?
+//            ) {
+//                EventBus.getDefault()
+//                    .post(CurrentPlayingSong(event.playingSong))
+//                navController.removeOnDestinationChangedListener(this)
+//            }
+//        })
     }
 
     private fun initializeIntents(inputs: Flow<ArtistsAction>) {
@@ -121,6 +121,7 @@ class ArtistsFragment : Fragment() {
             binding.artistsListView.visibility = View.VISIBLE
             binding.artistsListView.adapter =
                 ArtistsAdapter(state.artists) {
+                    folkPlayerController.artist = it
                     openEnsembleFragment(OpenEnsembleFragment(it))
                 }
         } else {

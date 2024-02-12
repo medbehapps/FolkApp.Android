@@ -1,21 +1,19 @@
 package ge.baqar.gogia.goefolk.ui.media.dashboard
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.databinding.BindingAdapter
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.FragmentDashboardBinding
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.ArtistType
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedFragment
 import ge.baqar.gogia.goefolk.ui.media.dashboard.holiday.HolidaysPagerAdapter
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -26,14 +24,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
-class DashboardFragment : Fragment() {
+@androidx.annotation.OptIn(UnstableApi::class)
+@OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
+class DashboardFragment : AuthorizedFragment() {
 
     private val viewModel: DashboardViewModel by viewModel()
     private lateinit var binding: FragmentDashboardBinding
     private var _view: View? = null
 
-    @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,27 +40,27 @@ class DashboardFragment : Fragment() {
         if (_view == null) {
             binding = FragmentDashboardBinding.inflate(inflater, container, false)
             binding.daySongLayout.setOnClickListener {
-                (activity as MenuActivity).playMediaPlayback(
+                folkPlayerController.artist = Artist(
+                    viewModel.state.daySong?.artistId!!,
+                    viewModel.state.daySong?.artistName!!,
+                    ArtistType.ENSEMBLE,
+                    true
+                )
+                authorizedActivity.playMediaPlayback(
                     0,
-                    mutableListOf(viewModel.state.daySong!!),
-                    Artist(
-                        viewModel.state.daySong?.artistId!!,
-                        viewModel.state.daySong?.artistName!!,
-                        ArtistType.ENSEMBLE,
-                        true
-                    )
+                    mutableListOf(viewModel.state.daySong!!)
                 )
             }
             binding.dayChantLayout.setOnClickListener {
-                (activity as MenuActivity).playMediaPlayback(
+                folkPlayerController.artist = Artist(
+                    viewModel.state.dayChant?.artistId!!,
+                    viewModel.state.dayChant?.artistName!!,
+                    ArtistType.ENSEMBLE,
+                    true
+                )
+                authorizedActivity.playMediaPlayback(
                     0,
-                    mutableListOf(viewModel.state.dayChant!!),
-                    Artist(
-                        viewModel.state.dayChant?.artistId!!,
-                        viewModel.state.dayChant?.artistName!!,
-                        ArtistType.ENSEMBLE,
-                        true
-                    )
+                    mutableListOf(viewModel.state.dayChant!!)
                 )
             }
             binding.searchBtn.setOnClickListener {

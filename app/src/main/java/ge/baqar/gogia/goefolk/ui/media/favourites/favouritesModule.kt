@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 @InternalCoroutinesApi
 val favouritesModule = module {
-    viewModel { FavouritesViewModel(get(), get(), get(), get(), get()) }
+    viewModel { FavouritesViewModel(get(), get()) }
 }
 

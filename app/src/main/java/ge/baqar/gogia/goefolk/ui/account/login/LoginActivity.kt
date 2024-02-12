@@ -16,7 +16,7 @@ import ge.baqar.gogia.goefolk.databinding.ActivityLoginBinding
 import ge.baqar.gogia.goefolk.model.LoginModel
 import ge.baqar.gogia.goefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.goefolk.ui.account.register.RegisterActivity
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedActivity
 import ge.baqar.gogia.goefolk.utility.DeviceId
 import ge.baqar.gogia.goefolk.utility.TokenValidator
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -133,7 +133,7 @@ class LoginActivity : AppCompatActivity() {
 
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
     fun startMenuActivity() {
-        val intent = Intent(this, MenuActivity::class.java)
+        val intent = Intent(this, AuthorizedActivity::class.java)
         startActivity(intent)
         finish()
     }

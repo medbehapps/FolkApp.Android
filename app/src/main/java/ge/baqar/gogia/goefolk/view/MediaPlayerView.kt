@@ -10,7 +10,7 @@ import android.widget.SeekBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ge.baqar.gogia.goefolk.R
 import ge.baqar.gogia.goefolk.databinding.ViewMediaPlayerBinding
-import ge.baqar.gogia.goefolk.media.MediaPlaybackServiceManager
+import ge.baqar.gogia.goefolk.media.FolkMediaService
 import ge.baqar.gogia.goefolk.model.AutoPlayState
 
 
@@ -24,41 +24,46 @@ class MediaPlayerView @JvmOverloads constructor(
     private var seeking: Boolean = false
     var onAutoPlayChanged: (() -> Unit)? = null
     var onSizeChange: ((Boolean) -> Unit)? = null
-    var onTimerSetRequested: (() -> Unit)? = null
     var onNext: (() -> Unit)? = null
     var onPrev: (() -> Unit)? = null
     var onStop: (() -> Unit)? = null
     var onPlayPause: (() -> Unit)? = null
     var onShare: (() -> Unit)? = null
-    var setFavButtonClickListener: (() -> Unit)? = null
+    var onRewind: ((Int) -> Unit)? = null
+    var onFav: (() -> Unit)? = null
     var openPlayListListener: (() -> Unit)? = null
-    var setOnCloseListener: (() -> Unit)? = null
-    var setSeekListener: ((Int) -> Unit)? = null
+    private var onClose: (() -> Unit)? = null
 
+    private var calculatedHeight = 0
     private var animationDuration = 350L
     private var translate: Float = 0F
-    var minimized = true
+    private var minimized = true
     private var measured = false
 
-    private var binding: ViewMediaPlayerBinding =
-        ViewMediaPlayerBinding.inflate(LayoutInflater.from(context), this, true)
-    private var calculatedHeight = 0
+    private val binding: ViewMediaPlayerBinding by lazy {
+        ViewMediaPlayerBinding.inflate(
+            LayoutInflater.from(context),
+            this,
+            true
+        )
+    }
 
-    private var actionButtons = arrayOf(
-        binding.collapsedMediaPlayerView.playPauseButton,
-        binding.collapsedMediaPlayerView.playerAutoPlayButton,
-        binding.collapsedMediaPlayerView.favBtn,
-        binding.collapsedMediaPlayerView.shareBtn,
-        binding.expandedMediaPlayerView.playPauseButton,
-        binding.expandedMediaPlayerView.favBtn,
-        binding.expandedMediaPlayerView.playerAutoPlayButton,
-        binding.expandedMediaPlayerView.playStopButton,
-        binding.expandedMediaPlayerView.playNextButton,
-        binding.expandedMediaPlayerView.playPrevButton,
-        binding.expandedMediaPlayerView.timerBtn,
-        binding.expandedMediaPlayerView.playerPlaylistButton,
-        binding.expandedMediaPlayerView.shareBtn
-    )
+    private val actionButtons by lazy {
+        arrayOf(
+            binding.collapsedMediaPlayerView.playPauseButton,
+            binding.collapsedMediaPlayerView.playerAutoPlayButton,
+            binding.collapsedMediaPlayerView.favBtn,
+            binding.collapsedMediaPlayerView.shareBtn,
+            binding.expandedMediaPlayerView.playPauseButton,
+            binding.expandedMediaPlayerView.favBtn,
+            binding.expandedMediaPlayerView.playerAutoPlayButton,
+            binding.expandedMediaPlayerView.playStopButton,
+            binding.expandedMediaPlayerView.playNextButton,
+            binding.expandedMediaPlayerView.playPrevButton,
+            binding.expandedMediaPlayerView.playerPlaylistButton,
+            binding.expandedMediaPlayerView.shareBtn
+        )
+    }
 
     init {
         disableButtons()
@@ -75,8 +80,7 @@ class MediaPlayerView @JvmOverloads constructor(
 
     private fun enableButtons() {
         actionButtons.forEach {
-            if (!it.isEnabled)
-                it.isEnabled = true
+            it.isEnabled = true
         }
     }
 
@@ -121,22 +125,19 @@ class MediaPlayerView @JvmOverloads constructor(
         }
 
         binding.expandedMediaPlayerView.favBtn.setOnClickListener {
-            setFavButtonClickListener?.invoke()
+            onFav?.invoke()
         }
 
         binding.expandedMediaPlayerView.playerAutoPlayButton.setOnClickListener {
             onAutoPlayChanged?.invoke()
         }
 
-        binding.expandedMediaPlayerView.timerBtn.setOnClickListener {
-            onTimerSetRequested?.invoke()
-        }
 
         binding.expandedMediaPlayerView.playerProgressBar.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
                 if (seeking)
-                    setSeekListener?.invoke(p1)
+                    onRewind?.invoke(p1)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -178,18 +179,18 @@ class MediaPlayerView @JvmOverloads constructor(
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "NewApi")
     private fun initMinimizedMediaPlayerListeners() {
         binding.collapsedMediaPlayerView.playerViewCloseBtn.setOnClickListener {
-            if (!MediaPlaybackServiceManager.isRunning)
+            if (!FolkMediaService.isRunning)
                 return@setOnClickListener
 
-            setOnCloseListener?.invoke()
+            onClose?.invoke()
             maximize()
         }
 
         binding.collapsedMediaPlayerView.favBtn.setOnClickListener {
-            setFavButtonClickListener?.invoke()
+            onFav?.invoke()
         }
 
         binding.collapsedMediaPlayerView.playerAutoPlayButton.setOnClickListener {
@@ -201,7 +202,7 @@ class MediaPlayerView @JvmOverloads constructor(
         }
         var initialY = 0f
         binding.collapsedMediaPlayerViewContainer.setOnTouchListener { _, event ->
-            if (!MediaPlaybackServiceManager.isRunning)
+            if (!FolkMediaService.isRunning)
                 return@setOnTouchListener false
 
             when (event.action) {
@@ -230,18 +231,10 @@ class MediaPlayerView @JvmOverloads constructor(
         }
     }
 
-    fun setTrackTitle(title: String, artistName: String?) {
+    fun setTrackTitle(title: String?, artistName: String?) {
         binding.collapsedMediaPlayerView.playingTrackTitle.text = title
         binding.expandedMediaPlayerView.playingTrackTitle.text = title
         binding.expandedMediaPlayerView.playingTrackArtist.text = artistName
-    }
-
-    fun setTimer(isSet: Boolean) {
-        if (isSet) {
-            binding.expandedMediaPlayerView.timerBtn.setImageResource(R.drawable.ic_outline_timer_24_set)
-        } else {
-            binding.expandedMediaPlayerView.timerBtn.setImageResource(R.drawable.ic_outline_timer_24)
-        }
     }
 
     fun setIsFav(isFav: Boolean) {
@@ -314,6 +307,27 @@ class MediaPlayerView @JvmOverloads constructor(
         onSizeChange?.invoke(true)
     }
 
+    fun forceMinimize() {
+        minimized = true
+
+        binding.expandedMediaPlayerViewContainer.animate()
+            .setDuration(1)
+            .translationY(measuredHeight.toFloat())
+            .start()
+
+        binding.collapsedMediaPlayerViewContainer.animate()
+            .setDuration(1)
+            .alpha(1f)
+            .start()
+
+        bottomNavigationView.animate()
+            .setDuration(1)
+            .translationY(0F)
+            .start()
+        state = HALF_OPENED
+        onSizeChange?.invoke(false)
+    }
+
     fun minimize() {
         minimized = true
 
@@ -353,6 +367,7 @@ class MediaPlayerView @JvmOverloads constructor(
 
     companion object {
         const val OPENED = 1
-        const val HALF_OPENED = 2
+        const val CLOSED = 2
+        const val HALF_OPENED = 3
     }
 }

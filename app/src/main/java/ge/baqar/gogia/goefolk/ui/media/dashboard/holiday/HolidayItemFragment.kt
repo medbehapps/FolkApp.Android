@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import com.bumptech.glide.Glide
 import ge.baqar.gogia.goefolk.databinding.FragmentHolidayItemBinding
 import ge.baqar.gogia.goefolk.http.response.HolidaySongData
@@ -16,8 +16,7 @@ import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.model.events.CurrentPlayingSong
 import ge.baqar.gogia.goefolk.model.events.SongsMarkedAsFavourite
 import ge.baqar.gogia.goefolk.model.events.SongsUnmarkedAsFavourite
-import ge.baqar.gogia.goefolk.storage.db.FolkApiDao
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedFragment
 import ge.baqar.gogia.goefolk.ui.media.playlist.AddSongToPlayListDialog
 import ge.baqar.gogia.goefolk.ui.media.songs.SongsAdapter
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -28,12 +27,13 @@ import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
 import kotlin.time.ExperimentalTime
 
-class HolidayItemFragment : Fragment() {
+@OptIn(ExperimentalTime::class)
+class HolidayItemFragment : AuthorizedFragment() {
     lateinit var data: HolidaySongData
+
     private lateinit var binding: FragmentHolidayItemBinding
 
     private val addSongDialog: AddSongToPlayListDialog by inject()
-    private val folkApiDao: FolkApiDao by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,6 @@ class HolidayItemFragment : Fragment() {
         binding.holidaySongsListView.adapter =
             SongsAdapter(data.holidaySongs, { song, index ->
                 lifecycleScope.launch {
-                    song.isFav = folkApiDao.song(song.id) != null
                     play(index, song)
                     currentPlayingSong(CurrentPlayingSong(song))
                 }
@@ -71,13 +70,14 @@ class HolidayItemFragment : Fragment() {
         return binding.root
     }
 
+    @androidx.annotation.OptIn(UnstableApi::class)
     @SuppressLint("NewApi")
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
     private fun play(position: Int, song: Song) {
-        (activity as MenuActivity).playMediaPlayback(
+        folkPlayerController.artist = Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true)
+        authorizedActivity.playMediaPlayback(
             position,
-            data.holidaySongs,
-            Artist(song.artistId, song.artistName, ArtistType.ENSEMBLE, true)
+            data.holidaySongs
         )
     }
 

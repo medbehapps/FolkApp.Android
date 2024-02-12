@@ -1,10 +1,19 @@
-package ge.baqar.gogia.goefolk.arch
+package ge.baqar.gogia.goefolk.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 
 abstract class ReactiveViewModel<INPUT : Any, OUTPUT : Any, STATE : OUTPUT>(
     initialState: STATE
@@ -15,7 +24,6 @@ abstract class ReactiveViewModel<INPUT : Any, OUTPUT : Any, STATE : OUTPUT>(
 
     private var outputs: Flow<OUTPUT> = emptyFlow()
 
-    @OptIn(FlowPreview::class)
     @Suppress("UNCHECKED_CAST")
     open fun intents(inputs: Flow<INPUT>): Flow<OUTPUT> {
         outputs = inputs

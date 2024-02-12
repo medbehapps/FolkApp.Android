@@ -8,14 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.goefolk.R
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedActivity
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.Song
 import ge.baqar.gogia.goefolk.databinding.FragmentSearchBinding
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedFragment
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -28,7 +29,8 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @InternalCoroutinesApi
 @FlowPreview
-class SearchFragment : Fragment() {
+@androidx.annotation.OptIn(UnstableApi::class)
+class SearchFragment : AuthorizedFragment() {
     private val viewModel: SearchViewModel by viewModel()
     private lateinit var binding: FragmentSearchBinding
     private val ime: InputMethodManager by lazy {
@@ -62,7 +64,7 @@ class SearchFragment : Fragment() {
             binding.songsSearchResultListView.visibility = View.VISIBLE
         }
         showKeyBoard()
-        (activity as MenuActivity).destinationChanged = {
+        (activity as AuthorizedActivity).destinationChanged = {
             if (it == javaClass.name) {
                 showKeyBoard()
             } else {
@@ -149,6 +151,7 @@ class SearchFragment : Fragment() {
 
     @SuppressLint("NewApi")
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
-        (activity as MenuActivity).playMediaPlayback(position, songs, artist)
+        folkPlayerController.artist = artist
+        authorizedActivity.playMediaPlayback(position, songs)
     }
 }

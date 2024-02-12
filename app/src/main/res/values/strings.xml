@@ -53,4 +53,5 @@
     <string name="add_to_playlist_action">დამატება</string>
     <string name="music_is_added_to_playlist">სიმღერა \"%s\" დაემატა \"%s\" სიაში</string>
     <string name="musics_is_added_to_playlist">სიმღერები \"%s\" დაემატა \"%s\" სიაში</string>
+    <string name="marked_as_favourite">მონიშნულია ფავორიტად.</string>
 </resources>

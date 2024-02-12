@@ -1,18 +1,14 @@
 package ge.baqar.gogia.goefolk.ui.media.search
 
 import androidx.lifecycle.viewModelScope
-import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
-import ge.baqar.gogia.goefolk.http.response.BaseError
+import ge.baqar.gogia.goefolk.ui.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.ArtistsServiceImpl
 import ge.baqar.gogia.goefolk.http.service_implementations.SearchServiceImpl
 import ge.baqar.gogia.goefolk.model.Artist
 import ge.baqar.gogia.goefolk.model.FailedResult
-import ge.baqar.gogia.goefolk.model.ReactiveResult
-import ge.baqar.gogia.goefolk.model.SearchResult
 import ge.baqar.gogia.goefolk.model.SucceedResult
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi

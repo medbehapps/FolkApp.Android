@@ -1,6 +1,6 @@
 package ge.baqar.gogia.goefolk.ui.account.login
 
-import ge.baqar.gogia.goefolk.arch.ReactiveViewModel
+import ge.baqar.gogia.goefolk.ui.ReactiveViewModel
 import ge.baqar.gogia.goefolk.http.service_implementations.AccountServiceImpl
 import ge.baqar.gogia.goefolk.model.FailedResult
 import ge.baqar.gogia.goefolk.model.SucceedResult

@@ -1,21 +1,21 @@
 package ge.baqar.gogia.goefolk
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import androidx.annotation.RequiresApi
+import androidx.media3.common.util.UnstableApi
 import ge.baqar.gogia.goefolk.http.networkModule
 import ge.baqar.gogia.goefolk.media.mediaModule
 import ge.baqar.gogia.goefolk.storage.storageModule
-import ge.baqar.gogia.goefolk.ui.media.MenuActivity
 import ge.baqar.gogia.goefolk.ui.account.login.LoginActivity
 import ge.baqar.gogia.goefolk.ui.account.login.loginModule
 import ge.baqar.gogia.goefolk.ui.account.register.registerModule
-import ge.baqar.gogia.goefolk.ui.media.activityModule
+import ge.baqar.gogia.goefolk.ui.media.AuthorizedActivity
+import ge.baqar.gogia.goefolk.ui.media.artists.artistsModule
+import ge.baqar.gogia.goefolk.ui.media.authorizedModule
 import ge.baqar.gogia.goefolk.ui.media.dashboard.dashboardModule
-import ge.baqar.gogia.goefolk.ui.media.ensembles.artistsModule
 import ge.baqar.gogia.goefolk.ui.media.favourites.favouritesModule
 import ge.baqar.gogia.goefolk.ui.media.playlist.playlistModule
 import ge.baqar.gogia.goefolk.ui.media.search.searchModule
@@ -31,10 +31,10 @@ import kotlin.time.ExperimentalTime
 class FolkApplication : Application() {
 
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
-    var activeActivity: MenuActivity? = null
+    var activeActivity: AuthorizedActivity? = null
 
+    @SuppressLint("NewApi")
     @OptIn(ExperimentalTime::class, InternalCoroutinesApi::class)
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -42,7 +42,7 @@ class FolkApplication : Application() {
             androidContext(this@FolkApplication)
             modules(
                 listOf(
-                    activityModule,
+                    authorizedModule,
                     utilityModule,
                     mediaModule,
                     networkModule,
@@ -88,14 +88,15 @@ class FolkApplication : Application() {
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-                activeActivity = null
+                //activeActivity = null
             }
         })
     }
 
+    @androidx.annotation.OptIn(UnstableApi::class)
     @OptIn(InternalCoroutinesApi::class, ExperimentalTime::class)
     private fun assignMenuActivity(activity: Activity) {
-        if (activity is MenuActivity) {
+        if (activity is AuthorizedActivity) {
             activeActivity = activity
         }
     }

@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/navigation_ensembles"
-        android:name="ge.baqar.gogia.goefolk.ui.media.ensembles.ArtistsFragment"
+        android:name="ge.baqar.gogia.goefolk.ui.media.artists.ArtistsFragment"
         android:label="@string/artists"
         tools:layout="@layout/fragment_artists">
         <argument
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/navigation_oldRecordings"
-        android:name="ge.baqar.gogia.goefolk.ui.media.ensembles.ArtistsFragment"
+        android:name="ge.baqar.gogia.goefolk.ui.media.artists.ArtistsFragment"
         android:label="@string/oldRecordings"
         tools:layout="@layout/fragment_artists">
 

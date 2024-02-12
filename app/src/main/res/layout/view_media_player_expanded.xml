@@ -67,14 +67,6 @@
             android:src="@drawable/ic_baseline_share_24"
             app:tint="@color/drawable_disabled_tint" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/timerBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"
-            android:src="@drawable/ic_outline_timer_24"
-            app:tint="@color/drawable_disabled_tint" />
     </LinearLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat

@@ -9,10 +9,7 @@ class FolkAppPreferences(private val context: Context) {
     }
     private val playerControlsAreVisibleKey = "playerControlsAreVisible"
     private val autoPlayEnabledKey = "autoPlayEnabledKey"
-    private val timerSetKey = "timerSetKey"
     private val tokenKey = "tokenKey"
-    private val currentSong = "currentSong"
-    private val currentArtist = "currentArtist"
 
     fun updateAutoPlay(autoPlayEnabled: Int) {
         preferences.edit()
@@ -33,16 +30,6 @@ class FolkAppPreferences(private val context: Context) {
             .apply()
     }
 
-    fun setTimerSet(enabled: Boolean) {
-        preferences.edit()
-            .putBoolean(timerSetKey, enabled)
-            .apply()
-    }
-
-    fun getTimerSet(): Boolean {
-        return preferences.getBoolean(timerSetKey, false)
-    }
-
     fun setToken(token: String?) {
         preferences.edit()
             .putString(tokenKey, token)
@@ -51,25 +38,5 @@ class FolkAppPreferences(private val context: Context) {
 
     fun getToken(): String? {
         return preferences.getString(tokenKey, null)
-    }
-
-    fun setCurrentSong(id: String) {
-        preferences.edit()
-            .putString(currentSong, id)
-            .apply()
-    }
-
-    fun getCurrentSong(): String? {
-        return preferences.getString(currentSong, null)
-    }
-
-    fun setCurrentArtist(artistId: String) {
-        preferences.edit()
-            .putString(currentArtist, artistId)
-            .apply()
-    }
-
-    fun getCurrentArtist(): String? {
-        return preferences.getString(currentArtist, null)
     }
 }
