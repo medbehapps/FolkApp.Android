@@ -10,5 +10,5 @@ val networkModule = module {
     single { provideDashboardService() }
     single { providePlaylistService() }
     single { JwtTokenInterceptor(get(), get()) }
-    single { RequestInterceptor(get(), get(), get()) }
+    single { AuthGuardRequestInterceptor(get(), get(), get()) }
 }

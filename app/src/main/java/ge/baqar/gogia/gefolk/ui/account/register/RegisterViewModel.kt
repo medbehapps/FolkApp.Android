@@ -1,11 +1,11 @@
 package ge.baqar.gogia.gefolk.ui.account.register
 
-import ge.baqar.gogia.gefolk.ui.ReactiveViewModel
 import ge.baqar.gogia.gefolk.http.request.RegisterAccountRequest
 import ge.baqar.gogia.gefolk.http.request.VerifyAccountRequest
 import ge.baqar.gogia.gefolk.http.service_implementations.AccountServiceImpl
 import ge.baqar.gogia.gefolk.model.FailedResult
 import ge.baqar.gogia.gefolk.model.SucceedResult
+import ge.baqar.gogia.gefolk.ui.ReactiveViewModel
 import kotlinx.coroutines.flow.Flow
 
 class RegisterViewModel(private val accountService: AccountServiceImpl) :
@@ -16,7 +16,7 @@ class RegisterViewModel(private val accountService: AccountServiceImpl) :
         return when (this) {
             is RegisterRequested -> update {
                 emit {
-                    RegisterState.DEFAULT
+                    state.copy(isInProgress = true)
                 }
                 accountService.register(
                     RegisterAccountRequest(
@@ -48,7 +48,7 @@ class RegisterViewModel(private val accountService: AccountServiceImpl) :
 
             is VerificationRequested -> update {
                 emit {
-                    RegisterState.DEFAULT
+                    state.copy(isInProgress = true)
                 }
 
                 accountService.verify(VerifyAccountRequest(code), accountId)
@@ -58,7 +58,7 @@ class RegisterViewModel(private val accountService: AccountServiceImpl) :
                                 state.copy(
                                     isInProgress = false,
                                     verified = result.value,
-                                    accountId = null,
+                                    accountId = accountId,
                                     error = null
                                 )
                             }

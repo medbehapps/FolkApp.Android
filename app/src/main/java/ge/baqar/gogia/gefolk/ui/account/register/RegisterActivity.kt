@@ -1,5 +1,6 @@
 package ge.baqar.gogia.gefolk.ui.account.register
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.View
@@ -63,17 +64,14 @@ class RegisterActivity : AppCompatActivity() {
                 )
             )
         }
+
         binding.include.tabBackImageView.setOnClickListener {
             finish()
         }
 
         binding.showPasswordBtn.setOnClickListener {
             val viewPassword: Boolean? = binding.viewPassword
-            if (viewPassword == true) {
-                binding.viewPassword = false
-            } else {
-                binding.viewPassword = true
-            }
+            binding.viewPassword = viewPassword != true
         }
     }
 
@@ -100,12 +98,16 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        if (state.accountId != null) {
+        if (state.accountId != null && !state.verified) {
             binding.showVerification = true
             return
         }
 
         if (state.verified) {
+            setResult(RESULT_OK, Intent().let {
+                it.putExtra("email", binding.registerModel?.email)
+                it.putExtra("password", binding.registerModel?.password)
+            })
             finish()
         }
     }

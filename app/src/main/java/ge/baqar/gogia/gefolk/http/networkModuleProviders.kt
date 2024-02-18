@@ -18,9 +18,9 @@ private const val baseURL = "https://ammpjt8siw.us-east-1.awsapprunner.com/"
 
 private var gson = GsonBuilder().setLenient().create()
 private val jwtTokenInterceptor by inject<JwtTokenInterceptor>(JwtTokenInterceptor::class.java)
-private val requestInterceptor by inject<RequestInterceptor>(RequestInterceptor::class.java)
+private val requestInterceptor by inject<AuthGuardRequestInterceptor>(AuthGuardRequestInterceptor::class.java)
 
-fun provideAlazaniAPIRetrofit(okHttpClient: OkHttpClient): Retrofit {
+fun provideFolkApiUrl(okHttpClient: OkHttpClient): Retrofit {
     return Retrofit.Builder().baseUrl(baseURL).client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson)).build()
 }
@@ -46,25 +46,25 @@ fun provideAuthorizedOkHttpClient(): OkHttpClient {
 }
 
 fun provideArtistsService(): ArtistsService {
-    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(ArtistsService::class.java)
+    return provideFolkApiUrl(provideAuthorizedOkHttpClient()).create(ArtistsService::class.java)
 }
 
 fun provideAccountService(): AccountService {
-    return provideAlazaniAPIRetrofit(provideOkHttpClient()).create(AccountService::class.java)
+    return provideFolkApiUrl(provideOkHttpClient()).create(AccountService::class.java)
 }
 
 fun provideSongsService(): SongService {
-    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(SongService::class.java)
+    return provideFolkApiUrl(provideAuthorizedOkHttpClient()).create(SongService::class.java)
 }
 
 fun provideSearchService(): SearchService {
-    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(SearchService::class.java)
+    return provideFolkApiUrl(provideAuthorizedOkHttpClient()).create(SearchService::class.java)
 }
 
 fun provideDashboardService(): DashboardService {
-    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(DashboardService::class.java)
+    return provideFolkApiUrl(provideAuthorizedOkHttpClient()).create(DashboardService::class.java)
 }
 
 fun providePlaylistService(): PlayListService {
-    return provideAlazaniAPIRetrofit(provideAuthorizedOkHttpClient()).create(PlayListService::class.java)
+    return provideFolkApiUrl(provideAuthorizedOkHttpClient()).create(PlayListService::class.java)
 }

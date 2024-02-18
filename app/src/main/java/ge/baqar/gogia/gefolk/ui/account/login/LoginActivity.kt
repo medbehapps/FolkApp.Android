@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
@@ -32,12 +34,33 @@ import reactivecircus.flowbinding.android.view.clicks
 import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
+
 class LoginActivity : AppCompatActivity() {
 
     private val viewModel: LoginViewModel by viewModel()
     private lateinit var binding: ActivityLoginBinding
     private val preferences: FolkAppPreferences by inject()
     private val deviceId: DeviceId by inject()
+    private var registerActivityLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            val email = it.data?.getStringExtra("email")
+            val password = it.data?.getStringExtra("password")
+
+            binding.loginModel?.email = email
+            binding.loginModel?.password = password
+            if (binding.loginModel?.email != null && binding.loginModel?.password != null) {
+                initializeIntents(
+                    flowOf(
+                        LoginRequested(
+                            binding.loginModel?.email!!,
+                            binding.loginModel?.password!!,
+                            deviceId.get()!!
+                        )
+                    )
+                )
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
         )
 
         binding.registrationLinkText.setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
+            registerActivityLauncher.launch(Intent(this, RegisterActivity::class.java))
         }
 
         binding.showPasswordBtn.setOnClickListener {

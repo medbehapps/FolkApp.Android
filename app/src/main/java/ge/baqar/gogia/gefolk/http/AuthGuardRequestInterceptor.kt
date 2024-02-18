@@ -12,7 +12,7 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 
-class RequestInterceptor constructor(
+class AuthGuardRequestInterceptor(
     private val preferences: FolkAppPreferences,
     private var networkStatus: NetworkStatus,
     private val application: Application?

@@ -7,7 +7,6 @@ class FolkAppPreferences(private val context: Context) {
     private val preferences: SharedPreferences by lazy {
         context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)!!
     }
-    private val playerControlsAreVisibleKey = "playerControlsAreVisible"
     private val autoPlayEnabledKey = "autoPlayEnabledKey"
     private val tokenKey = "tokenKey"
 
@@ -22,12 +21,6 @@ class FolkAppPreferences(private val context: Context) {
             autoPlayEnabledKey,
             ge.baqar.gogia.gefolk.model.AutoPlayState.OFF
         )
-    }
-
-    fun setPlayerState(playerControlsAreVisible: Boolean) {
-        preferences.edit()
-            .putBoolean(playerControlsAreVisibleKey, playerControlsAreVisible)
-            .apply()
     }
 
     fun setToken(token: String?) {
