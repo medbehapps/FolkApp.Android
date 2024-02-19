@@ -3,6 +3,7 @@ package ge.baqar.gogia.gefolk.ui.media.songs
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -23,6 +24,9 @@ class SongsAdapter(
         }
         private val availableOfflineIndicator: View by lazy {
             itemView.findViewById(R.id.availableOfflineIndicator)
+        }
+        private val songExpandMoreImageView: AppCompatImageView by lazy {
+            itemView.findViewById(R.id.songExpandMoreImageView)
         }
 
         fun bind(song: Song, position: Int) {
@@ -52,7 +56,7 @@ class SongsAdapter(
                 song.isPlaying = true
                 notifyItemChanged(position)
             }
-            itemView.setOnLongClickListener {
+            songExpandMoreImageView.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     menuInflater.inflate(R.menu.popup_menu, menu)
                     setOnMenuItemClickListener { item ->
@@ -60,7 +64,6 @@ class SongsAdapter(
                         true
                     }
                 }.show()
-                true
             }
         }
     }
