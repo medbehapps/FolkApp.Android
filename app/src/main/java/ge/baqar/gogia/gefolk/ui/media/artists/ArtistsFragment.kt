@@ -5,44 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.gefolk.R
 import ge.baqar.gogia.gefolk.databinding.FragmentArtistsBinding
-import ge.baqar.gogia.gefolk.media.FolkPlayerController
-import ge.baqar.gogia.gefolk.model.events.OpenEnsembleFragment
+import ge.baqar.gogia.gefolk.ui.media.AuthorizedFragment
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 @InternalCoroutinesApi
 @OptIn(ExperimentalTime::class)
-class ArtistsFragment : Fragment() {
+class ArtistsFragment : AuthorizedFragment() {
 
     private val viewModel: ArtistsViewModel by viewModel()
-    private val folkPlayerController: FolkPlayerController by inject()
     private lateinit var binding: FragmentArtistsBinding
     private var _view: View? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        EventBus.getDefault().unregister(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,8 +55,7 @@ class ArtistsFragment : Fragment() {
         return _view!!
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun openEnsembleFragment(event: OpenEnsembleFragment) {
+    private fun openEnsembleFragment() {
         val navController = findNavController()
         navController.navigate(
             R.id.navigation_artists_details)
@@ -106,7 +87,6 @@ class ArtistsFragment : Fragment() {
     private fun render(state: ArtistsState) {
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
-            Timber.i(state.error)
             return
         }
         if (state.isInProgress) {
@@ -122,7 +102,7 @@ class ArtistsFragment : Fragment() {
             binding.artistsListView.adapter =
                 ArtistsAdapter(state.artists) {
                     folkPlayerController.artist = it
-                    openEnsembleFragment(OpenEnsembleFragment(it))
+                    openEnsembleFragment()
                 }
         } else {
             binding.artistsListView.visibility = View.GONE

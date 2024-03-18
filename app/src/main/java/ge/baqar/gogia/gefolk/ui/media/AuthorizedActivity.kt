@@ -141,17 +141,15 @@ class AuthorizedActivity : AppCompatActivity(), KoinComponent,
                 binding.mediaPlayerView.maximize()
             }
         }
-        binding.mediaPlayerView.onFav = {
-            folkPlayerController.currentSong?.let { currentSong ->
-                lifecycleScope.launch {
-                    songsViewModel.markAsFavourite(currentSong.id).collect {
-                        val isFav: Boolean
-                        if (it is SucceedResult) {
-                            isFav = it.value
-                            lifecycleScope.launch(Dispatchers.Main) {
-                                binding.mediaPlayerView.setIsFav(isFav)
-                                songMarkedAsFav?.invoke(currentSong.id, isFav)
-                            }
+        folkPlayerController.songMarkedAsFav = { currentSong ->
+            lifecycleScope.launch {
+                songsViewModel.markAsFavourite(currentSong.id).collect {
+                    val isFav: Boolean
+                    if (it is SucceedResult) {
+                        isFav = it.value
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            binding.mediaPlayerView.setIsFav(isFav)
+                            songMarkedAsFav?.invoke(currentSong.id, isFav)
                         }
                     }
                 }

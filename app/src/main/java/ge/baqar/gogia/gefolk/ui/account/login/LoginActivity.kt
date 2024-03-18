@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import reactivecircus.flowbinding.android.view.clicks
-import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 
@@ -131,7 +130,6 @@ class LoginActivity : AppCompatActivity() {
         enableUi()
         if (output.error != null) {
             Toast.makeText(this, output.error, Toast.LENGTH_SHORT).show()
-            Timber.i(output.error)
             return
         }
 

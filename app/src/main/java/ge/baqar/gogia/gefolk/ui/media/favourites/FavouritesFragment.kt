@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 @OptIn(UnstableApi::class)
@@ -40,6 +39,9 @@ class FavouritesFragment : AuthorizedFragment() {
 
         authorizedActivity.songMarkedAsFav = { _, _ ->
             initializeIntents(flowOf(FavouritesList()))
+        }
+        folkPlayerController.trackChanged = {
+            currentPlayingSong(it)
         }
         return binding?.root!!
     }
@@ -62,7 +64,6 @@ class FavouritesFragment : AuthorizedFragment() {
 
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
-            Timber.i(state.error)
             return
         }
 
@@ -87,5 +88,18 @@ class FavouritesFragment : AuthorizedFragment() {
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
         folkPlayerController.artist = artist
         authorizedActivity.playMediaPlayback(position, songs)
+    }
+
+    private fun currentPlayingSong(song: Song) {
+        binding?.favSongsListView
+        (binding?.favSongsListView?.adapter as? FavouritesAdapter)?.apply {
+            applyNotPlayingState()
+            val adapterSong = dataSource.firstOrNull { it.id == song.id }
+            adapterSong?.let{
+                it.isPlaying = true
+                val position = dataSource.indexOf(it)
+                notifyItemChanged(position)
+            }
+        }
     }
 }

@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import reactivecircus.flowbinding.android.view.clicks
-import timber.log.Timber
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
@@ -94,7 +93,6 @@ class RegisterActivity : AppCompatActivity() {
         enableUi()
         if (state.error != null) {
             Toast.makeText(this, state.error, Toast.LENGTH_LONG).show()
-            Timber.i(state.error)
             return
         }
 

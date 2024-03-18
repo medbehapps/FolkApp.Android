@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -93,7 +92,6 @@ class DashboardFragment : AuthorizedFragment() {
         binding.loading = false
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
-            Timber.i(state.error)
             return
         }
 

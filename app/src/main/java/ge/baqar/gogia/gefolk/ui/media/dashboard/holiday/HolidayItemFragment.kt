@@ -13,14 +13,11 @@ import ge.baqar.gogia.gefolk.http.response.HolidaySongData
 import ge.baqar.gogia.gefolk.model.Artist
 import ge.baqar.gogia.gefolk.model.ArtistType
 import ge.baqar.gogia.gefolk.model.Song
-import ge.baqar.gogia.gefolk.model.events.CurrentPlayingSong
 import ge.baqar.gogia.gefolk.ui.media.AuthorizedFragment
 import ge.baqar.gogia.gefolk.ui.media.playlist.AddSongToPlayListDialog
 import ge.baqar.gogia.gefolk.ui.media.songs.SongsAdapter
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.android.ext.android.inject
 import kotlin.time.ExperimentalTime
 
@@ -29,7 +26,6 @@ class HolidayItemFragment : AuthorizedFragment() {
     lateinit var data: HolidaySongData
 
     private lateinit var binding: FragmentHolidayItemBinding
-
     private val addSongDialog: AddSongToPlayListDialog by inject()
 
     @SuppressLint("UnsafeOptInUsageError", "NotifyDataSetChanged")
@@ -50,7 +46,7 @@ class HolidayItemFragment : AuthorizedFragment() {
             SongsAdapter(data.holidaySongs, { song, index ->
                 lifecycleScope.launch {
                     play(index, song)
-                    currentPlayingSong(CurrentPlayingSong(song))
+                    currentPlayingSong(song)
                 }
             }, {
                 addSongDialog.showPlayListDialog(requireActivity(), mutableListOf(it))
@@ -68,6 +64,11 @@ class HolidayItemFragment : AuthorizedFragment() {
                 }
             }
         }
+
+        folkPlayerController.trackChanged = {
+            currentPlayingSong(it)
+        }
+
         return binding.root
     }
 
@@ -83,11 +84,9 @@ class HolidayItemFragment : AuthorizedFragment() {
         )
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun currentPlayingSong(event: CurrentPlayingSong?) {
-        val song = event?.song
+    private fun currentPlayingSong(song: Song) {
         if (data.holidaySongs.isNotEmpty()) {
-            song?.let {
+            song.let {
                 (binding.holidaySongsListView.adapter as? SongsAdapter)?.apply {
                     applyNotPlayingState()
                     dataSource.firstOrNull { it.id == song.id }?.isPlaying = true

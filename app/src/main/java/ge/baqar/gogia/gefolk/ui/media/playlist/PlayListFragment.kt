@@ -49,6 +49,7 @@ class PlayListFragment : AuthorizedFragment() {
         return binding.root
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun initializeClickEvents() {
         binding.toolbarInclude.tabTitleView.text = getString(R.string.play_list)
         binding.toolbarInclude.tabBackImageView.setOnClickListener {
@@ -75,7 +76,7 @@ class PlayListFragment : AuthorizedFragment() {
             val input = viewInflated.findViewById<AppCompatEditText>(R.id.playlistNameInput)
             builder.setView(viewInflated)
 
-            builder.setPositiveButton(android.R.string.ok) { dialog, which ->
+            builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
                 dialog.dismiss()
                 lifecycleScope.launch {
                     initializeIntents(channelFlow {
@@ -83,16 +84,16 @@ class PlayListFragment : AuthorizedFragment() {
                     })
                 }
             }
-            builder.setNegativeButton(android.R.string.cancel, { dialog, which -> dialog.cancel() })
+            builder.setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
             builder.setCancelable(false)
             builder.show()
         }
         binding.deleteSongsBtn.setOnClickListener {
             when (itemDeleteType()) {
                 playListType -> {
-                    (binding.playlistListView.adapter as? PlayListAdapter)?.let {
+                    (binding.playlistListView.adapter as? PlayListAdapter)?.let { adapter ->
                         val playlists =
-                            it.dataSource.filter { a -> a.isSelected }.map { it.playListId }
+                            adapter.dataSource.filter { a -> a.isSelected }.map { it.playListId }
                                 .toMutableList()
 
                         if (playlists.any()) {
@@ -129,6 +130,12 @@ class PlayListFragment : AuthorizedFragment() {
                         }
                     }
                 }
+            }
+        }
+
+        folkPlayerController.trackChanged = {
+            (binding.playlistSongs.adapter as? PlayListSongsAdapter)?.apply {
+                applySongPlayingState(it)
             }
         }
     }
@@ -228,5 +235,15 @@ class PlayListFragment : AuthorizedFragment() {
     private fun play(position: Int, artist: Artist, songs: MutableList<Song>) {
         folkPlayerController.artist = artist
         authorizedActivity.playMediaPlayback(position, songs)
+    }
+
+    private fun PlayListSongsAdapter.applySongPlayingState(song: Song) {
+        applyNotPlayingState()
+        val adapterSong = dataSource.firstOrNull { it.id == song.id }
+        adapterSong?.let {
+            it.isPlaying = true
+            val position = dataSource.indexOf(it)
+            notifyItemChanged(position)
+        }
     }
 }

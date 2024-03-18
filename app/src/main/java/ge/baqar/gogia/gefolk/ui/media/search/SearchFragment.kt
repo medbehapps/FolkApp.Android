@@ -13,16 +13,19 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.fragment.findNavController
 import ge.baqar.gogia.gefolk.R
 import ge.baqar.gogia.gefolk.databinding.FragmentSearchBinding
-import ge.baqar.gogia.gefolk.ui.media.AuthorizedActivity
 import ge.baqar.gogia.gefolk.model.Artist
 import ge.baqar.gogia.gefolk.model.Song
+import ge.baqar.gogia.gefolk.ui.media.AuthorizedActivity
 import ge.baqar.gogia.gefolk.ui.media.AuthorizedFragment
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import reactivecircus.flowbinding.android.widget.textChanges
-import timber.log.Timber
 import kotlin.time.ExperimentalTime
 
 
@@ -100,7 +103,6 @@ class SearchFragment : AuthorizedFragment() {
         if (state.error != null) {
             Toast.makeText(context, state.error, Toast.LENGTH_LONG).show()
             binding.searchProgressBar.visibility = View.GONE
-            Timber.i(state.error)
             return
         }
 

@@ -9,7 +9,7 @@ import ge.baqar.gogia.gefolk.R
 import ge.baqar.gogia.gefolk.model.Song
 
 class FavouritesAdapter(
-    private var dataSource: MutableList<Song>,
+    var dataSource: MutableList<Song>,
     private val callback: (Int, Song) -> Unit) : RecyclerView.Adapter<FavouritesAdapter.FavouritesViewHolder>() {
 
     inner class FavouritesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -22,6 +22,15 @@ class FavouritesAdapter(
             itemView.setOnClickListener {
                 callback(position, song)
             }
+        }
+    }
+
+    fun applyNotPlayingState() {
+        val oldPlayingOne = dataSource.firstOrNull { it.isPlaying }
+        oldPlayingOne?.let {
+            val index = dataSource.indexOf(it)
+            it.isPlaying = false
+            notifyItemChanged(index)
         }
     }
 

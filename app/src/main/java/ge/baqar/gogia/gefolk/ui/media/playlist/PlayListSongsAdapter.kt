@@ -15,6 +15,15 @@ class PlayListSongsAdapter(
     private val itemsChecked: (MutableList<Song>) -> Unit
 ) : RecyclerView.Adapter<PlayListSongsAdapter.PlayListSongsViewHolder>() {
 
+    fun applyNotPlayingState() {
+        val oldPlayingOne = dataSource.firstOrNull { it.isPlaying }
+        oldPlayingOne?.let {
+            val index = dataSource.indexOf(it)
+            it.isPlaying = false
+            notifyItemChanged(index)
+        }
+    }
+
     inner class PlayListSongsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val songName: AppCompatTextView by lazy {
             itemView.findViewById(R.id.songName)

@@ -4,16 +4,20 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.core.app.ShareCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import ge.baqar.gogia.gefolk.media.player.AudioPlayer
 import ge.baqar.gogia.gefolk.model.Artist
 import ge.baqar.gogia.gefolk.model.AutoPlayState
 import ge.baqar.gogia.gefolk.model.Song
+import ge.baqar.gogia.gefolk.model.SucceedResult
 import ge.baqar.gogia.gefolk.storage.FolkAppPreferences
 import ge.baqar.gogia.gefolk.ui.media.AuthorizedActivity
 import ge.baqar.gogia.gefolk.view.MediaPlayerView
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 @ExperimentalTime
@@ -22,6 +26,7 @@ class FolkPlayerController(
     private val audioPlayer: AudioPlayer,
     private val folkAppPreferences: FolkAppPreferences
 ) {
+    @SuppressLint("UnsafeOptInUsageError")
     var authorizedActivity: AuthorizedActivity? = null
     var artist: Artist? = null
     var position: Int = -1
@@ -32,6 +37,8 @@ class FolkPlayerController(
         get() = authorizedActivity?.binding?.mediaPlayerView
 
     private var playList: MutableList<Song> = mutableListOf()
+    var songMarkedAsFav: ((Song) -> Unit)? = null
+    var trackChanged: ((Song) -> Unit)? = null
 
     val currentSong: Song?
         get() {
@@ -60,6 +67,7 @@ class FolkPlayerController(
                 position = audioPlayerPosition
                 mediaPlayerView?.setTrackTitle(currentSong?.name, artist?.name)
             }
+            trackChanged?.invoke(currentSong!!)
         }
         audioPlayer.onPlayPause = {
             checkOnPlayPause(it)
@@ -141,6 +149,12 @@ class FolkPlayerController(
         mediaPlayerView?.openPlayListListener = {
             onPlayListOpen?.invoke()
             mediaPlayerView?.minimize()
+        }
+
+        mediaPlayerView?.onFav = {
+            currentSong?.let { currentSong ->
+                songMarkedAsFav?.invoke(currentSong)
+            }
         }
     }
 

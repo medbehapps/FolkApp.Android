@@ -38,9 +38,9 @@ data class Song(
 }
 
 enum class SongType(val index: Int) {
-    @SerializedName("0")
-    Song(0),
-
     @SerializedName("1")
-    Chant(1)
+    Song(1),
+
+    @SerializedName("2")
+    Chant(2)
 }

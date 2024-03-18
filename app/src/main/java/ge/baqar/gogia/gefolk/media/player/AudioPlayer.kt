@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Player.DISCONTINUITY_REASON_AUTO_TRANSITION
+import androidx.media3.common.Player.DISCONTINUITY_REASON_SEEK
 import androidx.media3.exoplayer.ExoPlayer
 
 
@@ -79,7 +80,9 @@ class AudioPlayer(private val context: Context, private val player: ExoPlayer) {
                 reason: Int
             ) {
                 super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-                if (reason == DISCONTINUITY_REASON_AUTO_TRANSITION) {
+                if (reason == DISCONTINUITY_REASON_AUTO_TRANSITION ||
+                    reason == DISCONTINUITY_REASON_SEEK
+                ) {
                     onTrackChange?.invoke(newPosition.mediaItemIndex)
                     timer?.cancel()
                 }
