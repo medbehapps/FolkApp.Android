@@ -6,7 +6,7 @@
 
     <include
         android:id="@+id/toolbarInclude"
-        layout="@layout/view_fragment_artist_toolbar" />
+        layout="@layout/view_fragment_toolbar_back" />
 
     <include
         android:id="@+id/tabViewInclude"

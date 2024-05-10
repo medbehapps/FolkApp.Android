@@ -45,10 +45,6 @@ class ArtistsFragment : AuthorizedFragment() {
                 initializeIntents(loadFlow)
             }
 
-            binding.include.tabBackImageView.setOnClickListener {
-                findNavController().navigateUp()
-            }
-
             _view = binding.root
             return _view!!
         }
