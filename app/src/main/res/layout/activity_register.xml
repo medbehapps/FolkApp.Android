@@ -20,10 +20,6 @@
             name="registerModel"
             type="ge.baqar.gogia.gefolk.model.RegistrationModel" />
 
-        <variable
-            name="verificationModel"
-            type="ge.baqar.gogia.gefolk.model.VerificationModel" />
-
     </data>
 
     <LinearLayout
@@ -43,49 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="15dp"
-                app:visible="@{showVerification}">
-
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/drawable_account_activity_input"
-                    android:enabled="@{!disableUi}"
-                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                    android:hint="@string/code"
-                    android:imeOptions="actionNext"
-                    android:inputType="number"
-                    android:maxLength="4"
-                    android:maxLines="1"
-                    android:minLines="1"
-                    android:padding="12dp"
-                    android:text="@={verificationModel.code}"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/hintTextColor" />
-
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/verifyButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/drawable_account_activity_button"
-                    android:enabled="@{!disableUi}"
-                    android:fontFamily="@font/bpg_nino_mtavruli_bold"
-                    android:gravity="center"
-                    android:padding="12dp"
-                    android:text="@string/verify"
-                    android:textColor="@color/white" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="15dp"
-                app:visible="@{!showVerification}">
+                android:padding="15dp">
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:layout_width="match_parent"

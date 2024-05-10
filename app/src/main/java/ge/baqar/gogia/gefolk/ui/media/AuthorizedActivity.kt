@@ -73,7 +73,6 @@ class AuthorizedActivity : AppCompatActivity(), KoinComponent,
         navController = findNavController(R.id.nav_host_fragment_activity_menu)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_dashboard,
                 R.id.navigation_ensembles,
                 R.id.navigation_oldRecordings,
                 R.id.navigation_playlist,

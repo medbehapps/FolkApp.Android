@@ -13,9 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import ge.baqar.gogia.gefolk.R
 import ge.baqar.gogia.gefolk.databinding.ActivityRegisterBinding
 import ge.baqar.gogia.gefolk.model.RegistrationModel
-import ge.baqar.gogia.gefolk.model.VerificationModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -34,13 +32,9 @@ class RegisterActivity : AppCompatActivity() {
         val registrationModel = RegistrationModel(
             null, null, null, null
         )
-        val verificationModel = VerificationModel(
-            null
-        )
         binding.showVerification = false
         binding.viewPassword = false
         binding.registerModel = registrationModel
-        binding.verificationModel = verificationModel
         initializeIntents(
             binding.registerButton.clicks()
                 .map {
@@ -52,17 +46,6 @@ class RegisterActivity : AppCompatActivity() {
                     )
                 }
         )
-
-        binding.verifyButton.setOnClickListener {
-            initializeIntents(
-                flowOf(
-                    VerificationRequested(
-                        binding.verificationModel?.code,
-                        viewModel.state.accountId!!
-                    )
-                )
-            )
-        }
 
         binding.include.tabBackImageView.setOnClickListener {
             finish()
@@ -96,12 +79,7 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        if (state.accountId != null && !state.verified) {
-            binding.showVerification = true
-            return
-        }
-
-        if (state.verified) {
+        if (state.accountId != null) {
             setResult(RESULT_OK, Intent().let {
                 it.putExtra("email", binding.registerModel?.email)
                 it.putExtra("password", binding.registerModel?.password)
